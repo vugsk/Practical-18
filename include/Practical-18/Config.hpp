@@ -3,15 +3,10 @@
 #define CONFIG_HPP
 
 #include <string>
-#include <typeindex>
-#include <unordered_map>
 #include <vector>
 
-enum class Tokes
+const enum class TokenType
 {
-        NUMBER_DATATYPE,
-        STRING_DATATYPE,
-
         COLON,          // двоеточие
         SEMICOLON,      // точка с запятой
         ASSIGNMENT,     // присваиваивание
@@ -24,12 +19,9 @@ enum class Tokes
         END,
 };
 
-inline const std::wstring& getWchar()
-{
-        return L":;=";
-}
+constexpr std::vector<wchar_t> CHAR_TYPE {':', ';', '='};
 
-constexpr std::vector<std::wstring> typ {L"число", L"строка", L"символ"};
+constexpr std::vector<std::wstring> DATA_TYPE {L"число", L"строка", L"символ"};
 
 
 [[nodiscard]] std::wstring ConvertString(const std::string& string);
