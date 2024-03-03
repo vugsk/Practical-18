@@ -52,9 +52,9 @@ bool is_func_E_Q_S(const wchar_t ch)
     return IsSpace(ch) || isEnter(ch) || isQuote(ch);
 }
 
-bool test_func_bool(const wchar_t ch, const std::wstring& i)
+bool test_func_bool(const wchar_t ch, const wchar_t i, const bool is)
 {
-    return ch == i[0];
+    return is ? ch == i : ch != i;
 }
 
 [[nodiscard]] std::wstring ConvertString(const std::string& string)
@@ -67,8 +67,8 @@ bool test_func_bool(const wchar_t ch, const std::wstring& i)
 std::wstring test_func_convert(const wchar_t ch)
 {
     auto* yut = new wchar_t[2];
-    yut[0]    = ch;
-    yut[1]    = '\0';
+    yut[0]   = ch;
+    yut[1]   = '\0';
     std::wstring io(yut);
     delete[] yut;
     return io;

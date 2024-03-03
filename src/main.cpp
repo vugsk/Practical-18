@@ -3,33 +3,9 @@
 #include <iostream>
 
 #include <Config.hpp>
-#include <memory>
 
 using namespace std;
 using placeholders::_1;
-
-class Token
-{
-public:
-    Token(const TokenType token, wstring value)
-        : _token(token), _value(std::move(value)) {}
-
-    [[nodiscard]] TokenType getToken() const
-    {
-        return _token;
-    }
-
-    [[nodiscard]] wstring getValue() const
-    {
-        return _value;
-    }
-
-private:
-    TokenType _token;
-    wstring _value;
-};
-
-
 
 static wstring input;
 static int     pos;
@@ -37,26 +13,23 @@ static int     pos;
 wstring test_func_wstring(const wchar_t quote)
 {
     pos++;
-    return test_st(input, pos, [quote](const wchar_t i) { return i != quote; });
-}
-
-template<typename F>
-pair<bool, shared_ptr<Token>> test_func_(const vector<pair<TokenType, wstring>>& vec,
-    const F& func)
-{
-    for (const auto& [_token, ch] : vec)
-        if (func(ch))
-            return {true, make_shared<Token>(_token, ch)};
-    return {false, nullptr};
+    return test_st(input, pos, bind(test_func_bool, _1, quote, false));
 }
 
 shared_ptr<Token> identifierOrKeyword()
 {
     const wstring sb = test_st(input, pos, IsLetterOrDigit);
-    if (test_func_(TYPE_DATA_, bind(ranges::equal, sb, _1)).first)
-        return test_func_(TYPE_DATA_, bind(ranges::equal, sb, _1)).second;
+    if (test_func_<wstring>(TYPE_DATA_, bind(ranges::equal, sb, _1)).first)
+        return test_func_<wstring>(TYPE_DATA_, bind(ranges::equal, sb, _1)).second;
     return make_shared<Token>(TokenType::ID, sb);
 }
+
+// pair<bool, shared_ptr<Token>> test_func_pair()
+// {
+//     if (is_func(input[pos]))
+//         make_shared<Token>(TokenType::STRING_LITERAL, test_func_wstring(input[pos]));
+//     return {false, nullptr};
+// }
 
 vector<shared_ptr<Token>> test_func(const wstring& input_text)
 {
@@ -75,13 +48,14 @@ vector<shared_ptr<Token>> test_func(const wstring& input_text)
         if (IsSymbol(input[pos]))
             token.push_back(identifierOrKeyword());
 
-        if (test_func_(TYPE_CHAR_, bind(test_func_bool, input[pos], _1)).first)
-            token.push_back(test_func_(TYPE_CHAR_, bind(test_func_bool, input[pos], _1)).second);
+        if (test_func_<wchar_t>(TYPE_CHAR_, bind(test_func_bool, input[pos], _1, true)).first)
+            token.push_back(test_func_<wchar_t>(TYPE_CHAR_, bind(test_func_bool, input[pos], _1, true)).second);
     }
 
     token.push_back(make_shared<Token>(TokenType::END, END));
     return token;
 }
+
 
 
 
@@ -97,6 +71,7 @@ int main()
     for (const auto& i : test_func(filename))
         std::wcout << static_cast<int>(i->getToken()) << ' '
                     << i->getValue() << std::endl;
+
 
     return 0;
 }

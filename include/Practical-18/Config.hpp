@@ -3,6 +3,7 @@
 #define CONFIG_HPP
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -26,6 +27,29 @@ enum class TokenType
         END,
 };
 
+class Token
+{
+public:
+        Token(const TokenType token, std::wstring value)
+            : _token(token), _value(std::move(value)) {}
+
+        [[nodiscard]] TokenType getToken() const
+        {
+                return _token;
+        }
+
+        [[nodiscard]] std::wstring getValue() const
+        {
+                return _value;
+        }
+
+private:
+        TokenType _token;
+        std::wstring _value;
+};
+
+
+
 constexpr wchar_t      COLON          = ':';
 constexpr wchar_t      SEMICOLON      = ';';
 constexpr wchar_t      ASSIGNMENT     = '=';
@@ -40,19 +64,13 @@ const std::wstring     CHARACTER      = L"символ";
 
 [[nodiscard]] std::wstring test_func_convert(wchar_t ch);
 
-const std::vector<std::pair<TokenType, std::wstring>> TYPE_CHAR_
-{
-        {TokenType::COLON, test_func_convert(COLON)},
-        {TokenType::SEMICOLON, test_func_convert(SEMICOLON)},
-        {TokenType::ASSIGNMENT, test_func_convert(ASSIGNMENT)},
-};
 
-// const std::vector<std::pair<TokenType, wchar_t>> TYPE_CHAR_
-// {
-//         {TokenType::COLON, COLON},
-//         {TokenType::SEMICOLON, SEMICOLON},
-//         {TokenType::ASSIGNMENT, ASSIGNMENT},
-// };
+const std::vector<std::pair<TokenType, wchar_t>> TYPE_CHAR_
+{
+        {TokenType::COLON, COLON},
+        {TokenType::SEMICOLON, SEMICOLON},
+        {TokenType::ASSIGNMENT, ASSIGNMENT},
+};
 
 const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
 {
@@ -71,12 +89,26 @@ const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
 [[nodiscard]] bool isEnter(wchar_t ch);
 [[nodiscard]] bool isQuote(wchar_t ch);
 [[nodiscard]] bool is_func_E_Q_S(wchar_t ch);
-[[nodiscard]] bool test_func_bool(wchar_t ch, const std::wstring& i);
+[[nodiscard]] bool test_func_bool(wchar_t ch, wchar_t i, bool is);
 
 [[nodiscard]] std::wstring ConvertString(const std::string& string);
 
 [[nodiscard]] std::wstring test_st(const std::wstring& _input, int& position,
         const std::function<bool(wchar_t)>& func);
 
+template<typename T>
+std::pair<bool, std::shared_ptr<Token>> test_func_(
+        const std::vector<std::pair<TokenType, T>>& vec,
+        const std::function<bool(const T&)>& func)
+{
+        std::wstring io;
+        for (const auto& [_token, ch] : vec)
+        {
+                io = ch;
+                if (func(ch))
+                        return {true, make_shared<Token>(_token, io)};
+        }
+        return {false, nullptr};
+}
 
 #endif //CONFIG_HPP
