@@ -5,11 +5,14 @@
 #include <string>
 #include <vector>
 
-const enum class TokenType
+enum class TokenType
 {
         COLON,          // двоеточие
         SEMICOLON,      // точка с запятой
         ASSIGNMENT,     // присваиваивание
+
+        STRING_LITERAL, // кавычки
+        NUMBER_LITERAL,
 
         NUMBER,
         STRING,
@@ -19,9 +22,17 @@ const enum class TokenType
         END,
 };
 
-constexpr std::vector<wchar_t> CHAR_TYPE {':', ';', '='};
+constexpr wchar_t COLON = ':';
+constexpr wchar_t SEMICOLON = ';';
+constexpr wchar_t ASSIGNMENT = '=';
+constexpr wchar_t SPACE = ' ';
 
-constexpr std::vector<std::wstring> DATA_TYPE {L"число", L"строка", L"символ"};
+constexpr std::pair<wchar_t, wchar_t> STRING_LITERAL = {'\"', '\''};
+
+constexpr std::vector<std::wstring> GetDataTypes()
+{
+        return {L"число", L"строка", L"символ"};
+}
 
 
 [[nodiscard]] std::wstring ConvertString(const std::string& string);
