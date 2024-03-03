@@ -89,7 +89,7 @@ vector<Token*> test_func(const wstring& input_text)
         }
     }
 
-    token.push_back(new Token(TokenType::END, L"NUL"));
+    token.push_back(new Token(TokenType::END, END));
 
     return token;
 }

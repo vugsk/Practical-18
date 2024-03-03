@@ -26,12 +26,14 @@ constexpr wchar_t COLON = ':';
 constexpr wchar_t SEMICOLON = ';';
 constexpr wchar_t ASSIGNMENT = '=';
 constexpr wchar_t SPACE = ' ';
+constexpr std::wstring END = L"NUL";
 
 constexpr std::pair<wchar_t, wchar_t> STRING_LITERAL = {'\"', '\''};
 
 const std::wstring NUMBER = L"число";
 const std::wstring STRING = L"строка";
 const std::wstring CHARACTER = L"символ";
+
 
 [[nodiscard]] bool IsDigit(wchar_t number);
 [[nodiscard]] bool IsSpace(wchar_t _ch);
