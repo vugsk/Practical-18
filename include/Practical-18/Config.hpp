@@ -14,9 +14,9 @@ enum class TokenType
         STRING_LITERAL, // кавычки
         NUMBER_LITERAL,
 
-        NUMBER,
-        STRING,
-        CHARACTER,
+        NUMBER_DATATYPE,
+        STRING_DATATYPE,
+        CHARACTER_DATATYPE,
         ID,
 
         END,
@@ -34,6 +34,10 @@ constexpr std::vector<std::wstring> GetDataTypes()
         return {L"число", L"строка", L"символ"};
 }
 
+[[nodiscard]] bool IsDigit(wchar_t number);
+[[nodiscard]] bool IsSpace(wchar_t _ch);
+[[nodiscard]] bool IsSymbol(wchar_t _ch);
+[[nodiscard]] bool IsLetterOrDigit(wchar_t _ch);
 
 [[nodiscard]] std::wstring ConvertString(const std::string& string);
 

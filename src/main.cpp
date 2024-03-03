@@ -2,8 +2,8 @@
 #include <iostream>
 
 #include <algorithm>
+
 #include <Config.hpp>
-#include <utility>
 
 using namespace std;
 
@@ -37,8 +37,7 @@ void SkipSpace();
 void Advace();
 wstring test_func_wstring(wchar_t quote);
 wstring integer();
-bool isSpace(wchar_t _ch);
-
+Token* identifierOrKeyword();
 
 vector<Token*> test_func(const wstring& input_text)
 {
@@ -49,7 +48,7 @@ vector<Token*> test_func(const wstring& input_text)
 
     while (pos != input_text.size() - 1)
     {
-        if (isSpace(ch))
+        if (IsSpace(ch))
         {
             SkipSpace();
         }
@@ -76,7 +75,12 @@ vector<Token*> test_func(const wstring& input_text)
         }
         else if (isdigit(ch))
         {
-            token.push_back(new Token(TokenType::STRING_LITERAL, integer()));
+            token.push_back(new Token(TokenType::NUMBER_LITERAL, integer()));
+            Advace();
+        }
+        else if (IsSymbol(ch))
+        {
+            token.push_back(identifierOrKeyword());
             Advace();
         }
         else
@@ -103,7 +107,7 @@ void Advace()
 
 void SkipSpace()
 {
-    while (ch != input.size() - 1 && isSpace(ch))
+    while (ch != input.size() - 1 && IsSpace(ch))
         Advace();
 }
 
@@ -120,23 +124,30 @@ wstring test_func_wstring(const wchar_t quote)
     return sb;
 }
 
-bool isDigit(const wchar_t number)
+Token* identifierOrKeyword()
 {
-    for(const auto i : L"1234567890")
-        if (number == i)
-            return true;
-    return false;
+    wstring sb;
+    while (ch != input.size() - 1 && IsLetterOrDigit(ch)) {
+        sb.push_back(ch);
+        Advace();
+    }
+
+    if (ranges::equal(sb, GetDataTypes()[0]))
+        return new Token(TokenType::NUMBER_DATATYPE, sb);
+    else if (ranges::equal(sb, GetDataTypes()[1]))
+        return new Token(TokenType::STRING_DATATYPE, sb);
+    else if (ranges::equal(sb, GetDataTypes()[2]))
+        return new Token(TokenType::CHARACTER_DATATYPE, sb);
+
+    else return new Token(TokenType::ID, sb);
 }
 
-[[nodiscard]] bool isSpace(const wchar_t _ch)
-{
-    return ch == SPACE;
-}
 
 wstring integer()
 {
     wstring sb;
-     while (ch != input.size() - 1 && isDigit(ch)) {
+     while (ch != input.size() - 1 && IsDigit(ch))
+     {
         sb.push_back(ch);
         Advace();
     }
