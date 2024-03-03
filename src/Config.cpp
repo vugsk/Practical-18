@@ -32,9 +32,24 @@ bool IsLetterOrDigit(const wchar_t _ch)
     return IsDigit(_ch) || IsSymbol(_ch);
 }
 
+bool is_func(const wchar_t ch)
+{
+    return ch == STRING_LITERAL.first || ch == STRING_LITERAL.second;
+}
+
 [[nodiscard]] std::wstring ConvertString(const std::string& string)
 {
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     std::wstring wtext = converter.from_bytes(string.c_str());
     return wtext;
+}
+
+std::wstring test_func_convert(const wchar_t ch)
+{
+    auto* yut = new wchar_t[2];
+    yut[0]    = ch;
+    yut[1]    = '\0';
+    std::wstring io(yut);
+    delete[] yut;
+    return io;
 }

@@ -1,7 +1,6 @@
 
-#include <iostream>
-
 #include <algorithm>
+#include <iostream>
 
 #include <Config.hpp>
 
@@ -35,14 +34,15 @@ wstring test_func_wstring(wchar_t quote);
 wstring integer();
 Token* identifierOrKeyword();
 
+
+
 vector<Token*> test_func(const wstring& input_text)
 {
     input = input_text;
-
     vector<Token*> token;
     for(pos = 0; pos < input.size(); pos++)
     {
-        if (input[pos] == STRING_LITERAL.first || input[pos] == STRING_LITERAL.second)
+        if (is_func(input[pos]))
             token.push_back(new Token(TokenType::STRING_LITERAL, test_func_wstring(input[pos])));
 
         else if (isdigit(input[pos]))
@@ -51,52 +51,45 @@ vector<Token*> test_func(const wstring& input_text)
         else if (IsSymbol(input[pos]))
             token.push_back(identifierOrKeyword());
 
-        if (input[pos] == COLON)
-            token.push_back(new Token(TokenType::COLON, L":"));
-
-        else if (input[pos] == SEMICOLON)
-            token.push_back(new Token(TokenType::SEMICOLON, L";"));
-
-        else if (input[pos] == ASSIGNMENT)
-            token.push_back(new Token(TokenType::ASSIGNMENT, L"="));
+        for (const auto& [_token, ch] : TYPE_CHAR_)
+            if (input[pos] == ch)
+                token.push_back(new Token(_token, test_func_convert(ch)));
     }
 
     token.push_back(new Token(TokenType::END, END));
     return token;
 }
 
-wstring test_func_wstring(const wchar_t quote)
+
+template<typename F>
+wstring test_st(const F& func)
 {
     wstring sb;
-    pos++;
-    while (input[pos] != input.size() - 1 && input[pos] != quote)
+    while (func(input[pos]))
         sb.push_back(input[pos++]);
     return sb;
+}
+
+
+wstring test_func_wstring(const wchar_t quote)
+{
+    pos++;
+    return test_st([quote](const wchar_t i) { return i != quote; });
 }
 
 Token* identifierOrKeyword()
 {
-    wstring sb;
-    while (input[pos] != input.size() - 1 && IsLetterOrDigit(input[pos]))
-        sb.push_back(input[pos++]);
-
-    if (ranges::equal(sb, NUMBER))
-        return new Token(TokenType::NUMBER_DATATYPE, sb);
-    if (ranges::equal(sb, STRING))
-        return new Token(TokenType::STRING_DATATYPE, sb);
-    if (ranges::equal(sb, CHARACTER))
-        return new Token(TokenType::CHARACTER_DATATYPE, sb);
+    const wstring sb = test_st(IsLetterOrDigit);
+    for (const auto& [token, type_data] : TYPE_DATA_)
+        if (ranges::equal(sb, type_data))
+            return new Token(token, sb);
 
     return new Token(TokenType::ID, sb);
 }
 
-
 wstring integer()
 {
-    wstring sb;
-    while (input[pos] != input.size() - 1 && IsDigit(input[pos]))
-        sb.push_back(input[pos++]);
-    return sb;
+    return test_st(IsDigit);
 }
 
 

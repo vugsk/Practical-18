@@ -11,17 +11,19 @@ enum class TokenType
         SEMICOLON,      // точка с запятой
         ASSIGNMENT,     // присваиваивание
 
+
         STRING_LITERAL, // кавычки
         NUMBER_LITERAL,
+
 
         NUMBER_DATATYPE,
         STRING_DATATYPE,
         CHARACTER_DATATYPE,
         ID,
 
+
         END,
 };
-
 
 constexpr wchar_t      COLON          = ':';
 constexpr wchar_t      SEMICOLON      = ';';
@@ -34,12 +36,30 @@ const std::wstring     STRING         = L"строка";
 const std::wstring     CHARACTER      = L"символ";
 
 
+
+const std::vector<std::pair<TokenType, wchar_t>> TYPE_CHAR_
+{
+        {TokenType::COLON, COLON},
+        {TokenType::SEMICOLON, SEMICOLON},
+        {TokenType::ASSIGNMENT, ASSIGNMENT},
+};
+
+const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
+{
+        {TokenType::NUMBER_DATATYPE, NUMBER},
+        {TokenType::STRING_DATATYPE, STRING},
+        {TokenType::CHARACTER_DATATYPE, CHARACTER},
+};
+
+
+
 [[nodiscard]] bool IsDigit(wchar_t number);
 [[nodiscard]] bool IsSpace(wchar_t _ch);
 [[nodiscard]] bool IsSymbol(wchar_t _ch);
 [[nodiscard]] bool IsLetterOrDigit(wchar_t _ch);
+[[nodiscard]] bool is_func(wchar_t ch);
 
 [[nodiscard]] std::wstring ConvertString(const std::string& string);
-
+[[nodiscard]] std::wstring test_func_convert(wchar_t ch);
 
 #endif //CONFIG_HPP
