@@ -26,15 +26,11 @@ public:
 private:
     TokenType _token;
     wstring _value;
-
 };
 
 static wstring input;
-static auto    pos   = 0;
-static wchar_t ch;
+static int     pos;
 
-void SkipSpace();
-void Advace();
 wstring test_func_wstring(wchar_t quote);
 wstring integer();
 Token* identifierOrKeyword();
@@ -42,93 +38,47 @@ Token* identifierOrKeyword();
 vector<Token*> test_func(const wstring& input_text)
 {
     input = input_text;
-    ch = input_text[pos];
 
     vector<Token*> token;
-
-    while (pos != input_text.size() - 1)
+    for(pos = 0; pos < input.size(); pos++)
     {
-        if (IsSpace(ch))
-        {
-            SkipSpace();
-        }
-        else if (ch == COLON)
-        {
-            token.push_back(new Token(TokenType::COLON, L":"));
-            Advace();
-        }
-        else if (ch == SEMICOLON)
-        {
-            token.push_back(new Token(TokenType::SEMICOLON, L";"));
-            Advace();
-        }
-        else if (ch == ASSIGNMENT)
-        {
-            token.push_back(new Token(TokenType::ASSIGNMENT, L"="));
-            Advace();
-        }
-        else if (ch == STRING_LITERAL.first || ch == STRING_LITERAL.second)
-        {
-            token.push_back(new Token(TokenType::STRING_LITERAL,
-                test_func_wstring(ch)));
-            Advace();
-        }
-        else if (isdigit(ch))
-        {
+        if (input[pos] == STRING_LITERAL.first || input[pos] == STRING_LITERAL.second)
+            token.push_back(new Token(TokenType::STRING_LITERAL, test_func_wstring(input[pos])));
+
+        else if (isdigit(input[pos]))
             token.push_back(new Token(TokenType::NUMBER_LITERAL, integer()));
-            Advace();
-        }
-        else if (IsSymbol(ch))
-        {
+
+        else if (IsSymbol(input[pos]))
             token.push_back(identifierOrKeyword());
-            Advace();
-        }
-        else
-        {
-            Advace();
-        }
+
+        if (input[pos] == COLON)
+            token.push_back(new Token(TokenType::COLON, L":"));
+
+        else if (input[pos] == SEMICOLON)
+            token.push_back(new Token(TokenType::SEMICOLON, L";"));
+
+        else if (input[pos] == ASSIGNMENT)
+            token.push_back(new Token(TokenType::ASSIGNMENT, L"="));
     }
 
     token.push_back(new Token(TokenType::END, END));
-
     return token;
-}
-
-void Advace()
-{
-    pos++;
-    if (pos > input.length() - 1)
-        ch = '\0';
-    else
-        ch = input[pos];
-}
-
-void SkipSpace()
-{
-    while (ch != input.size() - 1 && IsSpace(ch))
-        Advace();
 }
 
 wstring test_func_wstring(const wchar_t quote)
 {
     wstring sb;
-    Advace();
-    while (ch != input.size() - 1 && ch != quote)
-    {
-        sb.push_back(ch);
-        Advace();
-    }
-
+    pos++;
+    while (input[pos] != input.size() - 1 && input[pos] != quote)
+        sb.push_back(input[pos++]);
     return sb;
 }
 
 Token* identifierOrKeyword()
 {
     wstring sb;
-    while (ch != input.size() - 1 && IsLetterOrDigit(ch)) {
-        sb.push_back(ch);
-        Advace();
-    }
+    while (input[pos] != input.size() - 1 && IsLetterOrDigit(input[pos]))
+        sb.push_back(input[pos++]);
 
     if (ranges::equal(sb, NUMBER))
         return new Token(TokenType::NUMBER_DATATYPE, sb);
@@ -144,11 +94,8 @@ Token* identifierOrKeyword()
 wstring integer()
 {
     wstring sb;
-     while (ch != input.size() - 1 && IsDigit(ch))
-     {
-        sb.push_back(ch);
-        Advace();
-    }
+    while (input[pos] != input.size() - 1 && IsDigit(input[pos]))
+        sb.push_back(input[pos++]);
     return sb;
 }
 
@@ -159,22 +106,17 @@ int main()
     setlocale(LC_CTYPE, "");
 
     const wstring filename =
-        L"номер: число = 90; буква: символ = \'ш\'; текст: строка = \"какой-то текст\";";
-    std::wcout << filename << std::endl;
+        L"номер: число = 90;\nбуква: символ = \'ш\';\nтекст: строка = \"какой-то текст\";\n";
 
-    std::vector<Token*> tokens = test_func(filename);
+    std::wcout << L"Код:\n" << filename << std::endl;
 
+    const std::vector<Token*> tokens = test_func(filename);
     for (const auto i : tokens)
-    {
         std::wcout << static_cast<int>(i->getToken()) << ' '
                     << i->getValue() << std::endl;
-    }
 
-    for (auto& i : tokens)
-    {
+    for (const auto& i : tokens)
         delete i;
-    }
-    tokens.clear();
 
     return 0;
 }
