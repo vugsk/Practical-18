@@ -39,13 +39,19 @@ const std::wstring     CHARACTER      = L"символ";
 
 [[nodiscard]] std::wstring test_func_convert(wchar_t ch);
 
-
 const std::vector<std::pair<TokenType, std::wstring>> TYPE_CHAR_
 {
         {TokenType::COLON, test_func_convert(COLON)},
         {TokenType::SEMICOLON, test_func_convert(SEMICOLON)},
         {TokenType::ASSIGNMENT, test_func_convert(ASSIGNMENT)},
 };
+
+// const std::vector<std::pair<TokenType, wchar_t>> TYPE_CHAR_
+// {
+//         {TokenType::COLON, COLON},
+//         {TokenType::SEMICOLON, SEMICOLON},
+//         {TokenType::ASSIGNMENT, ASSIGNMENT},
+// };
 
 const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
 {

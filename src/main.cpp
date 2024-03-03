@@ -1,11 +1,12 @@
 
 #include <algorithm>
+#include <functional>
 #include <iostream>
 
 #include <Config.hpp>
-#include <functional>
 
 using namespace std;
+using placeholders::_1;
 
 class Token
 {
@@ -31,39 +32,6 @@ private:
 static wstring input;
 static int     pos;
 
-wstring test_func_wstring(wchar_t quote);
-wstring integer();
-Token* identifierOrKeyword();
-
-// template<typename T, typename F>
-// Token* test_func_token_gen(const vector<pair<TokenType, T>>& vec,
-//     const F& func, const wstring& ch, bool is);
-
-
-vector<Token*> test_func(const wstring& input_text)
-{
-    input = input_text;
-    vector<Token*> token;
-    for(pos = 0; pos < input.size(); pos++)
-    {
-        if (is_func(input[pos]))
-            token.push_back(new Token(TokenType::STRING_LITERAL, test_func_wstring(input[pos])));
-
-        else if (isdigit(input[pos]))
-            token.push_back(new Token(TokenType::NUMBER_LITERAL, integer()));
-
-        else if (IsSymbol(input[pos]))
-            token.push_back(identifierOrKeyword());
-
-        for (const auto& [_token, ch] : TYPE_CHAR_)
-            if (input[pos] == ch[0])
-                token.push_back(new Token(_token, ch));
-    }
-
-    token.push_back(new Token(TokenType::END, END));
-    return token;
-}
-
 
 template<typename F>
 wstring test_st(const F& func)
@@ -74,39 +42,58 @@ wstring test_st(const F& func)
     return sb;
 }
 
-
 wstring test_func_wstring(const wchar_t quote)
 {
     pos++;
     return test_st([quote](const wchar_t i) { return i != quote; });
 }
 
-// template<typename T, typename F>
-// Token* test_func_token_gen(const vector<pair<TokenType, T>>& vec,
-//     const F& func, const wstring& ch, const bool is)
-// {
-//     for (const auto& [token, type_data] : vec)
-//         if (func(ch, type_data))
-//             return new Token(token, ch);
-//
-//     if ((!IsSpace(input[pos]) || !isEnter(input[pos]) ||
-//         !isQuote(input[pos])) && is)
-//             return new Token(TokenType::END, END);
-//     return new Token(TokenType::ID, ch);
-// }
+template<typename F>
+pair<bool, Token*> test_func_(const vector<pair<TokenType, wstring>>& vec,
+    const F& func)
+{
+    for (const auto& [_token, ch] : vec)
+        if (func(ch))
+            return {true, new Token(_token, ch)};
+    return {false, nullptr};
+}
 
 Token* identifierOrKeyword()
 {
     const wstring sb = test_st(IsLetterOrDigit);
-    for (const auto& [token, type_data] : TYPE_DATA_)
-        if (ranges::equal(sb, type_data))
-            return new Token(token, sb);
+    if (test_func_(TYPE_DATA_, bind(ranges::equal, sb, _1)).first)
+        return test_func_(TYPE_DATA_, bind(ranges::equal, sb, _1)).second;
     return new Token(TokenType::ID, sb);
 }
 
-wstring integer()
+bool test_func_bool(const wstring& i)
 {
-    return test_st(IsDigit);
+    return input[pos] == i[0];
+}
+
+vector<Token*> test_func(const wstring& input_text)
+{
+    input = input_text;
+    vector<Token*> token;
+    for(pos = 0; pos < input.size(); pos++)
+    {
+        if (is_func(input[pos]))
+            token.push_back(new Token(TokenType::STRING_LITERAL,
+                test_func_wstring(input[pos])));
+
+        if (isdigit(input[pos]))
+            token.push_back(new Token(TokenType::NUMBER_LITERAL,
+                test_st(IsDigit)));
+
+        if (IsSymbol(input[pos]))
+            token.push_back(identifierOrKeyword());
+
+        if (test_func_(TYPE_CHAR_, test_func_bool).first)
+            token.push_back(test_func_(TYPE_CHAR_, test_func_bool).second);
+    }
+
+    token.push_back(new Token(TokenType::END, END));
+    return token;
 }
 
 
