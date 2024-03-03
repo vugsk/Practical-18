@@ -97,12 +97,10 @@ vector<Token*> test_func(const wstring& input_text)
 void Advace()
 {
     pos++;
-    if (pos > input.length() - 1) {
+    if (pos > input.length() - 1)
         ch = '\0';
-    }
-    else {
+    else
         ch = input[pos];
-    }
 }
 
 void SkipSpace()
@@ -132,14 +130,14 @@ Token* identifierOrKeyword()
         Advace();
     }
 
-    if (ranges::equal(sb, GetDataTypes()[0]))
+    if (ranges::equal(sb, NUMBER))
         return new Token(TokenType::NUMBER_DATATYPE, sb);
-    else if (ranges::equal(sb, GetDataTypes()[1]))
+    if (ranges::equal(sb, STRING))
         return new Token(TokenType::STRING_DATATYPE, sb);
-    else if (ranges::equal(sb, GetDataTypes()[2]))
+    if (ranges::equal(sb, CHARACTER))
         return new Token(TokenType::CHARACTER_DATATYPE, sb);
 
-    else return new Token(TokenType::ID, sb);
+    return new Token(TokenType::ID, sb);
 }
 
 

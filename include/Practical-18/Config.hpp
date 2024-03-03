@@ -29,10 +29,9 @@ constexpr wchar_t SPACE = ' ';
 
 constexpr std::pair<wchar_t, wchar_t> STRING_LITERAL = {'\"', '\''};
 
-constexpr std::vector<std::wstring> GetDataTypes()
-{
-        return {L"число", L"строка", L"символ"};
-}
+const std::wstring NUMBER = L"число";
+const std::wstring STRING = L"строка";
+const std::wstring CHARACTER = L"символ";
 
 [[nodiscard]] bool IsDigit(wchar_t number);
 [[nodiscard]] bool IsSpace(wchar_t _ch);

@@ -1,15 +1,16 @@
 
 #include "Config.hpp"
 
+#include <algorithm>
 #include <codecvt>
 #include <locale>
 
 bool IsDigit(const wchar_t number)
 {
-    for(const auto i : L"1234567890")
-        if (number == i)
-            return true;
-    return false;
+    return std::ranges::any_of(L"1234567890", [number](const wchar_t i)
+    {
+        return number == i;
+    });
 }
 
 bool IsSpace(const wchar_t _ch)
@@ -19,10 +20,11 @@ bool IsSpace(const wchar_t _ch)
 
 bool IsSymbol(const wchar_t _ch)
 {
-    for(const auto i : L"йцукенгшщзхъфывапролджэячсмитьбю")
-        if (i == _ch)
-            return true;
-    return false;
+    return std::ranges::any_of(L"йцукенгшщзхъфывапролджэячсмитьбю",
+        [_ch](const wchar_t i)
+    {
+        return _ch == i;
+    });
 }
 
 bool IsLetterOrDigit(const wchar_t _ch)
