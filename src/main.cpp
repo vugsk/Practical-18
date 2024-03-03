@@ -37,6 +37,8 @@ void SkipSpace();
 void Advace();
 wstring test_func_wstring(wchar_t quote);
 wstring integer();
+bool isSpace(wchar_t _ch);
+
 
 vector<Token*> test_func(const wstring& input_text)
 {
@@ -47,7 +49,7 @@ vector<Token*> test_func(const wstring& input_text)
 
     while (pos != input_text.size() - 1)
     {
-        if (ch == SPACE)
+        if (isSpace(ch))
         {
             SkipSpace();
         }
@@ -101,7 +103,7 @@ void Advace()
 
 void SkipSpace()
 {
-    while (ch != input.size() - 1 && ch == ' ')
+    while (ch != input.size() - 1 && isSpace(ch))
         Advace();
 }
 
@@ -124,6 +126,11 @@ bool isDigit(const wchar_t number)
         if (number == i)
             return true;
     return false;
+}
+
+[[nodiscard]] bool isSpace(const wchar_t _ch)
+{
+    return ch == SPACE;
 }
 
 wstring integer()
