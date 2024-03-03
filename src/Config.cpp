@@ -37,6 +37,21 @@ bool is_func(const wchar_t ch)
     return ch == STRING_LITERAL.first || ch == STRING_LITERAL.second;
 }
 
+bool isEnter(const wchar_t ch)
+{
+    return ch == ENTER;
+}
+
+bool isQuote(const wchar_t ch)
+{
+    return ch == STRING_LITERAL.first || ch == STRING_LITERAL.second;
+}
+
+bool is_func_E_Q_S(const wchar_t ch)
+{
+    return IsSpace(ch) || isEnter(ch) || isQuote(ch);
+}
+
 [[nodiscard]] std::wstring ConvertString(const std::string& string)
 {
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;

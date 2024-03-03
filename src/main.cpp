@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include <Config.hpp>
+#include <functional>
 
 using namespace std;
 
@@ -34,6 +35,9 @@ wstring test_func_wstring(wchar_t quote);
 wstring integer();
 Token* identifierOrKeyword();
 
+// template<typename T, typename F>
+// Token* test_func_token_gen(const vector<pair<TokenType, T>>& vec,
+//     const F& func, const wstring& ch, bool is);
 
 
 vector<Token*> test_func(const wstring& input_text)
@@ -52,8 +56,8 @@ vector<Token*> test_func(const wstring& input_text)
             token.push_back(identifierOrKeyword());
 
         for (const auto& [_token, ch] : TYPE_CHAR_)
-            if (input[pos] == ch)
-                token.push_back(new Token(_token, test_func_convert(ch)));
+            if (input[pos] == ch[0])
+                token.push_back(new Token(_token, ch));
     }
 
     token.push_back(new Token(TokenType::END, END));
@@ -77,13 +81,26 @@ wstring test_func_wstring(const wchar_t quote)
     return test_st([quote](const wchar_t i) { return i != quote; });
 }
 
+// template<typename T, typename F>
+// Token* test_func_token_gen(const vector<pair<TokenType, T>>& vec,
+//     const F& func, const wstring& ch, const bool is)
+// {
+//     for (const auto& [token, type_data] : vec)
+//         if (func(ch, type_data))
+//             return new Token(token, ch);
+//
+//     if ((!IsSpace(input[pos]) || !isEnter(input[pos]) ||
+//         !isQuote(input[pos])) && is)
+//             return new Token(TokenType::END, END);
+//     return new Token(TokenType::ID, ch);
+// }
+
 Token* identifierOrKeyword()
 {
     const wstring sb = test_st(IsLetterOrDigit);
     for (const auto& [token, type_data] : TYPE_DATA_)
         if (ranges::equal(sb, type_data))
             return new Token(token, sb);
-
     return new Token(TokenType::ID, sb);
 }
 
