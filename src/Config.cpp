@@ -52,6 +52,11 @@ bool is_func_E_Q_S(const wchar_t ch)
     return IsSpace(ch) || isEnter(ch) || isQuote(ch);
 }
 
+bool test_func_bool(const wchar_t ch, const std::wstring& i)
+{
+    return ch == i[0];
+}
+
 [[nodiscard]] std::wstring ConvertString(const std::string& string)
 {
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;

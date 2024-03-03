@@ -66,11 +66,6 @@ Token* identifierOrKeyword()
     return new Token(TokenType::ID, sb);
 }
 
-bool test_func_bool(const wstring& i)
-{
-    return input[pos] == i[0];
-}
-
 vector<Token*> test_func(const wstring& input_text)
 {
     input = input_text;
@@ -88,8 +83,8 @@ vector<Token*> test_func(const wstring& input_text)
         if (IsSymbol(input[pos]))
             token.push_back(identifierOrKeyword());
 
-        if (test_func_(TYPE_CHAR_, test_func_bool).first)
-            token.push_back(test_func_(TYPE_CHAR_, test_func_bool).second);
+        if (test_func_(TYPE_CHAR_, bind(test_func_bool, input[pos], _1)).first)
+            token.push_back(test_func_(TYPE_CHAR_, bind(test_func_bool, input[pos], _1)).second);
     }
 
     token.push_back(new Token(TokenType::END, END));

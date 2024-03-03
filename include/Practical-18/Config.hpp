@@ -70,6 +70,7 @@ const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
 [[nodiscard]] bool isEnter(wchar_t ch);
 [[nodiscard]] bool isQuote(wchar_t ch);
 [[nodiscard]] bool is_func_E_Q_S(wchar_t ch);
+[[nodiscard]] bool test_func_bool(wchar_t ch, const std::wstring& i);
 
 [[nodiscard]] std::wstring ConvertString(const std::string& string);
 
