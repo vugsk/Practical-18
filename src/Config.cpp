@@ -1,6 +1,7 @@
 
 #include "Config.hpp"
 
+#include <algorithm>
 #include <codecvt>
 #include <locale>
 

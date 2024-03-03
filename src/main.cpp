@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include <algorithm>
-
 #include <Config.hpp>
 
 using namespace std;
@@ -89,7 +88,7 @@ vector<Token*> test_func(const wstring& input_text)
         }
     }
 
-    token.push_back(new Token(TokenType::END, L"NUL"));
+    token.push_back(new Token(TokenType::END, END));
 
     return token;
 }
@@ -132,14 +131,13 @@ Token* identifierOrKeyword()
         Advace();
     }
 
-    if (ranges::equal(sb, GetDataTypes()[0]))
+    if (ranges::equal(sb, _NUMBER))
         return new Token(TokenType::NUMBER_DATATYPE, sb);
-    else if (ranges::equal(sb, GetDataTypes()[1]))
+    if (ranges::equal(sb, _STRING))
         return new Token(TokenType::STRING_DATATYPE, sb);
-    else if (ranges::equal(sb, GetDataTypes()[2]))
+    if (ranges::equal(sb, _CHARACTER))
         return new Token(TokenType::CHARACTER_DATATYPE, sb);
-
-    else return new Token(TokenType::ID, sb);
+    return new Token(TokenType::ID, sb);
 }
 
 
