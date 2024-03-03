@@ -73,3 +73,12 @@ std::wstring test_func_convert(const wchar_t ch)
     delete[] yut;
     return io;
 }
+
+std::wstring test_st(const std::wstring& _input, int& position,
+    const std::function<bool(wchar_t)>& func)
+{
+    std::wstring sb;
+    while (func(_input[position]))
+        sb.push_back(_input[position++]);
+    return sb;
+}

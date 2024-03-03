@@ -33,19 +33,10 @@ static wstring input;
 static int     pos;
 
 
-template<typename F>
-wstring test_st(const F& func)
-{
-    wstring sb;
-    while (func(input[pos]))
-        sb.push_back(input[pos++]);
-    return sb;
-}
-
 wstring test_func_wstring(const wchar_t quote)
 {
     pos++;
-    return test_st([quote](const wchar_t i) { return i != quote; });
+    return test_st(input, pos, [quote](const wchar_t i) { return i != quote; });
 }
 
 template<typename F>
@@ -60,7 +51,7 @@ pair<bool, Token*> test_func_(const vector<pair<TokenType, wstring>>& vec,
 
 Token* identifierOrKeyword()
 {
-    const wstring sb = test_st(IsLetterOrDigit);
+    const wstring sb = test_st(input, pos, IsLetterOrDigit);
     if (test_func_(TYPE_DATA_, bind(ranges::equal, sb, _1)).first)
         return test_func_(TYPE_DATA_, bind(ranges::equal, sb, _1)).second;
     return new Token(TokenType::ID, sb);
@@ -78,7 +69,7 @@ vector<Token*> test_func(const wstring& input_text)
 
         if (isdigit(input[pos]))
             token.push_back(new Token(TokenType::NUMBER_LITERAL,
-                test_st(IsDigit)));
+                test_st(input, pos, IsDigit)));
 
         if (IsSymbol(input[pos]))
             token.push_back(identifierOrKeyword());

@@ -2,6 +2,7 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -73,6 +74,9 @@ const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
 [[nodiscard]] bool test_func_bool(wchar_t ch, const std::wstring& i);
 
 [[nodiscard]] std::wstring ConvertString(const std::string& string);
+
+[[nodiscard]] std::wstring test_st(const std::wstring& _input, int& position,
+        const std::function<bool(wchar_t)>& func);
 
 
 #endif //CONFIG_HPP
