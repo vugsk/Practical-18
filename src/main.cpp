@@ -1,62 +1,44 @@
 
-#include <algorithm>
 #include <iostream>
-#include <utility>
 
-#include <Config.hpp>
+#include <Lexer.hpp>
 
 using namespace std;
-using placeholders::_1;
 
-class Lexer
-{
-public:
-    explicit Lexer(wstring input_text)
-        : m_input(std::move(input_text)), m_position(0) {}
-    Lexer(const Lexer& other)                = delete;
-    Lexer(Lexer&& other) noexcept            = delete;
-    Lexer& operator=(const Lexer& other)     = delete;
-    Lexer& operator=(Lexer&& other) noexcept = delete;
-    ~Lexer()                                 = default;
+// class Lexer -> Lexer.hpp
+//    test_func() - упростить и тоже избавиться от class Token
+//    test_func_() - переделать и избавиться от использования напримую class Token
+//                   и ещё упростить и как-то избавиться от использования pair<>
+//    identifierOrKeyword() - вследствии чего вот это функцию переделать
+//                            и тоже избавиться от class Token
+// main.cpp
+//    сделать механизм чтобы можно была создавать объект Lexer не использую
+//    напримую class Lexer только его интерфейс, тоже самое с class Token
+//
+// ConfigConcepts.hpp
+//      написать несколько концептов для шаблонов
+//
+// TEST -> tests/test.cpp
+//      дописать основной cmake файл для работы с тестоми
+//      и создать cmake файл для работы с тестами
+//      и написать тесты на class Lexer
+//      и на функции Config.hpp(может быть функции переедут в другое место)
+//
+// Parser.hpp
+//      написать парсер который будет из вектора делать чуда
+//
+// Exception.hpp
+//      написать оброботчик ошибок
+//
+// после проделанной работы можно приступать к работе над заданием
+//
+// WirkFile.hpp
+//      переделать на использование wstring
+//
+// переписать, то что осталось и продолжить идти по под задачам
+//
+// предположительно мне нужно часов 24-48 в днях где-то 3-10 дней
 
-    vector<shared_ptr<Token>> test_func()
-    {
-        for(m_position = 0; m_position < m_input.size(); m_position++)
-        {
-            if (is_func(m_input[m_position]))
-                m_token.push_back(make_shared<Token>(TokenType::STRING_LITERAL,
-                    test_st(m_input, m_position,
-                        bind(test_func_bool, _1, m_input[m_position++], false))));
-
-            if (isdigit(m_input[m_position]))
-                m_token.push_back(make_shared<Token>(TokenType::NUMBER_LITERAL,
-                    test_st(m_input, m_position, IsDigit)));
-
-            if (IsSymbol(m_input[m_position]))
-                m_token.push_back(identifierOrKeyword());
-
-            if (test_func_<wchar_t>(TYPE_CHAR_, bind(test_func_bool, m_input[m_position], _1, true)).first)
-                m_token.push_back(test_func_<wchar_t>(TYPE_CHAR_, bind(test_func_bool, m_input[m_position], _1, true)).second);
-       }
-
-        m_token.push_back(make_shared<Token>(TokenType::END, END));
-        return m_token;
-    }
-
-protected:
-    shared_ptr<Token> identifierOrKeyword()
-    {
-        const wstring sb = test_st(m_input, m_position, IsLetterOrDigit);
-        if (test_func_<wstring>(TYPE_DATA_, bind(ranges::equal, sb, _1)).first)
-            return test_func_<wstring>(TYPE_DATA_, bind(ranges::equal, sb, _1)).second;
-        return make_shared<Token>(TokenType::ID, sb);
-    }
-
-private:
-    wstring m_input;
-    int     m_position;
-    vector<shared_ptr<Token>> m_token;
-};
 
 
 int main()

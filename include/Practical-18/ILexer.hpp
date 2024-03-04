@@ -2,10 +2,15 @@
 #ifndef ILEXER_HPP
 #define ILEXER_HPP
 
+#include <memory>
+#include <vector>
+
+class IToken;
 
 class ILexer {
 public:
-    virtual                    ~ILexer() = default;
+    virtual                                      ~ILexer() = default;
+    virtual std::vector<std::shared_ptr<IToken>> test_func() = 0;
 };
 
 

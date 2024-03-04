@@ -18,4 +18,5 @@ add_executable(Practical-18
     include/Practical-18/Token.hpp
     include/Practical-18/ConfigConcepts.hpp
     include/Practical-18/Config.hpp
+    include/Practical-18/TokenType.hpp
 )

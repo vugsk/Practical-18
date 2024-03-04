@@ -7,7 +7,7 @@
 
 bool IsDigit(const wchar_t number)
 {
-    return std::ranges::any_of(L"1234567890", [number](const wchar_t i)
+    return std::ranges::any_of(NUMBER_LITERAL, [number](const wchar_t i)
     {
         return number == i;
     });
@@ -20,8 +20,7 @@ bool IsSpace(const wchar_t _ch)
 
 bool IsSymbol(const wchar_t _ch)
 {
-    return std::ranges::any_of(L"йцукенгшщзхъфывапролджэячсмитьбю",
-        [_ch](const wchar_t i)
+    return std::ranges::any_of(ALPHOVIT, [_ch](const wchar_t i)
     {
         return _ch == i;
     });
@@ -71,4 +70,12 @@ std::wstring test_st(const std::wstring& _input, int& position,
     while (func(_input[position]))
         sb.push_back(_input[position++]);
     return sb;
+}
+
+std::function<bool(const wchar_t&)> test_bind(const wchar_t ch, const bool is)
+{
+    return [ch, is](const wchar_t i)
+    {
+        return test_func_bool(i, ch, is);
+    };
 }
