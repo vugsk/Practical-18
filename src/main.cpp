@@ -1,6 +1,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <utility>
 
 #include <Config.hpp>
 
@@ -10,58 +11,39 @@ using placeholders::_1;
 class Lexer
 {
 public:
-    Lexer() : m_position(0) {}
+    explicit Lexer(wstring input_text)
+        : m_input(std::move(input_text)), m_position(0) {}
     Lexer(const Lexer& other)                = delete;
     Lexer(Lexer&& other) noexcept            = delete;
     Lexer& operator=(const Lexer& other)     = delete;
     Lexer& operator=(Lexer&& other) noexcept = delete;
     ~Lexer()                                 = default;
 
-    vector<shared_ptr<Token>> test_func(const wstring& input_text)
+    vector<shared_ptr<Token>> test_func()
     {
-        m_input = input_text;
         for(m_position = 0; m_position < m_input.size(); m_position++)
         {
             if (is_func(m_input[m_position]))
-                m_token.push_back(make_shared<Token>(TokenType::STRING_LITERAL, test_func_wstring(m_input[m_position])));
+                m_token.push_back(make_shared<Token>(TokenType::STRING_LITERAL,
+                    test_st(m_input, m_position,
+                        bind(test_func_bool, _1, m_input[m_position++], false))));
 
             if (isdigit(m_input[m_position]))
-                m_token.push_back(make_shared<Token>(TokenType::NUMBER_LITERAL, test_st(m_input, m_position, IsDigit)));
+                m_token.push_back(make_shared<Token>(TokenType::NUMBER_LITERAL,
+                    test_st(m_input, m_position, IsDigit)));
 
             if (IsSymbol(m_input[m_position]))
                 m_token.push_back(identifierOrKeyword());
 
-            // test_func_ui(is_func(m_input[m_position]), TokenType::STRING_LITERAL, test_func_wstring(m_input[m_position]));
-            // test_func_ui(isdigit(m_input[m_position]), TokenType::NUMBER_LITERAL, test_st(m_input, m_position, IsDigit));
-            // test_func_ui(IsSymbol(m_input[m_position]), identifierOrKeyword());
-
             if (test_func_<wchar_t>(TYPE_CHAR_, bind(test_func_bool, m_input[m_position], _1, true)).first)
                 m_token.push_back(test_func_<wchar_t>(TYPE_CHAR_, bind(test_func_bool, m_input[m_position], _1, true)).second);
-        }
+       }
 
         m_token.push_back(make_shared<Token>(TokenType::END, END));
         return m_token;
     }
+
 protected:
-
-    void test_func_ui(const bool is, TokenType token, const wstring& text)
-    {
-        if (is)
-            m_token.push_back(make_shared<Token>(token, text));
-    }
-
-    void test_func_ui(const bool is, const shared_ptr<Token>& token)
-    {
-        if (is)
-            m_token.push_back(token);
-    }
-
-    wstring test_func_wstring(const wchar_t quote)
-    {
-        m_position++;
-        return test_st(m_input, m_position, bind(test_func_bool, _1, quote, false));
-    }
-
     shared_ptr<Token> identifierOrKeyword()
     {
         const wstring sb = test_st(m_input, m_position, IsLetterOrDigit);
@@ -69,6 +51,7 @@ protected:
             return test_func_<wstring>(TYPE_DATA_, bind(ranges::equal, sb, _1)).second;
         return make_shared<Token>(TokenType::ID, sb);
     }
+
 private:
     wstring m_input;
     int     m_position;
@@ -85,10 +68,9 @@ int main()
 
     std::wcout << L"Код:\n" << filename << std::endl;
 
-    for (Lexer l; const auto& i : l.test_func(filename))
+    for (Lexer l(filename); const auto& i : l.test_func())
         std::wcout << static_cast<int>(i->getToken()) << ' '
                     << i->getValue() << std::endl;
-
 
     return 0;
 }

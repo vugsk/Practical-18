@@ -7,7 +7,6 @@ include_directories(include/Practical-18)
 
 add_executable(Practical-18
     src/main.cpp
-    include/Practical-18/Config.hpp
     src/Config.cpp
     src/WorkFile.cpp
     include/Practical-18/WorkFile.hpp
@@ -17,4 +16,6 @@ add_executable(Practical-18
     include/Practical-18/IToken.hpp
     src/Token.cpp
     include/Practical-18/Token.hpp
+    include/Practical-18/ConfigConcepts.hpp
+    include/Practical-18/Config.hpp
 )
