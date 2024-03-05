@@ -2,24 +2,41 @@
 #ifndef TOKENTYPE_HPP
 #define TOKENTYPE_HPP
 
-enum class TokenType
+enum TokenType : short
 {
-    COLON,          // двоеточие
-    SEMICOLON,      // точка с запятой
-    ASSIGNMENT,     // присваиваивание
+    none = -1,
+    colon = 0,          // двоеточие
+    semicolon,      // точка с запятой
+    assignment,     // присваиваивание
 
 
-    STRING_LITERAL, // кавычки
-    NUMBER_LITERAL,
+    string_literal, // кавычки
+    number_literal,
 
 
-    NUMBER_DATATYPE,
-    STRING_DATATYPE,
-    CHARACTER_DATATYPE,
-    ID,
+    number_datatype,
+    string_datatype,
+    character_datatype,
+    id,
 
 
-    END,
+    end,
+
+};
+
+constexpr unsigned short SIZE_TOKEN_TYPES = 10;
+constexpr TokenType TOKEN_TYPES[SIZE_TOKEN_TYPES]
+{
+    colon,
+    semicolon,
+    assignment,
+    string_literal,
+    number_literal,
+    number_datatype,
+    string_datatype,
+    character_datatype,
+    id,
+    end,
 };
 
 #endif //TOKENTYPE_HPP

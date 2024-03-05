@@ -4,6 +4,7 @@
 
 #include <functional>
 #include <memory>
+#include <memory>
 #include <vector>
 
 #include "Token.hpp"
@@ -33,24 +34,17 @@ constexpr std::pair ALPHOVIT       = {1072, 1103};
 
 const std::vector<std::pair<TokenType, wchar_t>> TYPE_CHAR_
 {
-    {TokenType::COLON, COLON},
-    {TokenType::SEMICOLON, SEMICOLON},
-    {TokenType::ASSIGNMENT, ASSIGNMENT},
+    {colon, COLON},
+    {semicolon, SEMICOLON},
+    {assignment, ASSIGNMENT},
 };
 
 const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
 {
-    {TokenType::NUMBER_DATATYPE, NUMBER},
-    {TokenType::STRING_DATATYPE, STRING},
-    {TokenType::CHARACTER_DATATYPE, CHARACTER},
+    {number_datatype, NUMBER},
+    {string_datatype, STRING},
+    {character_datatype, CHARACTER},
 };
-
-const std::vector<std::pair<TokenType, std::pair<int, int>>> LITERALS
-{
-    // {TokenType::NUMBER_LITERAL, NUMBER_LITERAL},
-    {TokenType::STRING_LITERAL, {STRING_LITERAL, CHARACTER_LITERAL}},
-};
-
 
 
 
@@ -58,12 +52,7 @@ const std::vector<std::pair<TokenType, std::pair<int, int>>> LITERALS
 [[nodiscard]] bool IsSpace(wchar_t _ch);
 [[nodiscard]] bool IsSymbol(wchar_t _ch);
 [[nodiscard]] bool IsLetterOrDigit(wchar_t _ch);
-[[nodiscard]] bool is_double_quote(wchar_t ch);
-[[nodiscard]] bool is_one_quote(wchar_t ch);
-[[nodiscard]] bool isEnter(wchar_t ch);
 [[nodiscard]] bool isQuote(wchar_t ch);
-[[nodiscard]] bool is_func_E_Q_S(wchar_t ch);
-[[nodiscard]] bool test_func_bool(wchar_t ch, wchar_t i, bool is);
 
 [[nodiscard]] bool Is_func_test(int to, int from, wchar_t ch);
 [[nodiscard]] bool Is_func_test(const std::pair<int, int>& p, wchar_t ch);
@@ -76,6 +65,8 @@ const std::vector<std::pair<TokenType, std::pair<int, int>>> LITERALS
 [[nodiscard]] std::function<bool(const wchar_t&)> test_bind(wchar_t ch, bool is);
 [[nodiscard]] std::function<bool(const std::wstring&)> test_func_auto(
     const std::wstring& sb);
+
+std::shared_ptr<IToken> Factory_func(TokenType token, const std::wstring& value);
 
 void remove_nullptr_vec(std::vector<std::shared_ptr<IToken>>& tokens);
 
@@ -93,13 +84,8 @@ template<typename T>
     const std::function<bool(const T&)>& func)
 {
     for (const auto& [_token, ch] : vec)
-    {
         if (func(ch))
-        {
-            return {true, std::make_shared<Token>(_token,
-                test_func_wstring(ch))};
-        }
-    }
+            return {true, Factory_func(_token, test_func_wstring(ch))};
     return {false, nullptr};
 }
 

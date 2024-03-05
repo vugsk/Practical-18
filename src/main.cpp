@@ -9,16 +9,7 @@
 
 using namespace std;
 
-//! class Lexer -> Lexer.hpp
-//!    test_func() - упростить и тоже избавиться от class Token
-//!    test_func_() - переделать и избавиться от использования напримую class Token
-//!                   и ещё упростить и как-то избавиться от использования pair<>
-//!    identifierOrKeyword() - вследствии чего вот это функцию переделать
-//!                            и тоже избавиться от class Token
-//! main.cpp
-//!    сделать механизм чтобы можно была создавать объект Lexer не использую
-//!    напримую class Lexer только его интерфейс, тоже самое с class Token
-//
+
 // ConfigConcepts.hpp
 //      написать несколько концептов для шаблонов
 //
@@ -43,79 +34,38 @@ using namespace std;
 //
 // предположительно мне нужно часов 24-48 в днях где-то 3-10 дней
 
-class Lexer final
+std::vector<std::shared_ptr<IToken>> test_func(const wstring& input)
 {
-public:
-    Lexer() = default;
-    Lexer(const Lexer& other)                = delete;
-    Lexer(Lexer&& other) noexcept            = delete;
-    Lexer& operator=(const Lexer& other)     = delete;
-    Lexer& operator=(Lexer&& other) noexcept = delete;
-    ~Lexer()                        = default;
-
-    std::vector<std::shared_ptr<IToken>> test_func(const wstring& input_text)
+    std::vector<std::shared_ptr<IToken>> tokens;
+    for(auto position = 0; position < input.size(); position++)
     {
-        std::vector<std::shared_ptr<IToken>> tokens;
+        if (isQuote(input[position]))
+            tokens.push_back(Factory_func(string_literal,
+                test_st(input, position,
+                    test_bind(input[position++], false))));
 
-        for(auto position = 0; position < input_text.size(); position++)
+        if(IsDigit(input[position]))
+            tokens.push_back(Factory_func(number_literal,
+                test_st(input, position, IsDigit)));
+
+        if (IsSymbol(input[position]))
         {
-            tokens.push_back(test_func_command(input_text, position));
-            tokens.push_back(test_func_number_literal(input_text, position));
-            tokens.push_back(test_func_operator(input_text[position]));
-            tokens.push_back(test_func_string_leteral(input_text, position));
-        }
-
-        tokens.push_back(make_shared<Token>(TokenType::END, END));
-
-        remove_nullptr_vec(tokens);
-        return tokens;
-    }
-
-protected:
-    std::wstring test_func_wstring_(const wstring& input, int& pos,
-        const std::function<bool(wchar_t)>& func)
-    {
-        return test_st(input, pos, func);
-    }
-
-    shared_ptr<IToken> test_func_string_leteral(const wstring& input, int& pos)
-    {
-        if (isQuote(input[pos]))
-            return std::make_shared<Token>(TokenType::STRING_LITERAL,
-                    test_func_wstring_(input, pos,
-                        test_bind(input[pos++], false)));
-        return nullptr;
-    }
-
-    shared_ptr<IToken> test_func_number_literal(const wstring& input, int& pos)
-    {
-        if (IsDigit(input[pos]))
-            return std::make_shared<Token>(TokenType::NUMBER_LITERAL,
-                test_func_wstring_(input, pos, IsDigit));
-        return nullptr;
-    }
-
-    shared_ptr<IToken> test_func_command(const wstring& input, int& pos)
-    {
-        if (IsSymbol(input[pos]))
-        {
-            wstring sb = test_st(input, pos, IsLetterOrDigit);
+            wstring sb = test_st(input, position, IsLetterOrDigit);
             if (test_func_(TYPE_DATA_, test_func_auto(sb)).first)
-                return test_func_(TYPE_DATA_, test_func_auto(sb)).second;
-            return make_shared<Token>(TokenType::ID, sb);
+                tokens.push_back(test_func_(TYPE_DATA_, test_func_auto(sb)).second);
+            else
+                tokens.push_back(Factory_func(id, sb));
         }
-        return nullptr;
+
+        if (test_func_(TYPE_CHAR_, test_bind(input[position], true)).first)
+            tokens.push_back(test_func_(TYPE_CHAR_,
+                test_bind(input[position], true)).second);
+
     }
 
-    shared_ptr<IToken> test_func_operator(const wchar_t ch)
-    {
-        if (test_func_(TYPE_CHAR_, test_bind(ch, true)).first)
-            return test_func_(TYPE_CHAR_, test_bind(ch, true)).second;
-        return nullptr;
-    }
-
-};
-
+    tokens.push_back(make_shared<Token>(TokenType::end, END));
+    return tokens;
+}
 
 
 
@@ -128,7 +78,7 @@ int main()
 
     std::wcout << L"Код:\n" << filename << std::endl;
 
-    for (Lexer l; const auto& i : l.test_func(filename))
+    for (const auto& i : test_func(filename))
             std::wcout << static_cast<int>(i->getToken()) << ' '
                         << i->getValue() << std::endl;
 
