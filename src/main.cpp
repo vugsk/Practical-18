@@ -7,6 +7,7 @@
 
 using namespace std;
 
+
 // ConfigConcepts.hpp
 //      написать несколько концептов для шаблонов
 //
@@ -74,7 +75,7 @@ int main()
     const wstring filename =
         L"номер: число = 90;\nбуква: символ = \'ш\';\nтекст: строка = \"какой-то текст\";\n";
 
-    std::wcout << L"Код:\n" << filename << std::endl;
+    std::wcout << L"Код:\n" << filename << '\n';
 
     for (const auto& i : test_func(filename))
             std::wcout << static_cast<int>(i->getToken()) << ' '

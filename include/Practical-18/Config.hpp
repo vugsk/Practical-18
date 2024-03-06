@@ -54,12 +54,7 @@ static const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
 [[nodiscard]] bool IsSpace(wchar_t _ch);
 [[nodiscard]] bool IsSymbol(wchar_t _ch);
 [[nodiscard]] bool IsLetterOrDigit(wchar_t _ch);
-[[nodiscard]] bool is_double_quote(wchar_t ch);
-[[nodiscard]] bool is_one_quote(wchar_t ch);
-[[nodiscard]] bool isEnter(wchar_t ch);
 [[nodiscard]] bool isQuote(wchar_t ch);
-[[nodiscard]] bool is_func_E_Q_S(wchar_t ch);
-[[nodiscard]] bool test_func_bool(wchar_t ch, wchar_t i, bool is);
 
 [[nodiscard]] bool Is_func_test(int to, int from, wchar_t ch);
 [[nodiscard]] bool Is_func_test(const std::pair<int, int>& p, wchar_t ch);
@@ -85,6 +80,8 @@ std::shared_ptr<IToken> test_func_id(const std::wstring& value);
 std::shared_ptr<IToken> test_func_none(const std::wstring& value = NONE);
 std::shared_ptr<IToken> test_func_end(const std::wstring& value = END);
 
+bool test_func_check_class_token(const std::shared_ptr<IToken>& token);
+
 template<typename T>
 [[nodiscard]] std::wstring test_func_wstring(const T& t)
 {
@@ -103,6 +100,5 @@ template<typename T>
             return {true, test_func_factory(_token, test_func_wstring(ch))};
     return {false, test_func_factory(TokenType::none, NONE)};
 }
-
 
 #endif //CONFIG_HPP

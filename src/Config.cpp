@@ -38,34 +38,9 @@ bool IsLetterOrDigit(const wchar_t _ch)
     return IsDigit(_ch) || IsSymbol(_ch);
 }
 
-bool is_double_quote(const wchar_t ch)
-{
-    return ch == STRING_LITERAL;
-}
-
-bool is_one_quote(const wchar_t ch)
-{
-    return ch == CHARACTER_LITERAL;
-}
-
-bool isEnter(const wchar_t ch)
-{
-    return ch == ENTER;
-}
-
 bool isQuote(const wchar_t ch)
 {
-    return is_double_quote(ch) || is_one_quote(ch);
-}
-
-bool is_func_E_Q_S(const wchar_t ch)
-{
-    return IsSpace(ch) || isEnter(ch) || isQuote(ch);
-}
-
-bool test_func_bool(const wchar_t ch, const wchar_t i, const bool is)
-{
-    return is ? ch == i : ch != i;
+    return ch == CHARACTER_LITERAL || ch == STRING_LITERAL;
 }
 
 std::wstring ConvertString(const std::string& string)
@@ -88,7 +63,7 @@ std::function<bool(const wchar_t&)> test_bind(const wchar_t ch, const bool is)
 {
     return [ch, is](const wchar_t i) -> bool
     {
-        return test_func_bool(i, ch, is);
+        return is ? ch == i : ch != i;
     };
 }
 
@@ -101,7 +76,7 @@ std::function<bool(const std::wstring&)> test_func_auto(const std::wstring& sb)
 }
 
 void remove_nullptr_vec(std::vector<std::shared_ptr<IToken>>& tokens) {
-    std::erase_if(tokens, [](const std::shared_ptr<IToken>& token)
+    std::erase_if(tokens, [](const std::shared_ptr<IToken>& token) -> bool
     {
         return token == nullptr;
     });
@@ -145,4 +120,9 @@ std::shared_ptr<IToken> test_func_factory(const TokenType token,
         if (token == i)
             return std::make_shared<Token>(token, value);
     return test_func_none();
+}
+
+bool test_func_check_class_token(const std::shared_ptr<IToken>& token)
+{
+    return !(token->getToken() == none || token->getValue() == NONE);
 }
