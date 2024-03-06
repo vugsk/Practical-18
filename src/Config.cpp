@@ -79,7 +79,7 @@ std::shared_ptr<IToken> Factory_func(TokenType token, const std::wstring& value)
     for (auto i = 0; i < SIZE_TOKEN_TYPES; i++)
         if (TOKEN_TYPES[i] == token)
             return std::make_shared<Token>(token, value);
-    return std::make_shared<Token>(none, L"");
+    return std::make_shared<Token>(none, NONE);
 }
 
 void remove_nullptr_vec(std::vector<std::shared_ptr<IToken>>& tokens) {
@@ -87,4 +87,9 @@ void remove_nullptr_vec(std::vector<std::shared_ptr<IToken>>& tokens) {
     {
         return token == nullptr;
     });
+}
+
+bool test_func_check_class_token(const std::shared_ptr<IToken>& token)
+{
+    return !(token->getToken() == none || token->getValue() == NONE);
 }

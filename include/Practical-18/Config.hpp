@@ -4,7 +4,6 @@
 
 #include <functional>
 #include <memory>
-#include <memory>
 #include <vector>
 
 #include "Token.hpp"
@@ -22,6 +21,7 @@ constexpr wchar_t      ENTER             = '\n';
 constexpr wchar_t      STRING_LITERAL    = '\"';
 constexpr wchar_t      CHARACTER_LITERAL = '\'';
 constexpr std::wstring END               = L"NUL";
+const std::wstring     NONE              = L"NONE";
 
 const std::wstring     NUMBER         = L"число";
 const std::wstring     STRING         = L"строка";
@@ -70,6 +70,8 @@ std::shared_ptr<IToken> Factory_func(TokenType token, const std::wstring& value)
 
 void remove_nullptr_vec(std::vector<std::shared_ptr<IToken>>& tokens);
 
+bool test_func_check_class_token(const std::shared_ptr<IToken>& token);
+
 template<typename T>
 [[nodiscard]] std::wstring test_func_wstring(const T& t)
 {
@@ -79,15 +81,14 @@ template<typename T>
 }
 
 template<typename T>
-[[nodiscard]] std::pair<bool, std::shared_ptr<IToken>> test_func_(
+[[nodiscard]] std::shared_ptr<IToken> test_func_(
     const std::vector<std::pair<TokenType, T>>& vec,
     const std::function<bool(const T&)>& func)
 {
     for (const auto& [_token, ch] : vec)
         if (func(ch))
-            return {true, Factory_func(_token, test_func_wstring(ch))};
-    return {false, nullptr};
+            return Factory_func(_token, test_func_wstring(ch));
+    return Factory_func(none, NONE);
 }
-
 
 #endif //CONFIG_HPP
