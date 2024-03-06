@@ -4,7 +4,6 @@
 
 #include <functional>
 #include <memory>
-#include <vector>
 
 #include "Token.hpp"
 #include "TokenType.hpp"
@@ -13,42 +12,39 @@
 #define DEBUG false
 
 
-constexpr wchar_t      COLON             = ':';
-constexpr wchar_t      SEMICOLON         = ';';
-constexpr wchar_t      ASSIGNMENT        = '=';
-constexpr wchar_t      SPACE             = ' ';
-constexpr wchar_t      ENTER             = '\n';
-constexpr wchar_t      STRING_LITERAL    = '\"';
-constexpr wchar_t      CHARACTER_LITERAL = '\'';
-constexpr std::wstring END               = L"NUL";
 
-const std::wstring     NUMBER         = L"число";
-const std::wstring     STRING         = L"строка";
-const std::wstring     CHARACTER      = L"символ";
+static constexpr wchar_t COLON             = ':';
+static constexpr wchar_t SEMICOLON         = ';';
+static constexpr wchar_t ASSIGNMENT        = '=';
+static constexpr wchar_t SPACE             = ' ';
+static constexpr wchar_t ENTER             = '\n';
+static constexpr wchar_t STRING_LITERAL    = '\"';
+static constexpr wchar_t CHARACTER_LITERAL = '\'';
 
-constexpr std::pair NUMBER_LITERAL = {45, 57};
-constexpr std::pair ALPHOVIT       = {1072, 1103};
+static const std::wstring END  = L"NULL";
+static const std::wstring NONE = L"NONE";
+
+static const std::wstring NUMBER    = L"число";
+static const std::wstring STRING    = L"строка";
+static const std::wstring CHARACTER = L"символ";
+
+static constexpr std::pair NUMBER_LITERAL = {45, 57};
+static constexpr std::pair ALPHOVIT       = {1072, 1103};
 
 
 
-const std::vector<std::pair<TokenType, wchar_t>> TYPE_CHAR_
+static const std::vector<std::pair<TokenType, wchar_t>> TYPE_CHAR_
 {
-    {TokenType::COLON, COLON},
-    {TokenType::SEMICOLON, SEMICOLON},
-    {TokenType::ASSIGNMENT, ASSIGNMENT},
+    {TokenType::colon, COLON},
+    {TokenType::semicolon, SEMICOLON},
+    {TokenType::assignment, ASSIGNMENT},
 };
 
-const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
+static const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
 {
-    {TokenType::NUMBER_DATATYPE, NUMBER},
-    {TokenType::STRING_DATATYPE, STRING},
-    {TokenType::CHARACTER_DATATYPE, CHARACTER},
-};
-
-const std::vector<std::pair<TokenType, std::pair<int, int>>> LITERALS
-{
-    // {TokenType::NUMBER_LITERAL, NUMBER_LITERAL},
-    {TokenType::STRING_LITERAL, {STRING_LITERAL, CHARACTER_LITERAL}},
+    {TokenType::number_datatype, NUMBER},
+    {TokenType::string_datatype, STRING},
+    {TokenType::character_datatype, CHARACTER},
 };
 
 
@@ -78,6 +74,16 @@ const std::vector<std::pair<TokenType, std::pair<int, int>>> LITERALS
     const std::wstring& sb);
 
 void remove_nullptr_vec(std::vector<std::shared_ptr<IToken>>& tokens);
+bool test_if_none_token(const std::shared_ptr<IToken>& token);
+
+std::shared_ptr<IToken> test_func_factory(TokenType token,
+    const std::wstring& value);
+
+std::shared_ptr<IToken> test_func_string_leteral(const std::wstring& value);
+std::shared_ptr<IToken> test_func_number_leteral(const std::wstring& value);
+std::shared_ptr<IToken> test_func_id(const std::wstring& value);
+std::shared_ptr<IToken> test_func_none(const std::wstring& value = NONE);
+std::shared_ptr<IToken> test_func_end(const std::wstring& value = END);
 
 template<typename T>
 [[nodiscard]] std::wstring test_func_wstring(const T& t)
@@ -93,14 +99,9 @@ template<typename T>
     const std::function<bool(const T&)>& func)
 {
     for (const auto& [_token, ch] : vec)
-    {
         if (func(ch))
-        {
-            return {true, std::make_shared<Token>(_token,
-                test_func_wstring(ch))};
-        }
-    }
-    return {false, nullptr};
+            return {true, test_func_factory(_token, test_func_wstring(ch))};
+    return {false, test_func_factory(TokenType::none, NONE)};
 }
 
 
