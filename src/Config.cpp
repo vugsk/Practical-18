@@ -124,5 +124,5 @@ std::shared_ptr<IToken> test_func_factory(const TokenType token,
 
 bool test_func_check_class_token(const std::shared_ptr<IToken>& token)
 {
-    return !(token->getToken() == none || token->getValue() == NONE);
+    return !(token->getToken() == TokenType::none || token->getValue() == NONE);
 }
