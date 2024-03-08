@@ -6,9 +6,7 @@
 using namespace std;
 using namespace lexer;
 
-// ConfigConcepts.hpp
-//      написать несколько концептов для шаблонов
-//
+
 // TEST -> tests/test.cpp
 //      дописать основной cmake файл для работы с тестоми
 //      и создать cmake файл для работы с тестами

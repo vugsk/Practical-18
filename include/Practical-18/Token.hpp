@@ -8,14 +8,16 @@
 
 namespace token_
 {
+
 class Token final : public itoken::IToken
 {
 public:
-    // Token(const Token& other)                = delete;
-    // Token(Token&& other) noexcept            = delete;
-    // Token& operator=(const Token& other)     = delete;
-    // Token& operator=(Token&& other) noexcept = delete;
-    ~Token() override = default;
+    Token(const Token& other)                = delete;
+    Token(Token&& other) noexcept            = delete;
+    Token& operator=(const Token& other)     = delete;
+    Token& operator=(Token&& other) noexcept = delete;
+    ~Token() override                        = default;
+
     Token(TokenType token, std::wstring value);
     Token(TokenType token, wchar_t value);
 
@@ -26,6 +28,7 @@ private:
     TokenType    _token;
     std::wstring _value;
 };
+
 }
 
 template<typename T>
