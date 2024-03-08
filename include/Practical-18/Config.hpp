@@ -12,7 +12,6 @@
 #define DEBUG false
 
 
-
 static constexpr wchar_t COLON             = ':';
 static constexpr wchar_t SEMICOLON         = ';';
 static constexpr wchar_t ASSIGNMENT        = '=';
@@ -21,8 +20,9 @@ static constexpr wchar_t ENTER             = '\n';
 static constexpr wchar_t STRING_LITERAL    = '\"';
 static constexpr wchar_t CHARACTER_LITERAL = '\'';
 
-static const std::wstring END  = L"NULL";
+static const std::wstring END  = L"END";
 static const std::wstring NONE = L"NONE";
+static const std::wstring NUL = L"NULL";
 
 static const std::wstring NUMBER    = L"число";
 static const std::wstring STRING    = L"строка";
@@ -35,16 +35,16 @@ static constexpr std::pair ALPHOVIT       = {1072, 1103};
 
 static const std::vector<std::pair<TokenType, wchar_t>> TYPE_CHAR_
 {
-    {TokenType::colon, COLON},
-    {TokenType::semicolon, SEMICOLON},
-    {TokenType::assignment, ASSIGNMENT},
+    {colon, COLON},
+    {semicolon, SEMICOLON},
+    {assignment, ASSIGNMENT},
 };
 
 static const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
 {
-    {TokenType::number_datatype, NUMBER},
-    {TokenType::string_datatype, STRING},
-    {TokenType::character_datatype, CHARACTER},
+    {number_datatype, NUMBER},
+    {string_datatype, STRING},
+    {character_datatype, CHARACTER},
 };
 
 
@@ -69,7 +69,9 @@ static const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
     const std::wstring& sb);
 
 void remove_nullptr_vec(std::vector<std::shared_ptr<IToken>>& tokens);
+bool test_func_check_class_token(const std::shared_ptr<IToken>& token);
 bool test_if_none_token(const std::shared_ptr<IToken>& token);
+bool test_if_null_token(const std::shared_ptr<IToken>& token);
 
 std::shared_ptr<IToken> test_func_factory(TokenType token,
     const std::wstring& value);
@@ -79,8 +81,7 @@ std::shared_ptr<IToken> test_func_number_leteral(const std::wstring& value);
 std::shared_ptr<IToken> test_func_id(const std::wstring& value);
 std::shared_ptr<IToken> test_func_none(const std::wstring& value = NONE);
 std::shared_ptr<IToken> test_func_end(const std::wstring& value = END);
-
-bool test_func_check_class_token(const std::shared_ptr<IToken>& token);
+std::shared_ptr<IToken> test_func_null(const std::wstring& value = NUL);
 
 template<typename T>
 [[nodiscard]] std::wstring test_func_wstring(const T& t)

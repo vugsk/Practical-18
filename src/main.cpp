@@ -33,37 +33,69 @@ using namespace std;
 // предположительно мне нужно часов 24-48 в днях где-то 3-10 дней
 
 
-
-std::vector<std::shared_ptr<IToken>> test_func(const wstring& input)
+class Lexer
 {
-    std::vector<std::shared_ptr<IToken>> tokens;
+public:
+    std::vector<std::shared_ptr<IToken>> test_func(const wstring& input)
+    {
+        for(auto pos = 0; pos < input.size(); pos++)
+            test_func_for(input, pos);
+        m_tokens.push_back(test_func_end());
+        return m_tokens;
+    }
+protected:
+    void test_func_for(const wstring& input, int& pos)
+    {
+        for (auto i : test_vec)
+            m_tokens.push_back(i(input, pos));
+    }
 
-    for(auto pos = 0; pos < input.size(); pos++)
+
+    shared_ptr<IToken> command_operator(const wstring& input, int pos)
+    {
+        if (test_func_check_class_token(test_func_(TYPE_CHAR_, test_bind(input[pos], true))))
+            return test_func_(TYPE_CHAR_, test_bind(input[pos], true));
+        return test_func_null();
+    }
+
+    shared_ptr<IToken> command_number(const wstring& input, int& pos)
+    {
+        if (IsDigit(input[pos]))
+            return test_func_number_leteral(
+                test_st(input, pos, IsDigit));
+        return test_func_null();
+    }
+
+    shared_ptr<IToken> command_string(const wstring& input, int& pos)
     {
         if (isQuote(input[pos]))
-            tokens.push_back(test_func_string_leteral(test_st(input, pos,
-                test_bind(input[pos++], false))));
+            return test_func_string_leteral(test_st(input, pos,
+                test_bind(input[pos++], false)));
+        return test_func_null();
+    }
 
-        if (IsDigit(input[pos]))
-            tokens.push_back(test_func_number_leteral(
-                test_st(input, pos, IsDigit)));
-
+    shared_ptr<IToken> command_command(const wstring& input, int& pos)
+    {
         if (IsSymbol(input[pos]))
         {
             const wstring sb = test_st(input, pos, IsLetterOrDigit);
             if (test_func_check_class_token(test_func_(TYPE_DATA_, test_func_auto(sb))))
-                tokens.push_back(test_func_(TYPE_DATA_, test_func_auto(sb)));
-            tokens.push_back(test_func_id(sb));
+                return test_func_(TYPE_DATA_, test_func_auto(sb));
+            return test_func_id(sb);
         }
-
-        if (test_func_check_class_token(test_func_(TYPE_CHAR_, test_bind(input[pos], true))))
-            tokens.push_back(test_func_(TYPE_CHAR_, test_bind(input[pos], true)));
+        return test_func_null();
     }
 
-    tokens.push_back(test_func_end());
-    return tokens;
-}
-
+private:
+    std::vector<std::shared_ptr<IToken>> m_tokens;
+    vector<function<shared_ptr<IToken>(const wstring&, int&)>> test_vec
+    {
+        [this](const wstring& t, int& pos) {return command_command(t, pos);},
+        [this](const wstring& t, int& pos) {return command_number(t, pos);},
+        [this](const wstring& t, int& pos) {return command_string(t, pos);},
+        [this](const wstring& t, const int pos) {return command_operator(t, pos);},
+    };
+};
 
 
 
@@ -77,9 +109,8 @@ int main()
 
     std::wcout << L"Код:\n" << filename << '\n';
 
-    for (const auto& i : test_func(filename))
-            std::wcout << static_cast<int>(i->getToken()) << ' '
-                        << i->getValue() << std::endl;
+    for (Lexer l; const auto& i : l.test_func(filename))
+            std::wcout << i->getToken() << ' ' << i->getValue() << std::endl;
 
     return 0;
 }

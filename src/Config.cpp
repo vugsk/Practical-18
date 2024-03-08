@@ -84,33 +84,48 @@ void remove_nullptr_vec(std::vector<std::shared_ptr<IToken>>& tokens) {
 
 bool test_if_none_token(const std::shared_ptr<IToken>& token)
 {
-    return token->getToken() == TokenType::none || token->getValue() == NONE;
+    return token->getToken() != none || token->getValue() != NONE;
+}
+
+bool test_if_null_token(const std::shared_ptr<IToken>& token)
+{
+    return token->getToken() != null || token->getValue() != NUL;
+}
+
+bool test_func_check_class_token(const std::shared_ptr<IToken>& token)
+{
+    return test_if_none_token(token);
 }
 
 
 std::shared_ptr<IToken> test_func_string_leteral(const std::wstring& value)
 {
-    return test_func_factory(TokenType::string_literal, value);
+    return test_func_factory(string_literal, value);
 }
 
 std::shared_ptr<IToken> test_func_number_leteral(const std::wstring& value)
 {
-    return test_func_factory(TokenType::number_literal, value);
+    return test_func_factory(number_literal, value);
 }
 
 std::shared_ptr<IToken> test_func_id(const std::wstring& value)
 {
-    return test_func_factory(TokenType::id, value);
+    return test_func_factory(id, value);
 }
 
 std::shared_ptr<IToken> test_func_none(const std::wstring& value)
 {
-    return test_func_factory(TokenType::none, value);
+    return test_func_factory(none, value);
 }
 
 std::shared_ptr<IToken> test_func_end(const std::wstring& value)
 {
-    return test_func_factory(TokenType::end, value);
+    return test_func_factory(end, value);
+}
+
+std::shared_ptr<IToken> test_func_null(const std::wstring& value)
+{
+    return test_func_factory(null, value);
 }
 
 std::shared_ptr<IToken> test_func_factory(const TokenType token,
@@ -122,8 +137,4 @@ std::shared_ptr<IToken> test_func_factory(const TokenType token,
     return test_func_none();
 }
 
-bool test_func_check_class_token(const std::shared_ptr<IToken>& token)
-{
-    return !(token->getToken() == TokenType::none || token->getValue() == NONE);
-}
 

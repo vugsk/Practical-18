@@ -4,12 +4,12 @@
 
 #include <vector>
 
-enum class TokenType : short
+enum TokenType : short
 {
     none = -1,
+    null = 0,
 
-
-    colon = 0,          // двоеточие
+    colon = 1,          // двоеточие
     semicolon,      // точка с запятой
     assignment,     // присваиваивание
 
@@ -29,17 +29,18 @@ enum class TokenType : short
 
 static const std::vector TOKEN_TYPES
 {
-    TokenType::none,
-    TokenType::colon,
-    TokenType::semicolon,
-    TokenType::assignment,
-    TokenType::string_literal,
-    TokenType::number_literal,
-    TokenType::number_datatype,
-    TokenType::string_datatype,
-    TokenType::character_datatype,
-    TokenType::id,
-    TokenType::end,
+    none,
+    null,
+    colon,
+    semicolon,
+    assignment,
+    string_literal,
+    number_literal,
+    number_datatype,
+    string_datatype,
+    character_datatype,
+    id,
+    end,
 };
 
 #endif //TOKENTYPE_HPP
