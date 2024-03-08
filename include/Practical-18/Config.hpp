@@ -12,6 +12,7 @@
 #define DEBUG false
 
 
+
 static constexpr wchar_t COLON             = ':';
 static constexpr wchar_t SEMICOLON         = ';';
 static constexpr wchar_t ASSIGNMENT        = '=';
@@ -22,7 +23,7 @@ static constexpr wchar_t CHARACTER_LITERAL = '\'';
 
 static const std::wstring END  = L"END";
 static const std::wstring NONE = L"NONE";
-static const std::wstring NUL = L"NULL";
+static const std::wstring NUL  = L"NULL";
 
 static const std::wstring NUMBER    = L"число";
 static const std::wstring STRING    = L"строка";
@@ -71,7 +72,8 @@ static const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
 void remove_nullptr_vec(std::vector<std::shared_ptr<IToken>>& tokens);
 bool test_func_check_class_token(const std::shared_ptr<IToken>& token);
 bool test_if_none_token(const std::shared_ptr<IToken>& token);
-bool test_if_null_token(const std::shared_ptr<IToken>& token);
+bool test_if_null_token(const std::shared_ptr<IToken>& token,
+    const std::wstring& value_if = NUL);
 
 std::shared_ptr<IToken> test_func_factory(TokenType token,
     const std::wstring& value);

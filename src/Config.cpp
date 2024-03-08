@@ -87,9 +87,10 @@ bool test_if_none_token(const std::shared_ptr<IToken>& token)
     return token->getToken() != none || token->getValue() != NONE;
 }
 
-bool test_if_null_token(const std::shared_ptr<IToken>& token)
+bool test_if_null_token(const std::shared_ptr<IToken>& token,
+    const std::wstring& value_if)
 {
-    return token->getToken() != null || token->getValue() != NUL;
+    return token->getToken() != null || token->getValue() != value_if;
 }
 
 bool test_func_check_class_token(const std::shared_ptr<IToken>& token)

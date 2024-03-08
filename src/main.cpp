@@ -39,23 +39,25 @@ public:
     std::vector<std::shared_ptr<IToken>> test_func(const wstring& input)
     {
         for(auto pos = 0; pos < input.size(); pos++)
-            test_func_for(input, pos);
+        {
+            for (auto i : test_vec)
+            {
+                const shared_ptr<IToken> io = i(input, pos);
+                if (test_if_null_token(io, NOTHING))
+                    m_tokens.push_back(io);
+            }
+        }
+
         m_tokens.push_back(test_func_end());
         return m_tokens;
     }
+
 protected:
-    void test_func_for(const wstring& input, int& pos)
-    {
-        for (auto i : test_vec)
-            m_tokens.push_back(i(input, pos));
-    }
-
-
-    shared_ptr<IToken> command_operator(const wstring& input, int pos)
+    shared_ptr<IToken> command_operator(const wstring& input, const int pos)
     {
         if (test_func_check_class_token(test_func_(TYPE_CHAR_, test_bind(input[pos], true))))
             return test_func_(TYPE_CHAR_, test_bind(input[pos], true));
-        return test_func_null();
+        return test_func_null(NOTHING);
     }
 
     shared_ptr<IToken> command_number(const wstring& input, int& pos)
@@ -63,7 +65,7 @@ protected:
         if (IsDigit(input[pos]))
             return test_func_number_leteral(
                 test_st(input, pos, IsDigit));
-        return test_func_null();
+        return test_func_null(NOTHING);
     }
 
     shared_ptr<IToken> command_string(const wstring& input, int& pos)
@@ -71,7 +73,7 @@ protected:
         if (isQuote(input[pos]))
             return test_func_string_leteral(test_st(input, pos,
                 test_bind(input[pos++], false)));
-        return test_func_null();
+        return test_func_null(NOTHING);
     }
 
     shared_ptr<IToken> command_command(const wstring& input, int& pos)
@@ -83,11 +85,28 @@ protected:
                 return test_func_(TYPE_DATA_, test_func_auto(sb));
             return test_func_id(sb);
         }
-        return test_func_null();
+        return test_func_null(NOTHING);
+    }
+
+    void add(const function<shared_ptr<IToken>(const wstring&, int)>& func)
+    {
+        test_vec.push_back(func);
+    }
+
+    void remove()
+    {
+        if (test_vec.size() == MIN_SIZE_VEC)
+            return;
+
+        test_vec.pop_back();
     }
 
 private:
+    static const std::wstring NOTHING;
+    static const size_t       MIN_SIZE_VEC;
+
     std::vector<std::shared_ptr<IToken>> m_tokens;
+
     vector<function<shared_ptr<IToken>(const wstring&, int&)>> test_vec
     {
         [this](const wstring& t, int& pos) {return command_command(t, pos);},
@@ -96,6 +115,9 @@ private:
         [this](const wstring& t, const int pos) {return command_operator(t, pos);},
     };
 };
+
+const std::wstring Lexer::NOTHING      = L"NOTHING";
+const size_t       Lexer::MIN_SIZE_VEC = 4;
 
 
 
