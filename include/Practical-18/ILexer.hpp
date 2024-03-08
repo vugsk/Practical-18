@@ -2,9 +2,6 @@
 #ifndef ILEXER_HPP
 #define ILEXER_HPP
 
-#include <memory>
-#include <vector>
-
 #include "IToken.hpp"
 
 namespace ilexer

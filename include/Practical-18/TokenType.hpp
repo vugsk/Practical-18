@@ -2,7 +2,6 @@
 #ifndef TOKENTYPE_HPP
 #define TOKENTYPE_HPP
 
-#include <vector>
 
 enum TokenType : short
 {
