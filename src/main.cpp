@@ -36,13 +36,15 @@ using namespace std;
 class Lexer
 {
 public:
-    std::vector<std::shared_ptr<IToken>> test_func(const wstring& input)
+    explicit Lexer(const wstring& input): m_input(input) {}
+
+    std::vector<std::shared_ptr<IToken>> test_func()
     {
-        for(auto pos = 0; pos < input.size(); pos++)
+        for(auto pos = 0; pos < m_input.size(); pos++)
         {
             for (auto i : test_vec)
             {
-                const shared_ptr<IToken> io = i(input, pos);
+                const shared_ptr<IToken> io = i(pos);
                 if (test_if_null_token(io, NOTHING))
                     m_tokens.push_back(io);
             }
@@ -53,34 +55,38 @@ public:
     }
 
 protected:
-    shared_ptr<IToken> command_operator(const wstring& input, const int pos)
+    auto test_func_bind(const int pos, const bool is) const
     {
-        if (test_func_check_class_token(test_func_(TYPE_CHAR_, test_bind(input[pos], true))))
-            return test_func_(TYPE_CHAR_, test_bind(input[pos], true));
+        return test_bind(m_input[pos], is);
+    }
+
+    shared_ptr<IToken> command_operator(const int pos)
+    {
+        if (test_func_check_class_token(test_func_(TYPE_CHAR_, test_func_bind(pos, true))))
+            return test_func_(TYPE_CHAR_, test_func_bind(pos, true));
         return test_func_null(NOTHING);
     }
 
-    shared_ptr<IToken> command_number(const wstring& input, int& pos)
+    shared_ptr<IToken> command_number(int& pos)
     {
-        if (IsDigit(input[pos]))
-            return test_func_number_leteral(
-                test_st(input, pos, IsDigit));
+        if (IsDigit(m_input[pos]))
+            return test_func_number_leteral(test_st(m_input, pos, IsDigit));
         return test_func_null(NOTHING);
     }
 
-    shared_ptr<IToken> command_string(const wstring& input, int& pos)
+    shared_ptr<IToken> command_string(int& pos)
     {
-        if (isQuote(input[pos]))
-            return test_func_string_leteral(test_st(input, pos,
-                test_bind(input[pos++], false)));
+        if (isQuote(m_input[pos]))
+            return test_func_string_leteral(test_st(m_input, pos,
+                test_func_bind(pos++, false)));
         return test_func_null(NOTHING);
     }
 
-    shared_ptr<IToken> command_command(const wstring& input, int& pos)
+    shared_ptr<IToken> command_command(int& pos)
     {
-        if (IsSymbol(input[pos]))
+        if (IsSymbol(m_input[pos]))
         {
-            const wstring sb = test_st(input, pos, IsLetterOrDigit);
+            const wstring sb = test_st(m_input, pos, IsLetterOrDigit);
             if (test_func_check_class_token(test_func_(TYPE_DATA_, test_func_auto(sb))))
                 return test_func_(TYPE_DATA_, test_func_auto(sb));
             return test_func_id(sb);
@@ -88,7 +94,9 @@ protected:
         return test_func_null(NOTHING);
     }
 
-    void add(const function<shared_ptr<IToken>(const wstring&, int)>& func)
+
+
+    void add(const function<shared_ptr<IToken>(int)>& func)
     {
         test_vec.push_back(func);
     }
@@ -106,13 +114,14 @@ private:
     static const size_t       MIN_SIZE_VEC;
 
     std::vector<std::shared_ptr<IToken>> m_tokens;
+    wstring m_input;
 
-    vector<function<shared_ptr<IToken>(const wstring&, int&)>> test_vec
+    vector<function<shared_ptr<IToken>(int&)>> test_vec
     {
-        [this](const wstring& t, int& pos) {return command_command(t, pos);},
-        [this](const wstring& t, int& pos) {return command_number(t, pos);},
-        [this](const wstring& t, int& pos) {return command_string(t, pos);},
-        [this](const wstring& t, const int pos) {return command_operator(t, pos);},
+        [this](int& pos) {return command_command(pos);},
+        [this](int& pos) {return command_number(pos);},
+        [this](int& pos) {return command_string(pos);},
+        [this](const int pos) {return command_operator(pos);},
     };
 };
 
@@ -131,7 +140,7 @@ int main()
 
     std::wcout << L"Код:\n" << filename << '\n';
 
-    for (Lexer l; const auto& i : l.test_func(filename))
+    for (Lexer l(filename); const auto& i : l.test_func())
             std::wcout << i->getToken() << ' ' << i->getValue() << std::endl;
 
     return 0;

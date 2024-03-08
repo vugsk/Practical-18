@@ -86,7 +86,7 @@ std::shared_ptr<IToken> test_func_end(const std::wstring& value = END);
 std::shared_ptr<IToken> test_func_null(const std::wstring& value = NUL);
 
 template<typename T>
-[[nodiscard]] std::wstring test_func_wstring(const T& t)
+[[nodiscard]] static std::wstring test_func_wstring(const T& t)
 {
     std::wstring io;
     io = t;
@@ -94,7 +94,7 @@ template<typename T>
 }
 
 template<typename T>
-[[nodiscard]] std::shared_ptr<IToken> test_func_(
+[[nodiscard]] static std::shared_ptr<IToken> test_func_(
     const std::vector<std::pair<TokenType, T>>& vec,
     const std::function<bool(const T&)>& func)
 {
