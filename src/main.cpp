@@ -4,6 +4,7 @@
 
 #include <Config.hpp>
 #include <IToken.hpp>
+#include <utility>
 
 using namespace std;
 
@@ -36,13 +37,13 @@ using namespace std;
 class Lexer
 {
 public:
-    explicit Lexer(const wstring& input): m_input(input) {}
+    explicit Lexer(wstring input): m_input(std::move(input)) {}
 
     std::vector<std::shared_ptr<IToken>> test_func()
     {
         for(auto pos = 0; pos < m_input.size(); pos++)
         {
-            for (auto i : test_vec)
+            for (const auto& i : test_vec)
             {
                 const shared_ptr<IToken> io = i(pos);
                 if (test_if_null_token(io, NOTHING))
@@ -55,42 +56,50 @@ public:
     }
 
 protected:
-    auto test_func_bind(const int pos, const bool is) const
+    function<bool(const wchar_t&)> test_func_bind(const int pos, const bool is) const
     {
-        return test_bind(m_input[pos], is);
+        return test_bind(m_input[pos], is); // return function
     }
 
-    shared_ptr<IToken> command_operator(const int pos)
+    std::wstring test_st(int& position, const std::function<bool(wchar_t)>& func) const
     {
-        if (test_func_check_class_token(test_func_(TYPE_CHAR_, test_func_bind(pos, true))))
-            return test_func_(TYPE_CHAR_, test_func_bind(pos, true));
+        std::wstring sb;
+        while (func(m_input[position]))
+            sb.push_back(m_input[position++]);
+        return sb;
+    }
+
+    template<typename F>
+    shared_ptr<IToken> test_func_shared_ptr_num(int& pos, const TokenType token,
+        const function<bool(wchar_t)>& func, const F& func1)
+    {
+        if (func(m_input[pos]))
+            return test_func_factory(token, test_st(pos, func1(pos)));
         return test_func_null(NOTHING);
+    }
+
+    shared_ptr<IToken> command_operator(const int pos) const
+    {
+        return test_func_(TYPE_CHAR_, test_func_bind(pos, true),
+            test_func_null(NOTHING));
     }
 
     shared_ptr<IToken> command_number(int& pos)
     {
-        if (IsDigit(m_input[pos]))
-            return test_func_number_leteral(test_st(m_input, pos, IsDigit));
-        return test_func_null(NOTHING);
+        return test_func_shared_ptr_num(pos, number_literal, IsDigit,
+            test_func_bind_lamda(IsDigit));
     }
 
     shared_ptr<IToken> command_string(int& pos)
     {
-        if (isQuote(m_input[pos]))
-            return test_func_string_leteral(test_st(m_input, pos,
-                test_func_bind(pos++, false)));
-        return test_func_null(NOTHING);
+        return test_func_shared_ptr_num(pos, string_literal, isQuote,
+            [this](int& i) { return test_func_bind(i++, false); });
     }
 
-    shared_ptr<IToken> command_command(int& pos)
+    shared_ptr<IToken> command_command(int& pos) const
     {
         if (IsSymbol(m_input[pos]))
-        {
-            const wstring sb = test_st(m_input, pos, IsLetterOrDigit);
-            if (test_func_check_class_token(test_func_(TYPE_DATA_, test_func_auto(sb))))
-                return test_func_(TYPE_DATA_, test_func_auto(sb));
-            return test_func_id(sb);
-        }
+            return test_func_(TYPE_DATA_, test_func_auto(test_st(pos, IsLetterOrDigit)), test_func_id(test_st(pos, IsLetterOrDigit)));
         return test_func_null(NOTHING);
     }
 
@@ -105,7 +114,6 @@ protected:
     {
         if (test_vec.size() == MIN_SIZE_VEC)
             return;
-
         test_vec.pop_back();
     }
 
@@ -135,8 +143,8 @@ int main()
 {
     setlocale(LC_CTYPE, "");
 
-    const wstring filename =
-        L"номер: число = 90;\nбуква: символ = \'ш\';\nтекст: строка = \"какой-то текст\";\n";
+    const wstring filename = L"номер: число = 90;\nбуква: символ = \'ш\';"
+            + wstring(L"\nтекст: строка = \"какой-то текст\";\n");
 
     std::wcout << L"Код:\n" << filename << '\n';
 

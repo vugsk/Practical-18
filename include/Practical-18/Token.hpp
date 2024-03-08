@@ -13,6 +13,7 @@ public:
     // Token& operator=(Token&& other) noexcept = delete;
     ~Token() override = default;
     Token(TokenType token, std::wstring value);
+    Token(TokenType token, wchar_t value);
 
     [[nodiscard]] TokenType getToken() const override;
     [[nodiscard]] std::wstring getValue() const override;

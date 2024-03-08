@@ -50,15 +50,6 @@ std::wstring ConvertString(const std::string& string)
     return wtext;
 }
 
-std::wstring test_st(const std::wstring& _input, int& position,
-    const std::function<bool(wchar_t)>& func)
-{
-    std::wstring sb;
-    while (func(_input[position]))
-        sb.push_back(_input[position++]);
-    return sb;
-}
-
 std::function<bool(const wchar_t&)> test_bind(const wchar_t ch, const bool is)
 {
     return [ch, is](const wchar_t i) -> bool
@@ -127,15 +118,6 @@ std::shared_ptr<IToken> test_func_end(const std::wstring& value)
 std::shared_ptr<IToken> test_func_null(const std::wstring& value)
 {
     return test_func_factory(null, value);
-}
-
-std::shared_ptr<IToken> test_func_factory(const TokenType token,
-                                          const std::wstring& value)
-{
-    for (const auto i : TOKEN_TYPES)
-        if (token == i)
-            return std::make_shared<Token>(token, value);
-    return test_func_none();
 }
 
 
