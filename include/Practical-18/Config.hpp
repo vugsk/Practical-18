@@ -91,14 +91,14 @@ template<typename T>
 }
 
 template<typename T>
-[[nodiscard]] std::pair<bool, std::shared_ptr<IToken>> test_func_(
+[[nodiscard]] std::shared_ptr<IToken> test_func_(
     const std::vector<std::pair<TokenType, T>>& vec,
     const std::function<bool(const T&)>& func)
 {
     for (const auto& [_token, ch] : vec)
         if (func(ch))
-            return {true, test_func_factory(_token, test_func_wstring(ch))};
-    return {false, test_func_factory(TokenType::none, NONE)};
+            return test_func_factory(_token, test_func_wstring(ch));
+    return test_func_none();
 }
 
 #endif //CONFIG_HPP

@@ -51,13 +51,13 @@ std::vector<std::shared_ptr<IToken>> test_func(const wstring& input)
         if (IsSymbol(input[pos]))
         {
             const wstring sb = test_st(input, pos, IsLetterOrDigit);
-            if (test_func_(TYPE_DATA_, test_func_auto(sb)).first)
-                tokens.push_back(test_func_(TYPE_DATA_, test_func_auto(sb)).second);
+            if (test_func_check_class_token(test_func_(TYPE_DATA_, test_func_auto(sb))))
+                tokens.push_back(test_func_(TYPE_DATA_, test_func_auto(sb)));
             tokens.push_back(test_func_id(sb));
         }
 
-        if (test_func_(TYPE_CHAR_, test_bind(input[pos], true)).first)
-            tokens.push_back(test_func_(TYPE_CHAR_, test_bind(input[pos], true)).second);
+        if (test_func_check_class_token(test_func_(TYPE_CHAR_, test_bind(input[pos], true))))
+            tokens.push_back(test_func_(TYPE_CHAR_, test_bind(input[pos], true)));
     }
 
     tokens.push_back(test_func_end());
