@@ -3,9 +3,12 @@
 
 #include <codecvt>
 #include <locale>
+#include <memory>
 
 
-bool Is_func_test(const int to, const int from, const wchar_t ch)
+using namespace type_char_literals;
+
+bool func_base::Is_func_test(const int to, const int from, const wchar_t ch)
 {
     for (auto i = to; i < from + 1; i++)
         if (i == ch)
@@ -13,44 +16,44 @@ bool Is_func_test(const int to, const int from, const wchar_t ch)
     return false;
 }
 
-bool Is_func_test(const std::pair<int, int>& p, const wchar_t ch)
+bool func_base::Is_func_test(const std::pair<int, int>& p, const wchar_t ch)
 {
     return Is_func_test(p.first, p.second, ch);
 }
 
-bool IsDigit(const wchar_t number)
+bool func_base::IsDigit(const wchar_t number)
 {
     return Is_func_test(45, 57, number);
 }
 
-bool IsSpace(const wchar_t _ch)
+bool func_base::IsSpace(const wchar_t _ch)
 {
     return _ch == SPACE;
 }
 
-bool IsSymbol(const wchar_t _ch)
+bool func_base::IsSymbol(const wchar_t _ch)
 {
     return Is_func_test(1072, 1103, _ch);
 }
 
-bool IsLetterOrDigit(const wchar_t _ch)
+bool func_base::IsLetterOrDigit(const wchar_t _ch)
 {
     return IsDigit(_ch) || IsSymbol(_ch);
 }
 
-bool isQuote(const wchar_t ch)
+bool func_base::isQuote(const wchar_t ch)
 {
     return ch == CHARACTER_LITERAL || ch == STRING_LITERAL;
 }
 
-std::wstring ConvertString(const std::string& string)
+std::wstring func_base::ConvertString(const std::string& string)
 {
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     std::wstring wtext = converter.from_bytes(string.c_str());
     return wtext;
 }
 
-std::function<bool(const wchar_t&)> test_bind(const wchar_t ch, const bool is)
+std::function<bool(const wchar_t&)> func_base::test_bind(const wchar_t ch, const bool is)
 {
     return [ch, is](const wchar_t i) -> bool
     {
@@ -58,66 +61,12 @@ std::function<bool(const wchar_t&)> test_bind(const wchar_t ch, const bool is)
     };
 }
 
-std::function<bool(const std::wstring&)> test_func_auto(const std::wstring& sb)
+std::function<bool(const std::wstring&)> func_base::test_func_auto(const std::wstring& sb)
 {
     return [sb](const std::wstring& i) -> bool
     {
         return std::ranges::equal(sb, i);
     };
-}
-
-void remove_nullptr_vec(std::vector<std::shared_ptr<IToken>>& tokens) {
-    std::erase_if(tokens, [](const std::shared_ptr<IToken>& token) -> bool
-    {
-        return token == nullptr;
-    });
-}
-
-bool test_if_none_token(const std::shared_ptr<IToken>& token)
-{
-    return token->getToken() != none || token->getValue() != NONE;
-}
-
-bool test_if_null_token(const std::shared_ptr<IToken>& token,
-    const std::wstring& value_if)
-{
-    return token->getToken() != null || token->getValue() != value_if;
-}
-
-bool test_func_check_class_token(const std::shared_ptr<IToken>& token)
-{
-    return test_if_none_token(token);
-}
-
-
-std::shared_ptr<IToken> test_func_string_leteral(const std::wstring& value)
-{
-    return test_func_factory(string_literal, value);
-}
-
-std::shared_ptr<IToken> test_func_number_leteral(const std::wstring& value)
-{
-    return test_func_factory(number_literal, value);
-}
-
-std::shared_ptr<IToken> test_func_id(const std::wstring& value)
-{
-    return test_func_factory(id, value);
-}
-
-std::shared_ptr<IToken> test_func_none(const std::wstring& value)
-{
-    return test_func_factory(none, value);
-}
-
-std::shared_ptr<IToken> test_func_end(const std::wstring& value)
-{
-    return test_func_factory(end, value);
-}
-
-std::shared_ptr<IToken> test_func_null(const std::wstring& value)
-{
-    return test_func_factory(null, value);
 }
 
 

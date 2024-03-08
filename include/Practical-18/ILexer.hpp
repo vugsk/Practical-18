@@ -5,13 +5,18 @@
 #include <memory>
 #include <vector>
 
-class IToken;
+#include "IToken.hpp"
+
+namespace ilexer
+{
 
 class ILexer {
 public:
-    virtual                                      ~ILexer() = default;
-    virtual std::vector<std::shared_ptr<IToken>> test_func() = 0;
+    virtual                                              ~ILexer() = default;
+    virtual std::vector<std::shared_ptr<itoken::IToken>> test_func() = 0;
 };
+
+}
 
 
 

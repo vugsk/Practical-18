@@ -1,6 +1,8 @@
 
 #include "Token.hpp"
 
+using namespace token_;
+
 Token::Token(const TokenType token, std::wstring value)
     : _token(token), _value(std::move(value)) {}
 

@@ -2,16 +2,20 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include <functional>
-#include <memory>
 
-#include "Token.hpp"
+#include <functional>
+#include <string>
+
 #include "TokenType.hpp"
+
 
 #define TEST false
 #define DEBUG false
 
 
+
+namespace type_char_literals
+{
 
 static constexpr wchar_t COLON             = ':';
 static constexpr wchar_t SEMICOLON         = ';';
@@ -48,8 +52,11 @@ static const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
     {character_datatype, CHARACTER},
 };
 
+}
 
 
+namespace func_base
+{
 
 [[nodiscard]] bool IsDigit(wchar_t number);
 [[nodiscard]] bool IsSpace(wchar_t _ch);
@@ -66,45 +73,16 @@ static const std::vector<std::pair<TokenType, std::wstring>> TYPE_DATA_
 [[nodiscard]] std::function<bool(const std::wstring&)> test_func_auto(
     const std::wstring& sb);
 
-void remove_nullptr_vec(std::vector<std::shared_ptr<IToken>>& tokens);
-bool test_func_check_class_token(const std::shared_ptr<IToken>& token);
-bool test_if_none_token(const std::shared_ptr<IToken>& token);
-bool test_if_null_token(const std::shared_ptr<IToken>& token,
-    const std::wstring& value_if = NUL);
-
-
-std::shared_ptr<IToken> test_func_string_leteral(const std::wstring& value);
-std::shared_ptr<IToken> test_func_number_leteral(const std::wstring& value);
-std::shared_ptr<IToken> test_func_id(const std::wstring& value);
-std::shared_ptr<IToken> test_func_none(const std::wstring& value = NONE);
-std::shared_ptr<IToken> test_func_end(const std::wstring& value = END);
-std::shared_ptr<IToken> test_func_null(const std::wstring& value = NUL);
-
-template<typename T>
-std::shared_ptr<IToken> test_func_factory(const TokenType token, const T& value)
-{
-    for (const auto i : TOKEN_TYPES)
-        if (token == i)
-            return std::make_shared<Token>(token, value);
-    return test_func_none();
-}
-
-template<typename T>
-std::shared_ptr<IToken> test_func_(
-        const std::vector<std::pair<TokenType, T>>& vec,
-        const std::function<bool(const T&)>& func,
-        const std::shared_ptr<IToken>& default_return = test_func_none())
-{
-    for (const auto& [_token, ch] : vec)
-        if (func(ch))
-            return test_func_factory(_token, ch);
-    return default_return;
-}
-
 template<typename F>
 auto test_func_bind_lamda(const F& func)
 {
     return [func](int& p) { return func; };
 }
+
+}
+
+
+
+
 
 #endif //CONFIG_HPP
