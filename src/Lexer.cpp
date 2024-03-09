@@ -81,9 +81,11 @@ tokenPtr lexer::Lexer::command_string(int& pos)
 tokenPtr lexer::Lexer::command_command(int& pos) const
 {
     if (iswalpha(m_input[pos]))
-        return test_func_(lexicon_cppon::DATA_TYPES,
-            test_func_auto(test_st(pos, iswalnum)),
-            test_func_id(test_st(pos, iswalnum)));
+    {
+        const std::wstring io = test_st(pos, iswalnum);
+        return test_func_(lexicon_cppon::DATA_TYPES, test_func_auto(io),
+            test_func_id(io));
+    }
     return test_func_null(NOTHING);
 }
 
