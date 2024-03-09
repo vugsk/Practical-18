@@ -20,22 +20,22 @@ public:
 
 }
 
+
+
 namespace func_itoken
 {
+typedef std::shared_ptr<itoken::IToken> tokenPtr;
 
-bool test_if_none_token(const std::shared_ptr<itoken::IToken>& token);
-bool test_if_null_token(const std::shared_ptr<itoken::IToken>& token,
-    const std::wstring& value_if = type_char_literals::NUL);
+bool test_if_none_token(const tokenPtr& token);
+bool test_if_null_token(const tokenPtr& token,
+    const std::wstring& value_if = lexicon_cppon::NUL);
 
-std::shared_ptr<itoken::IToken> test_func_string_leteral(const std::wstring& value);
-std::shared_ptr<itoken::IToken> test_func_number_leteral(const std::wstring& value);
-std::shared_ptr<itoken::IToken> test_func_id(const std::wstring& value);
-std::shared_ptr<itoken::IToken> test_func_none(const std::wstring& value =
-    type_char_literals::NONE);
-std::shared_ptr<itoken::IToken> test_func_end(const std::wstring& value =
-    type_char_literals::END);
-std::shared_ptr<itoken::IToken> test_func_null(const std::wstring& value =
-    type_char_literals::NUL);
+tokenPtr test_func_string_leteral(const std::wstring& value);
+tokenPtr test_func_number_leteral(const std::wstring& value);
+tokenPtr test_func_id(const std::wstring& value);
+tokenPtr test_func_none(const std::wstring& value = lexicon_cppon::NONE);
+tokenPtr test_func_end(const std::wstring& value = lexicon_cppon::END);
+tokenPtr test_func_null(const std::wstring& value = lexicon_cppon::NUL);
 
 }
 

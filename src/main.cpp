@@ -1,4 +1,5 @@
 
+
 #include <iostream>
 
 #include <Lexer.hpp>
@@ -6,6 +7,7 @@
 using namespace std;
 using namespace lexer;
 
+// текстовый формат называется CPPON -> C++ Object Notation
 
 // TEST -> tests/test.cpp
 //      дописать основной cmake файл для работы с тестоми
@@ -36,7 +38,7 @@ int main()
 {
     setlocale(LC_CTYPE, "");
 
-    const wstring filename = L"номер: число = 90;\nбуква: символ = \'ш\';"
+    wstring filename = L"номер: число = 90;\nбуква: символ = \'ш\';"
             + wstring(L"\nтекст: строка = \"какой-то текст\";\n");
 
     std::wcout << L"Код:\n" << filename << '\n';

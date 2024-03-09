@@ -30,7 +30,7 @@ private:
 }
 
 template<typename T>
-std::shared_ptr<itoken::IToken> test_func_factory(const TokenType token,
+func_itoken::tokenPtr test_func_factory(const TokenType token,
     const T& value)
 {
     for (const auto i : TOKEN_TYPES)

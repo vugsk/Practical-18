@@ -4,7 +4,7 @@
 #include "Token.hpp"
 
 using namespace itoken;
-using namespace type_char_literals;
+using namespace lexicon_cppon;
 
 bool func_itoken::test_if_none_token(const std::shared_ptr<IToken>& token)
 {

@@ -3,23 +3,26 @@
 
 #include "IToken.hpp"
 
-using namespace itoken;
+
 using namespace func_itoken;
-using namespace func_base;
-using namespace type_char_literals;
+
+
 
 const std::wstring lexer::Lexer::NOTHING      = L"NOTHING";
 const size_t       lexer::Lexer::MIN_SIZE_VEC = 4;
 
+
+
 lexer::Lexer::Lexer(std::wstring input): m_input(std::move(input)) {}
 
-std::vector<std::shared_ptr<IToken>> lexer::Lexer::test_func()
+std::vector<tokenPtr> lexer::Lexer::test_func()
 {
+    std::vector<tokenPtr> m_tokens;
     for(auto pos = 0; pos < m_input.size(); pos++)
     {
         for (const auto& i : test_vec)
         {
-            const std::shared_ptr<IToken> io = i(pos);
+            const tokenPtr io = i(pos);
             if (test_if_null_token(io, NOTHING))
                 m_tokens.push_back(io);
         }
@@ -32,11 +35,14 @@ std::vector<std::shared_ptr<IToken>> lexer::Lexer::test_func()
 std::function<bool(const wchar_t&)> lexer::Lexer::test_func_bind(const int pos,
     const bool is) const
 {
-    return test_bind(m_input[pos], is); // return function
+    return [this, pos, is](const wchar_t i)
+    {
+        return is ? m_input[pos] == i : m_input[pos] != i;
+    };
 }
 
 std::wstring lexer::Lexer::test_st(int& position,
-                            const std::function<bool(wchar_t)>& func) const
+    const std::function<bool(wchar_t)>& func) const
 {
     std::wstring sb;
     while (func(m_input[position]))
@@ -44,34 +50,44 @@ std::wstring lexer::Lexer::test_st(int& position,
     return sb;
 }
 
-std::shared_ptr<IToken> lexer::Lexer::command_operator(const int pos) const
+std::function<bool(const std::wstring&)> lexer::Lexer::test_func_auto(
+    const std::wstring& sb)
 {
-    return test_func_(TYPE_CHAR_, test_func_bind(pos, true),
+    return [sb](const std::wstring& i)
+    {
+        return std::ranges::equal(sb, i);
+    };
+}
+
+tokenPtr lexer::Lexer::command_operator(const int pos) const
+{
+    return test_func_(lexicon_cppon::OPERATORS, test_func_bind(pos, true),
                       test_func_null(NOTHING));
 }
 
-std::shared_ptr<IToken> lexer::Lexer::command_number(int& pos)
+tokenPtr lexer::Lexer::command_number(int& pos)
 {
-    return test_func_shared_ptr_num(pos, number_literal, IsDigit,
-                                    test_func_bind_lamda(IsDigit));
+    return test_func_shared_ptr_num(pos, number_literal, iswdigit,
+        standard_functions::test_func_bind_lamda(iswdigit));
 }
 
-std::shared_ptr<IToken> lexer::Lexer::command_string(int& pos)
+tokenPtr lexer::Lexer::command_string(int& pos)
 {
-    return test_func_shared_ptr_num(pos, string_literal, isQuote,
-        [this](int& i)
+    return test_func_shared_ptr_num(pos, string_literal,
+        standard_functions::IsQuote, [this](int& i)
             { return test_func_bind(i++, false); });
 }
 
-std::shared_ptr<IToken> lexer::Lexer::command_command(int& pos) const
+tokenPtr lexer::Lexer::command_command(int& pos) const
 {
-    if (IsSymbol(m_input[pos]))
-        return test_func_(TYPE_DATA_, test_func_auto(test_st(pos,
-            IsLetterOrDigit)), test_func_id(test_st(pos, IsLetterOrDigit)));
+    if (iswalpha(m_input[pos]))
+        return test_func_(lexicon_cppon::DATA_TYPES,
+            test_func_auto(test_st(pos, iswalnum)),
+            test_func_id(test_st(pos, iswalnum)));
     return test_func_null(NOTHING);
 }
 
-void lexer::Lexer::add(const std::function<std::shared_ptr<IToken>(int)>& func) {
+void lexer::Lexer::add(const std::function<tokenPtr(int)>& func) {
     test_vec.push_back(func);
 }
 

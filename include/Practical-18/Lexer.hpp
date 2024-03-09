@@ -1,17 +1,18 @@
 #ifndef LEXER_HPP
 #define LEXER_HPP
 
+#include <Token.hpp>
+
 #include "ILexer.hpp"
-#include "Token.hpp"
 
 namespace lexer
 {
 
 template<typename T>
-std::shared_ptr<itoken::IToken> test_func_(
+func_itoken::tokenPtr test_func_(
         const std::vector<std::pair<TokenType, T>>& vec,
         const std::function<bool(const T&)>& func,
-        const std::shared_ptr<itoken::IToken>& default_return =
+        const func_itoken::tokenPtr& default_return =
             func_itoken::test_func_none())
 {
     for (const auto& [_token, ch] : vec)
@@ -30,16 +31,19 @@ public:
     Lexer& operator=(Lexer&& other) noexcept = delete;
     ~Lexer() override = default;
 
-    std::vector<std::shared_ptr<itoken::IToken>> test_func() override;
+    std::vector<func_itoken::tokenPtr> test_func() override;
 
 protected:
     std::function<bool(const wchar_t&)> test_func_bind(int pos, bool is) const;
+
+    static std::function<bool(const std::wstring&)> test_func_auto(
+        const std::wstring& sb);
 
     std::wstring test_st(int& position,
         const std::function<bool(wchar_t)>& func) const;
 
     template<typename F>
-    std::shared_ptr<itoken::IToken> test_func_shared_ptr_num(int& pos,
+    func_itoken::tokenPtr test_func_shared_ptr_num(int& pos,
         const TokenType token, const std::function<bool(wchar_t)>& func,
         const F& func1)
     {
@@ -48,27 +52,26 @@ protected:
         return func_itoken::test_func_null(NOTHING);
     }
 
-    std::shared_ptr<itoken::IToken> command_operator(int pos) const;
-    std::shared_ptr<itoken::IToken> command_number(int& pos);
-    std::shared_ptr<itoken::IToken> command_string(int& pos);
-    std::shared_ptr<itoken::IToken> command_command(int& pos) const;
+    func_itoken::tokenPtr command_operator(int pos) const;
+    func_itoken::tokenPtr command_number(int& pos);
+    func_itoken::tokenPtr command_string(int& pos);
+    func_itoken::tokenPtr command_command(int& pos) const;
 
-    void add(const std::function<std::shared_ptr<itoken::IToken>(int)>& func);
+    void add(const std::function<func_itoken::tokenPtr(int)>& func);
     void remove();
 
 private:
     static const std::wstring NOTHING;
     static const size_t       MIN_SIZE_VEC;
 
-    std::vector<std::shared_ptr<itoken::IToken>> m_tokens;
-    std::wstring                         m_input;
+    std::wstring m_input;
 
-    std::vector<std::function<std::shared_ptr<itoken::IToken>(int&)>> test_vec
+    std::vector<std::function<func_itoken::tokenPtr(int&)>> test_vec
     {
-        [this](int& pos) {return command_command(pos);},
-        [this](int& pos) {return command_number(pos);},
-        [this](int& pos) {return command_string(pos);},
-        [this](const int pos) {return command_operator(pos);},
+        std::bind(&Lexer::command_command, this, std::placeholders::_1),
+        std::bind(&Lexer::command_number, this, std::placeholders::_1),
+        std::bind(&Lexer::command_string, this, std::placeholders::_1),
+        std::bind(&Lexer::command_operator, this, std::placeholders::_1),
     };
 };
 
