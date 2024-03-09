@@ -1,8 +1,5 @@
 
-#include "Lexer.hpp"
-
-#include "IToken.hpp"
-
+#include "include/Lexer.hpp"
 
 using namespace func_itoken;
 
@@ -61,20 +58,20 @@ std::function<bool(const std::wstring&)> lexer::Lexer::test_func_auto(
 
 tokenPtr lexer::Lexer::command_operator(const int pos) const
 {
-    return test_func_(lexicon_cppon::OPERATORS, test_func_bind(pos, true),
+    return test_func_(OPERATORS, test_func_bind(pos, true),
                       test_func_null(NOTHING));
 }
 
 tokenPtr lexer::Lexer::command_number(int& pos)
 {
     return test_func_shared_ptr_num(pos, number_literal, iswdigit,
-        standard_functions::test_func_bind_lamda(iswdigit));
+        test_func_bind_lamda(iswdigit));
 }
 
 tokenPtr lexer::Lexer::command_string(int& pos)
 {
     return test_func_shared_ptr_num(pos, string_literal,
-        standard_functions::IsQuote, [this](int& i)
+        IsQuote, [this](int& i)
             { return test_func_bind(i++, false); });
 }
 
@@ -83,7 +80,7 @@ tokenPtr lexer::Lexer::command_command(int& pos) const
     if (iswalpha(m_input[pos]))
     {
         const std::wstring io = test_st(pos, iswalnum);
-        return test_func_(lexicon_cppon::DATA_TYPES, test_func_auto(io),
+        return test_func_(DATA_TYPES, test_func_auto(io),
             test_func_id(io));
     }
     return test_func_null(NOTHING);

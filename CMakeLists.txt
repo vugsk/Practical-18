@@ -3,20 +3,25 @@ project(Practical-18)
 
 set(CMAKE_CXX_STANDARD 20)
 
+option(TESTS "ON/OFF tests?" OFF)
+option(TEST_LEXER "build test for lexerLib?" ON)
+#option(TEST_PARSER "build test for parserLib?" OFF)
+
+
 include_directories(include/Practical-18)
+
+add_subdirectory(src/Lexer)
+add_subdirectory(src/Parser)
+
 
 add_executable(Practical-18
     src/main.cpp
-    src/Config.cpp
-    src/WorkFile.cpp
-    include/Practical-18/WorkFile.hpp
-    include/Practical-18/ILexer.hpp
-    src/Lexer.cpp
-    include/Practical-18/Lexer.hpp
-    include/Practical-18/IToken.hpp
-    src/Token.cpp
-    include/Practical-18/Token.hpp
     include/Practical-18/Config.hpp
-    include/Practical-18/TokenType.hpp
-    src/IToken.cpp
+#    src/WorkFile.cpp
+#    include/Practical-18/WorkFile.hpp
+)
+
+target_link_libraries(Practical-18
+    sub::LexerLib
+    sub::ParserLib
 )

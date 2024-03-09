@@ -1,9 +1,10 @@
 #ifndef LEXER_HPP
 #define LEXER_HPP
 
-#include <Token.hpp>
+#include <functional>
 
 #include "ILexer.hpp"
+#include "Token.hpp"
 
 namespace lexer
 {

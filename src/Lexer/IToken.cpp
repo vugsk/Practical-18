@@ -1,10 +1,9 @@
 
-#include "IToken.hpp"
+#include "include/IToken.hpp"
 
-#include "Token.hpp"
+#include "include/Token.hpp"
 
 using namespace itoken;
-using namespace lexicon_cppon;
 
 bool func_itoken::test_if_none_token(const std::shared_ptr<IToken>& token)
 {
