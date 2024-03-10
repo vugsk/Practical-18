@@ -1,0 +1,19 @@
+
+set(PROJECT_NAME CPPON_lib)
+
+project(${PROJECT_NAME} VERSION ${VERSION_PROJECT} LANGUAGES ${LANGUAGES_PROJECT})
+
+option(TEST_LEXER "build test for lexer?" OFF)
+add_subdirectory(src/LexicalAnalyzer)
+
+
+add_library(${PROJECT_NAME} SHARED
+    include/Config.hpp
+    Config.cpp
+)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC Lexer_lib)
+
+target_include_directories(${PROJECT_NAME}
+    PUBLIC ${PROJECT_SOURCE_DIR}/include
+)

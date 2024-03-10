@@ -1,27 +1,17 @@
 cmake_minimum_required(VERSION 3.28)
-project(Practical-18)
+
+set(VERSION_PROJECT 0.0.1)
+set(LANGUAGES_PROJECT CXX)
+
+project(P18 VERSION ${VERSION_PROJECT} LANGUAGES ${LANGUAGES_PROJECT})
 
 set(CMAKE_CXX_STANDARD 20)
-
-option(TESTS "ON/OFF tests?" OFF)
-option(TEST_LEXER "build test for lexerLib?" ON)
-#option(TEST_PARSER "build test for parserLib?" OFF)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 
-include_directories(include/Practical-18)
+enable_testing()
+add_subdirectory(CPPON)
+add_subdirectory(practichka_18)
 
-add_subdirectory(src/Lexer)
-add_subdirectory(src/Parser)
 
 
-add_executable(Practical-18
-    src/main.cpp
-    include/Practical-18/Config.hpp
-#    src/WorkFile.cpp
-#    include/Practical-18/WorkFile.hpp
-)
-
-target_link_libraries(Practical-18
-    sub::LexerLib
-    sub::ParserLib
-)
