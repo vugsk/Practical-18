@@ -28,17 +28,17 @@ static const std::wstring CHARACTER = L"символ";
 
 static const std::vector<std::pair<TokenType, wchar_t>> OPERATORS
 {
-        {colon, COLON},
-        {semicolon, SEMICOLON},
-        {assignment, ASSIGNMENT},
-    };
+    {colon, COLON},
+    {semicolon, SEMICOLON},
+    {assignment, ASSIGNMENT},
+};
 
 static const std::vector<std::pair<TokenType, std::wstring>> DATA_TYPES
 {
-        {number_datatype, NUMBER},
-        {string_datatype, STRING},
-        {character_datatype, CHARACTER},
-    };
+    {number_datatype, NUMBER},
+    {string_datatype, STRING},
+    {character_datatype, CHARACTER},
+};
 
 template<typename F>
 auto test_func_bind_lamda(const F& func)

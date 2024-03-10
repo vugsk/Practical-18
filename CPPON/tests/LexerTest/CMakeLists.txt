@@ -14,6 +14,7 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(${PROJECT_NAME}
     test.cpp
+    Config.hpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE

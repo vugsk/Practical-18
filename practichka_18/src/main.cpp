@@ -7,12 +7,6 @@ using namespace std;
 
 // текстовый формат называется CPPON -> C++ Object Notation
 
-// TEST -> TEST-Practical/test.cpp
-//      дописать основной cmake файл для работы с тестоми
-//      и создать cmake файл для работы с тестами
-//      и написать тесты на class Lexer
-//      и на функции Config.hpp(может быть функции переедут в другое место)
-//
 // Parser.hpp
 //      написать парсер который будет из вектора делать чуда
 //
@@ -37,7 +31,7 @@ int main()
 
     std::wcout << L"Код:\n" << filename << '\n';
 
-    TestLexer l(filename);
+    Lexer l(filename);
     for (const auto& i : l.lexicalCodeAnalysis())
         std::wcout << i->getToken() << ' ' << i->getValue() << std::endl;
 

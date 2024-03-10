@@ -5,22 +5,22 @@
 #include <functional>
 #include <memory>
 
+#include "Token.hpp"
 #include "Vocabulary.hpp"
 
 
-class TestLexer
+class Lexer
 {
-    class TestToken;
-    typedef std::shared_ptr<TestToken> tokenPtr;
+    typedef std::shared_ptr<IToken> tokenPtr;
 
 public:
-    explicit TestLexer(std::wstring input);
+    explicit Lexer(std::wstring input);
 
-    TestLexer(const TestLexer& other)                = delete;
-    TestLexer(TestLexer&& other) noexcept            = delete;
-    TestLexer& operator=(const TestLexer& other)     = delete;
-    TestLexer& operator=(TestLexer&& other) noexcept = delete;
-    ~TestLexer()                                     = default;
+    Lexer(const Lexer& other)                = delete;
+    Lexer(Lexer&& other) noexcept            = delete;
+    Lexer& operator=(const Lexer& other)     = delete;
+    Lexer& operator=(Lexer&& other) noexcept = delete;
+    ~Lexer()                                     = default;
 
     std::vector<tokenPtr> lexicalCodeAnalysis();
 
@@ -48,7 +48,7 @@ protected:
     {
         for (const auto i : TOKEN_TYPES)
             if (token == i)
-                return std::make_shared<TestToken>(token, value);
+                return std::make_shared<Token>(token, value);
         return test_func_none();
     }
 
@@ -83,30 +83,10 @@ private:
 
     std::vector<std::function<tokenPtr(int&)>> test_vec
     {
-        std::bind(&TestLexer::command_command, this, std::placeholders::_1),
-        std::bind(&TestLexer::command_number, this, std::placeholders::_1),
-        std::bind(&TestLexer::command_string, this, std::placeholders::_1),
-        std::bind(&TestLexer::command_operator, this, std::placeholders::_1),
-    };
-
-    class TestToken
-    {
-    public:
-        TestToken(const TestToken& other)                = delete;
-        TestToken(TestToken&& other) noexcept            = delete;
-        TestToken& operator=(const TestToken& other)     = delete;
-        TestToken& operator=(TestToken&& other) noexcept = delete;
-        ~TestToken()                                     = default;
-
-        TestToken(TokenType token, std::wstring value);
-        TestToken(TokenType token, wchar_t value);
-
-        [[nodiscard]] const std::wstring& getValue() const;
-        [[nodiscard]] TokenType           getToken() const;
-
-    private:
-        std::wstring _value;
-        TokenType _token;
+        std::bind(&Lexer::command_command, this, std::placeholders::_1),
+        std::bind(&Lexer::command_number, this, std::placeholders::_1),
+        std::bind(&Lexer::command_string, this, std::placeholders::_1),
+        std::bind(&Lexer::command_operator, this, std::placeholders::_1),
     };
 
 };
