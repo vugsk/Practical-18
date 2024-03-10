@@ -1,7 +1,7 @@
 
 #include <iostream>
 
-#include "Lexer.hpp"
+#include "../../CPPON/src/LexicalAnalyzer/include/Lexer.hpp"
 
 using namespace std;
 
@@ -37,7 +37,11 @@ int main()
 
     std::wcout << L"Код:\n" << filename << '\n';
 
-    for (Lexer l(filename); const auto& i : l.lexicalCodeAnalysis())
+    TestLexer l(filename);
+    for (const auto& i : l.lexicalCodeAnalysis())
         std::wcout << i->getToken() << ' ' << i->getValue() << std::endl;
+
+
+    return 0;
 }
 

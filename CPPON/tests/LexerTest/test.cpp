@@ -1,9 +1,9 @@
 
 #include <gtest/gtest.h>
 
-#include <Lexer.hpp>
+#include "Lexer.hpp"
 
-TEST(OP, kl)
+TEST(TestPrintOperator, kl)
 {
 
 }
