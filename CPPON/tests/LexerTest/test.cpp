@@ -5,21 +5,21 @@
 
 #include "Lexer.hpp"
 
-void test_func_t(const std::shared_ptr<IToken>& token)
+void TestOfOperatorsInToken(const std::shared_ptr<IToken>& token)
 {
     for (const auto& [fst, snd] : OPERATORS)
         if (fst == token->getToken())
             EXPECT_EQ(token->getValue()[0], snd);
 }
 
-void test_func_f(const std::shared_ptr<IToken>& token)
+void TestingDataTypesInToken(const std::shared_ptr<IToken>& token)
 {
     for (const auto& [fst, snd] : DATA_TYPES)
         if (fst == token->getToken())
             EXPECT_EQ(token->getValue(), snd);
 }
 
-void Test_func(const std::wstring& test_code,
+void ForEachTokenApplyFunction(const std::wstring& test_code,
     const std::function<void(const std::shared_ptr<IToken>&)>& func)
 {
     for (Lexer kl(test_code); const auto& j
@@ -29,21 +29,22 @@ void Test_func(const std::wstring& test_code,
     }
 }
 
-void test_func_g(const std::function<void(const std::shared_ptr<IToken>&)>& func)
+void TestTokensWithCustomFunction(
+    const std::function<void(const std::shared_ptr<IToken>&)>& func)
 {
-    for (auto i : TEST_CODES)
-        Test_func(i, func);
+    for (const auto& i : TEST_CODES)
+        ForEachTokenApplyFunction(i, func);
 }
 
 
 TEST(TestPrint, Operators)
 {
-    test_func_g(test_func_t);
+    TestTokensWithCustomFunction(TestOfOperatorsInToken);
 }
 
 TEST(TestPrint, TypeData)
 {
-    test_func_g(test_func_f);
+    TestTokensWithCustomFunction(TestingDataTypesInToken);
 }
 
 TEST(TestFunctionIsQuote, Quote)
