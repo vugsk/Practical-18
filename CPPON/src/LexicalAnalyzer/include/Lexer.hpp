@@ -4,8 +4,9 @@
 
 #include <functional>
 #include <string>
+#include <memory>
 
-#include "ILexer.hpp"
+// #include "ILexer.hpp"
 #include "Vocabulary.hpp"
 
 
@@ -80,7 +81,7 @@ tokenPtr test_func_(
     return default_return;
 }
 
-class Lexer final : public ILexer
+class Lexer
 {
 public:
     explicit Lexer(std::wstring input);
@@ -88,9 +89,9 @@ public:
     Lexer(Lexer&& other) noexcept            = delete;
     Lexer& operator=(const Lexer& other)     = delete;
     Lexer& operator=(Lexer&& other) noexcept = delete;
-    ~Lexer() override = default;
+    ~Lexer() = default;
 
-    std::vector<tokenPtr> lexicalCodeAnalysis() override;
+    std::vector<tokenPtr> lexicalCodeAnalysis();
 
 protected:
     std::function<bool(const wchar_t&)> test_func_bind(int pos, bool is) const;
