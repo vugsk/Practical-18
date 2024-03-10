@@ -1,11 +1,9 @@
 
-
 #include <iostream>
 
-#include <Lexer.hpp>
+#include "Lexer.hpp"
 
 using namespace std;
-using namespace lexer;
 
 // текстовый формат называется CPPON -> C++ Object Notation
 
@@ -30,10 +28,6 @@ using namespace lexer;
 //
 // предположительно мне нужно часов 24-48 в днях где-то 3-10 дней
 
-
-
-
-
 int main()
 {
     setlocale(LC_CTYPE, "");
@@ -43,8 +37,7 @@ int main()
 
     std::wcout << L"Код:\n" << filename << '\n';
 
-    for (Lexer l(filename); const auto& i : l.test_func())
-            std::wcout << i->getToken() << ' ' << i->getValue() << std::endl;
-
-    return 0;
+    for (Lexer l(filename); const auto& i : l.lexicalCodeAnalysis())
+        std::wcout << i->getToken() << ' ' << i->getValue() << std::endl;
 }
+

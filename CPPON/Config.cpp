@@ -1,14 +1,8 @@
 
-#include "include/ConfigLexer.hpp"
+#include "Config.hpp"
 
 #include <codecvt>
 #include <locale>
-
-
-bool IsQuote(const wchar_t ch)
-{
-    return ch == CHARACTER_LITERAL || ch == STRING_LITERAL;
-}
 
 std::wstring ConvertString(const std::string& string)
 {

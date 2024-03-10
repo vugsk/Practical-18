@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.28)
-project(LexerTest)
 
-set(CMAKE_CXX_STANDARD 20)
+set(PROJECT_NAME Lexer_test)
+
+project(${PROJECT_NAME} VERSION ${VERSION_PROJECT} LANGUAGES ${LANGUAGES_PROJECT})
 
 include(FetchContent)
 FetchContent_Declare(
@@ -12,15 +12,15 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-
-add_executable(LexerTest
-    tests.cpp
+add_executable(${PROJECT_NAME}
+    test.cpp
 )
 
-target_link_libraries(LexerTest
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    Lexer_lib
     gtest
     gtest_main
 )
 
 include(GoogleTest)
-gtest_discover_tests(LexerTest)
+gtest_discover_tests(${PROJECT_NAME})

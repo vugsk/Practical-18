@@ -1,7 +1,8 @@
 
-#ifndef TOKENTYPE_HPP
-#define TOKENTYPE_HPP
+#ifndef TYPETOKEN_HPP
+#define TYPETOKEN_HPP
 
+#include <vector>
 
 enum TokenType : short
 {
@@ -42,4 +43,4 @@ static const std::vector TOKEN_TYPES
     end,
 };
 
-#endif //TOKENTYPE_HPP
+#endif //TYPETOKEN_HPP

@@ -1,11 +1,12 @@
 
-#ifndef CONFIGLEXER_HPP
-#define CONFIGLEXER_HPP
+#ifndef VOCABULARY_HPP
+#define VOCABULARY_HPP
 
 #include <string>
-#include <vector>
 
-#include "TokenType.hpp"
+#include "TypeToken.hpp"
+
+
 
 static constexpr wchar_t COLON             = ':';
 static constexpr wchar_t SEMICOLON         = ';';
@@ -27,17 +28,17 @@ static const std::wstring CHARACTER = L"символ";
 
 static const std::vector<std::pair<TokenType, wchar_t>> OPERATORS
 {
-    {colon, COLON},
-    {semicolon, SEMICOLON},
-    {assignment, ASSIGNMENT},
-};
+        {colon, COLON},
+        {semicolon, SEMICOLON},
+        {assignment, ASSIGNMENT},
+    };
 
 static const std::vector<std::pair<TokenType, std::wstring>> DATA_TYPES
 {
-    {number_datatype, NUMBER},
-    {string_datatype, STRING},
-    {character_datatype, CHARACTER},
-};
+        {number_datatype, NUMBER},
+        {string_datatype, STRING},
+        {character_datatype, CHARACTER},
+    };
 
 template<typename F>
 auto test_func_bind_lamda(const F& func)
@@ -48,4 +49,4 @@ auto test_func_bind_lamda(const F& func)
 [[nodiscard]] bool IsQuote(wchar_t ch);
 
 
-#endif //CONFIGLEXER_HPP
+#endif //VOCABULARY_HPP
