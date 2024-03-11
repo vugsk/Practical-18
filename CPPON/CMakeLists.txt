@@ -17,7 +17,10 @@ add_library(${PROJECT_NAME} SHARED
     Config.cpp
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC Lexer_lib)
+target_link_libraries(${PROJECT_NAME} PUBLIC
+    Lexer_lib
+    Parser_lib
+)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC ${PROJECT_SOURCE_DIR}/include

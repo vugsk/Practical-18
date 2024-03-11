@@ -14,7 +14,9 @@ add_library(${PROJECT_NAME} SHARED
     include/Token.hpp
 )
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${PROJECT_SOURCE_DIR}/include/
+)
 
 if (TEST_LEXER)
     add_subdirectory(${PATH_TEST}LexerTest build)
