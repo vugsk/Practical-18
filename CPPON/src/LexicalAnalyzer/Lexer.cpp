@@ -7,17 +7,16 @@ const std::wstring Lexer::NOTHING      = L"NOTHING";
 const size_t       Lexer::MIN_SIZE_VEC = 4;
 
 
-Lexer::Lexer(std::wstring input)
-    : _input(std::move(input)) {}
+Lexer::Lexer(std::wstring input) : _input(std::move(input)) {}
 
-std::vector<Lexer::tokenPtr> Lexer::lexicalCodeAnalysis()
+std::vector<Lexer::tokenPointer> Lexer::lexicalCodeAnalysis()
 {
-    std::vector<tokenPtr> m_tokens;
+    std::vector<tokenPointer> m_tokens;
     for(auto pos = 0; pos < _input.size(); pos++)
     {
-        for (const auto& i : test_vec)
+        for (const auto& i : _tokenMakers)
         {
-            const tokenPtr io = i(pos);
+            const tokenPointer io = i(pos);
             if (isNullToken(io, NOTHING))
                 m_tokens.push_back(io);
         }
@@ -53,43 +52,43 @@ std::wstring Lexer::extractString(int& position,
     return sb;
 }
 
-bool Lexer::isNullToken(const tokenPtr& token,
+bool Lexer::isNullToken(const tokenPointer& token,
     const std::wstring& value_if)
 {
     return token->getToken() != null || token->getValue() != value_if;
 }
 
-Lexer::tokenPtr Lexer::createNoneToken(const std::wstring& value)
+Lexer::tokenPointer Lexer::createNoneToken(const std::wstring& value)
 {
     return createToken(none, value);
 }
 
-Lexer::tokenPtr Lexer::createNullToken(const std::wstring& value)
+Lexer::tokenPointer Lexer::createNullToken(const std::wstring& value)
 {
     return createToken(null, value);
 }
 
-Lexer::tokenPtr Lexer::findOperatorAtPosition(const int pos)
+Lexer::tokenPointer Lexer::findOperatorAtPosition(const int pos)
 {
     return findToken(OPERATORS,
         checkingCharacterMatchesPosition(pos, true),
         createNullToken(NOTHING));
 }
 
-Lexer::tokenPtr Lexer::createNumberToken(int& pos)
+Lexer::tokenPointer Lexer::createNumberToken(int& pos)
 {
     return createTokenWithExtractedString(pos, number_literal,
         iswdigit, test_func_bind_lamda(iswdigit));
 }
 
-Lexer::tokenPtr Lexer::createStringToken(int& pos)
+Lexer::tokenPointer Lexer::createStringToken(int& pos)
 {
     return createTokenWithExtractedString(pos, string_literal,
         IsQuote, [this](int& i)
             { return checkingCharacterMatchesPosition(i++, false); });
 }
 
-Lexer::tokenPtr Lexer::createCommandToken(int& pos)
+Lexer::tokenPointer Lexer::createCommandToken(int& pos)
 {
     if (iswalpha(_input[pos]))
     {

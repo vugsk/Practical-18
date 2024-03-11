@@ -11,7 +11,7 @@
 
 class Lexer
 {
-    typedef std::shared_ptr<IToken> tokenPtr;
+    typedef std::shared_ptr<IToken> tokenPointer;
 
 public:
     explicit Lexer(std::wstring input);
@@ -20,14 +20,15 @@ public:
     Lexer(Lexer&& other) noexcept            = delete;
     Lexer& operator=(const Lexer& other)     = delete;
     Lexer& operator=(Lexer&& other) noexcept = delete;
-    ~Lexer()                                     = default;
+    ~Lexer()                                 = default;
 
-    std::vector<tokenPtr> lexicalCodeAnalysis();
+    std::vector<tokenPointer> lexicalCodeAnalysis();
 
 protected:
     typedef std::function<bool(wchar_t)> funcBoolWcharT;
 
-    funcBoolWcharT checkingCharacterMatchesPosition(int pos, bool is) const;
+    [[nodiscard]] funcBoolWcharT checkingCharacterMatchesPosition(int pos,
+        bool is) const;
 
     static std::function<bool(const std::wstring&)> сompareStrings(
         const std::wstring& sb);
@@ -35,7 +36,7 @@ protected:
     std::wstring extractString(int& position, const funcBoolWcharT& func) const;
 
     template<typename F>
-    tokenPtr createTokenWithExtractedString(int& pos, const TokenType token,
+    tokenPointer createTokenWithExtractedString(int& pos, const TokenType token,
         const funcBoolWcharT& func, const F& func1)
     {
         if (func(_input[pos]))
@@ -44,7 +45,7 @@ protected:
     }
 
     template<typename T>
-    tokenPtr createToken(const TokenType token, const T& value)
+    tokenPointer createToken(const TokenType token, const T& value)
     {
         for (const auto i : TOKEN_TYPES)
             if (token == i)
@@ -53,9 +54,9 @@ protected:
     }
 
     template<typename T>
-    tokenPtr findToken(const std::vector<std::pair<TokenType, T>>& vec,
+    tokenPointer findToken(const std::vector<std::pair<TokenType, T>>& vec,
             const std::function<bool(T)>& func,
-            const tokenPtr& default_return)
+            const tokenPointer& default_return)
     {
         for (const auto& [_token, ch] : vec)
             if (func(ch))
@@ -63,17 +64,17 @@ protected:
         return default_return;
     }
 
-    static bool isNullToken(const tokenPtr& token,
+    static bool isNullToken(const tokenPointer& token,
         const std::wstring& value_if = NUL);
 
 
-    tokenPtr createNoneToken(const std::wstring& value = NONE);
-    tokenPtr createNullToken(const std::wstring& value = NUL);
+    tokenPointer createNoneToken(const std::wstring& value = NONE);
+    tokenPointer createNullToken(const std::wstring& value = NUL);
 
-    tokenPtr findOperatorAtPosition(int pos);
-    tokenPtr createNumberToken(int& pos);
-    tokenPtr createStringToken(int& pos);
-    tokenPtr createCommandToken(int& pos);
+    tokenPointer findOperatorAtPosition(int pos);
+    tokenPointer createNumberToken(int& pos);
+    tokenPointer createStringToken(int& pos);
+    tokenPointer createCommandToken(int& pos);
 
 private:
     static const std::wstring NOTHING;
@@ -81,7 +82,7 @@ private:
 
     std::wstring _input;
 
-    const std::vector<std::function<tokenPtr(int&)>> test_vec
+    const std::vector<std::function<tokenPointer(int&)>> _tokenMakers
     {
         std::bind(&Lexer::createCommandToken, this, std::placeholders::_1),
         std::bind(&Lexer::createNumberToken, this, std::placeholders::_1),
