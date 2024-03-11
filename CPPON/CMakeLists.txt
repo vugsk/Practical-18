@@ -4,8 +4,12 @@ set(PATH_TEST ../../tests/)
 
 project(${PROJECT_NAME} VERSION ${VERSION_PROJECT} LANGUAGES ${LANGUAGES_PROJECT})
 
+
 option(TEST_LEXER "build test for lexer?" OFF)
 add_subdirectory(src/LexicalAnalyzer)
+
+option(TEST_PARSER "build test for parser" OFF)
+add_subdirectory(src/Parser)
 
 
 add_library(${PROJECT_NAME} SHARED
