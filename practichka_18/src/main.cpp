@@ -1,7 +1,7 @@
 
 #include <iostream>
 
-#include "../../CPPON/src/LexicalAnalyzer/include/Lexer.hpp"
+#include "Lexer.hpp"
 
 using namespace std;
 

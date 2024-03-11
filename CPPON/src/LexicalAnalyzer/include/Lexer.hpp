@@ -27,53 +27,53 @@ public:
 protected:
     typedef std::function<bool(wchar_t)> funcBoolWcharT;
 
-    funcBoolWcharT test_func_bind(int pos, bool is) const;
+    funcBoolWcharT checkingCharacterMatchesPosition(int pos, bool is) const;
 
-    static std::function<bool(const std::wstring&)> test_func_auto(
+    static std::function<bool(const std::wstring&)> сompareStrings(
         const std::wstring& sb);
 
-    std::wstring test_st(int& position, const funcBoolWcharT& func) const;
+    std::wstring extractString(int& position, const funcBoolWcharT& func) const;
 
     template<typename F>
-    tokenPtr test_func_shared_ptr_num(int& pos, const TokenType token,
+    tokenPtr createTokenWithExtractedString(int& pos, const TokenType token,
         const funcBoolWcharT& func, const F& func1)
     {
         if (func(_input[pos]))
-            return test_func_factory(token, test_st(pos, func1(pos)));
-        return test_func_null(NOTHING);
+            return createToken(token, extractString(pos, func1(pos)));
+        return createNullToken(NOTHING);
     }
 
     template<typename T>
-    tokenPtr test_func_factory(const TokenType token, const T& value)
+    tokenPtr createToken(const TokenType token, const T& value)
     {
         for (const auto i : TOKEN_TYPES)
             if (token == i)
                 return std::make_shared<Token>(token, value);
-        return test_func_none();
+        return createNoneToken();
     }
 
     template<typename T>
-    tokenPtr test_func_(const std::vector<std::pair<TokenType, T>>& vec,
+    tokenPtr findToken(const std::vector<std::pair<TokenType, T>>& vec,
             const std::function<bool(T)>& func,
             const tokenPtr& default_return)
     {
         for (const auto& [_token, ch] : vec)
             if (func(ch))
-                return test_func_factory(_token, ch);
+                return createToken(_token, ch);
         return default_return;
     }
 
-    static bool test_if_null_token(const tokenPtr& token,
+    static bool isNullToken(const tokenPtr& token,
         const std::wstring& value_if = NUL);
 
 
-    tokenPtr test_func_none(const std::wstring& value = NONE);
-    tokenPtr test_func_null(const std::wstring& value = NUL);
+    tokenPtr createNoneToken(const std::wstring& value = NONE);
+    tokenPtr createNullToken(const std::wstring& value = NUL);
 
-    tokenPtr command_operator(int pos);
-    tokenPtr command_number(int& pos);
-    tokenPtr command_string(int& pos);
-    tokenPtr command_command(int& pos);
+    tokenPtr findOperatorAtPosition(int pos);
+    tokenPtr createNumberToken(int& pos);
+    tokenPtr createStringToken(int& pos);
+    tokenPtr createCommandToken(int& pos);
 
 private:
     static const std::wstring NOTHING;
@@ -81,12 +81,12 @@ private:
 
     std::wstring _input;
 
-    std::vector<std::function<tokenPtr(int&)>> test_vec
+    const std::vector<std::function<tokenPtr(int&)>> test_vec
     {
-        std::bind(&Lexer::command_command, this, std::placeholders::_1),
-        std::bind(&Lexer::command_number, this, std::placeholders::_1),
-        std::bind(&Lexer::command_string, this, std::placeholders::_1),
-        std::bind(&Lexer::command_operator, this, std::placeholders::_1),
+        std::bind(&Lexer::createCommandToken, this, std::placeholders::_1),
+        std::bind(&Lexer::createNumberToken, this, std::placeholders::_1),
+        std::bind(&Lexer::createStringToken, this, std::placeholders::_1),
+        std::bind(&Lexer::findOperatorAtPosition, this, std::placeholders::_1),
     };
 
 };
