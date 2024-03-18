@@ -5,8 +5,6 @@ project(${PROJECT_NAME} VERSION ${VERSION_PROJECT} LANGUAGES ${LANGUAGES_PROJECT
 
 
 add_library(${PROJECT_NAME} SHARED
-    Vocabulary.cpp
-    include/Vocabulary.hpp
     include/TypeToken.hpp
     Lexer.cpp
     include/Lexer.hpp

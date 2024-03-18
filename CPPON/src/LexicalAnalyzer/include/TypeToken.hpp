@@ -2,45 +2,40 @@
 #ifndef TYPETOKEN_HPP
 #define TYPETOKEN_HPP
 
-#include <vector>
-
-enum TokenType : short
+struct TokenType
 {
-    none = -1,
-    null = 0,
-
-    colon = 1,          // двоеточие
-    semicolon,      // точка с запятой
-    assignment,     // присваиваивание
-
-
-    string_literal, // кавычки
-    number_literal,
-
-
-    number_datatype,
-    string_datatype,
-    character_datatype,
-    id,
-
-
-    end,
+    const wchar_t* tokenType;
+    const wchar_t* value;
 };
 
-static const std::vector TOKEN_TYPES
+static constexpr unsigned short SIZE_ARRAY_TOKEN_OPERATORS = 3;
+static constexpr TokenType TOKEN_OPERATORS[SIZE_ARRAY_TOKEN_OPERATORS]
 {
-    none,
-    null,
-    colon,
-    semicolon,
-    assignment,
-    string_literal,
-    number_literal,
-    number_datatype,
-    string_datatype,
-    character_datatype,
-    id,
-    end,
+    {L"COLON", L":"},
+    {L"SEMICOLON", L";"},
+    {L"ASSIGMENT", L"="},
 };
+
+static constexpr unsigned short SIZE_ARRAY_TOKEN_LITERALS = 3;
+static constexpr TokenType TOKEN_LITERALS[SIZE_ARRAY_TOKEN_LITERALS]
+{
+    {L"STRING_LITERAL", L"\""},
+    {L"CHARACTER_LITERAL", L"\'"},
+    {L"NUMBER_LITERAL", L"0-9"},
+};
+
+static constexpr unsigned short SIZE_ARRAY_TOKEN_DATA_TYPES = 4;
+static constexpr TokenType TOKEN_DATA_TYPES[SIZE_ARRAY_TOKEN_DATA_TYPES]
+{
+    {L"STRING_DATATYPE", L"строка"},
+    {L"NUMBER_DATATYPE", L"число"},
+    {L"CHARACTER_DATATYPE", L"символ"},
+    {L"ID", L"а-я && 0-9"},
+};
+
+static constexpr TokenType NONE = {L"NONE", L"NONE"};
+static constexpr TokenType NUL = {L"NULL", L"NULL"};
+static constexpr TokenType END = {L"END", L"END"};
+
 
 #endif //TYPETOKEN_HPP
