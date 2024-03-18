@@ -3,8 +3,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <memory>
-#include <memory>
 
 #include <Token.hpp>
 #include <TypeToken.hpp>
@@ -14,8 +12,7 @@ const std::wstring Lexer::NOTHING      = L"NOTHING";
 const size_t       Lexer::MIN_SIZE_VEC = 4;
 
 
-Lexer::Lexer(std::wstring code)
-    : _inputCode(std::move(code)), _position(0) {}
+Lexer::Lexer(std::wstring code) : _inputCode(std::move(code)) {}
 
 std::vector<Lexer::tokenPointer> Lexer::lexicalCodeAnalysis()
 {
