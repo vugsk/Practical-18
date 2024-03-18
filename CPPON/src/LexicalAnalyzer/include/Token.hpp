@@ -13,9 +13,9 @@ public:
     Token& operator=(const Token& other)     = delete;
     Token& operator=(Token&& other) noexcept = delete;
 
-    Token(const TokenType token, unsigned position,
+    Token(const TokenType   token, const unsigned position,
         const std::wstring& value)
-         : _token(token), _position(position), _value(value) {}
+         : _token(token), _value(value), _position(position) {}
 
     [[nodiscard]] const TokenType& getToken() const override
     {
