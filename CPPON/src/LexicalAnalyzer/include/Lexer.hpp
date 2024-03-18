@@ -29,7 +29,7 @@ public:
     std::vector<tokenPointer> lexicalCodeAnalysis();
 
 protected:
-    static std::shared_ptr<IToken> createrToken(TokenType token_type,
+    std::shared_ptr<IToken> createrToken(TokenType token_type,
         const std::wstring& value);
 
     std::shared_ptr<IToken> test_func_operator();
@@ -43,7 +43,7 @@ private:
     static const size_t       MIN_SIZE_VEC;
 
     std::wstring _inputCode;
-    unsigned int _position;
+    unsigned _position;
     std::vector<tokenPointer> _tokens;
 
 
