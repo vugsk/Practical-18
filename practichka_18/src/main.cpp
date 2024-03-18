@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "Lexer.hpp"
-#include "Parser.hpp"
+// #include "Parser.hpp"
 
 using namespace std;
 
@@ -36,17 +36,17 @@ int main()
     std::wcout << L"Код:\n" << filename << '\n';
 
     Lexer l(filename);
-    Parser p;
-
-    for (const auto& [fst, snd] : p.parse(l.lexicalCodeAnalysis()).root)
-    {
-        if (snd.first == L"число")
-            wcout << fst << ' ' << snd.first << ' ' << get<int>(snd.second) << '\n';
-        else if (snd.first == L"символ")
-            wcout << fst << ' ' << snd.first << ' ' << get<wchar_t>(snd.second) << '\n';
-        else if (snd.first == L"строка")
-            wcout << fst << ' ' << snd.first << ' ' << get<wstring>(snd.second) << '\n';
-    }
+    // Parser p;
+    //
+    // for (const auto& [fst, snd] : p.parse(l.lexicalCodeAnalysis()).root)
+    // {
+    //     if (snd.first == L"число")
+    //         wcout << fst << ' ' << snd.first << ' ' << get<int>(snd.second) << '\n';
+    //     else if (snd.first == L"символ")
+    //         wcout << fst << ' ' << snd.first << ' ' << get<wchar_t>(snd.second) << '\n';
+    //     else if (snd.first == L"строка")
+    //         wcout << fst << ' ' << snd.first << ' ' << get<wstring>(snd.second) << '\n';
+    // }
 
     //
     // wcout << "Обработка лексера:\n";
