@@ -2,7 +2,8 @@
 #ifndef TOKEN_HPP
 #define TOKEN_HPP
 
-#include <IToken.hpp>
+#include "IToken.hpp"
+#include "TypeToken.hpp"
 
 class Token final : public IToken
 {
@@ -12,17 +13,10 @@ public:
     Token& operator=(const Token& other)     = delete;
     Token& operator=(Token&& other) noexcept = delete;
 
-    Token(TokenType token, const std::wstring& value)
-        : _token(token), _value(value) {}
-    Token(TokenType token, const wchar_t value)
-        : _token(token)
-    {
-        _value = value;
-    }
+    Token(const TokenType token, const std::wstring& value)
+         : _token(token), _value(value) {}
 
-    ~Token() override = default;
-
-    [[nodiscard]] TokenType           getToken() const override
+    [[nodiscard]] const TokenType& getToken() const override
     {
         return _token;
     }

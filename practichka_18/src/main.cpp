@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <TypeToken.hpp>
 
 #include "Lexer.hpp"
 // #include "Parser.hpp"
@@ -36,23 +37,10 @@ int main()
     std::wcout << L"Код:\n" << filename << '\n';
 
     Lexer l(filename);
-    // Parser p;
-    //
-    // for (const auto& [fst, snd] : p.parse(l.lexicalCodeAnalysis()).root)
-    // {
-    //     if (snd.first == L"число")
-    //         wcout << fst << ' ' << snd.first << ' ' << get<int>(snd.second) << '\n';
-    //     else if (snd.first == L"символ")
-    //         wcout << fst << ' ' << snd.first << ' ' << get<wchar_t>(snd.second) << '\n';
-    //     else if (snd.first == L"строка")
-    //         wcout << fst << ' ' << snd.first << ' ' << get<wstring>(snd.second) << '\n';
-    // }
-
-    //
-    // wcout << "Обработка лексера:\n";
-    // for (const auto& i : l.lexicalCodeAnalysis())
-    //     std::wcout << i->getToken() << ' ' << i->getValue() << '\n';
-    //
+    wcout << L"Обработка лексера:\n";
+    for (const auto& i : l.lexicalCodeAnalysis())
+        std::wcout << i->getToken().tokenType << ' ' << i->getToken().value
+                    << " | " << i->getValue() << '\n';
     // wcout << "\nРабота парсера\n";
 
 

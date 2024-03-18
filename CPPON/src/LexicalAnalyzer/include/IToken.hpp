@@ -4,13 +4,13 @@
 
 #include <string>
 
-enum TokenType : short;
+struct TokenType;
 
 class IToken
 {
 public:
     virtual ~IToken() = default;
-    [[nodiscard]] virtual TokenType getToken() const = 0;
+    [[nodiscard]] virtual const TokenType& getToken() const = 0;
     [[nodiscard]] virtual const std::wstring& getValue() const = 0;
 };
 
