@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <memory>
 #include <memory>
+#include <memory>
 
 #include <Token.hpp>
 #include <TypeToken.hpp>
@@ -14,16 +15,17 @@ const size_t       Lexer::MIN_SIZE_VEC = 4;
 
 
 Lexer::Lexer(std::wstring code)
-    : _inputCode(std::move(code)) {}
-
+    : _inputCode(std::move(code)), _position(0) {}
 
 std::vector<Lexer::tokenPointer> Lexer::lexicalCodeAnalysis()
 {
-    while (_position >= _inputCode.length())
+    while (_position <= _inputCode.length() - 1)
     {
+        for (const auto i : TOKEN_OPERATORS)
+            if (i.value[0] == _inputCode[_position])
+                _tokens.push_back(createrToken(i, i.value));
 
-
-
+        _position++;
     }
 
     _tokens.push_back(createrToken(END, END.value));
@@ -39,10 +41,10 @@ std::shared_ptr<IToken> Lexer::createrToken(TokenType token_type,
 
 std::shared_ptr<IToken> Lexer::test_func_operator()
 {
-
-
-
-    return {};
+    for (const auto i : TOKEN_OPERATORS)
+        if (i.value[0] == _inputCode[_position])
+            return createrToken(i, i.value);
+    return createrToken(NUL, NUL.value);
 }
 
 std::shared_ptr<IToken> Lexer::test_func_literal()
