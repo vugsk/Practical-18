@@ -1,85 +1,29 @@
 
 #include <iostream>
 
-// #include "Lexer.hpp"
+#include "Lexer.hpp"
 #include "Parser.hpp"
 
 using namespace std;
 
-// текстовый формат называется CPPON -> C++ Object Notation
 
-// Parser.hpp
-//      написать парсер который будет из вектора делать чуда
-//
-// Exception.hpp
-//      написать оброботчик ошибок
-//
-// после проделанной работы можно приступать к работе над заданием
-//
-// WorkFile.hpp
-//      переделать на использование wstring
-//
-// переписать, то что осталось и продолжить идти по под задачам
-//
-// предположительно мне нужно часов 24-48 в днях где-то 3-10 дней
 
-struct Node
-{
-    int data = 0;
-    char pos = 0;
-    unique_ptr<Node> next;
-    unique_ptr<Node> left;
-};
+// *  текстовый формат называется CPPON -> C++ Object Notation
 
-unique_ptr<Node> CreateNode(const int data, const char ch = 'C')
-{
-    return make_unique<Node>(data, ch, nullptr, nullptr);
-}
+// [[Parser.hpp]]
+// *      написать парсер который будет из вектора делать чуда
 
-void AddNode(const unique_ptr<Node>& root, const int data)
-{
-    if (root == nullptr)
-        return;
+// ? [[Exception.hpp]]
+// *      написать оброботчик ошибок
 
-    if (data < root->data)
-    {
-        if (root->next == nullptr)
-        {
-            root->next = CreateNode(data, 'N');
-        }
-        else
-        {
-            AddNode(root->next, data);
-        }
-    }
-    else if (data > root->data)
-    {
-        if (root->left == nullptr)
-        {
-            root->left = CreateNode(data, 'L');
-        }
-        else
-        {
-            AddNode(root->left, data);
-        }
-    }
-}
+// * после проделанной работы можно приступать к работе над заданием
 
-void PrintNodes(const unique_ptr<Node>& root)
-{
-    if (root == nullptr)
-        return;
+// [[WorkFile.hpp]]
+// *      переделать на использование wstring
 
-    wcout << "Data: " << root->data << ' ' << root->pos << '\n';
+// * переписать, то что осталось и продолжить идти по под задачам
 
-    if (root->next != nullptr)
-        PrintNodes(root->next);
-
-    if (root->left != nullptr)
-        PrintNodes(root->left);
-
-}
-
+// * предположительно мне нужно часов 24-48 в днях где-то 3-10 дней
 
 
 int main()
@@ -91,12 +35,20 @@ int main()
 
     std::wcout << L"Код:\n" << filename << '\n';
 
-    const unique_ptr<Node> root = CreateNode(90);
-    AddNode(root, 97);
-    AddNode(root, 78);
-    AddNode(root, 790);
-    PrintNodes(root);
-    // Lexer l(filename);
+    Lexer l(filename);
+    Parser p;
+
+    for (const auto& [fst, snd] : p.parse(l.lexicalCodeAnalysis()).root)
+    {
+        if (snd.first == L"число")
+            wcout << fst << ' ' << snd.first << ' ' << get<int>(snd.second) << '\n';
+        else if (snd.first == L"символ")
+            wcout << fst << ' ' << snd.first << ' ' << get<wchar_t>(snd.second) << '\n';
+        else if (snd.first == L"строка")
+            wcout << fst << ' ' << snd.first << ' ' << get<wstring>(snd.second) << '\n';
+    }
+
+    //
     // wcout << "Обработка лексера:\n";
     // for (const auto& i : l.lexicalCodeAnalysis())
     //     std::wcout << i->getToken() << ' ' << i->getValue() << '\n';

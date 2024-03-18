@@ -2,23 +2,33 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 
-
 #include <map>
-#include <iostream>
 #include <memory>
-#include <string>
+#include <Node.hpp>
+#include <stack>
+#include <unordered_map>
 #include <vector>
 
-#include "IToken.hpp"
-#include "TypeToken.hpp"
+class IToken;
 
+struct StartPointer
+{
+    std::wstring name;
+    std::unordered_map<std::wstring, std::pair<std::wstring,
+        std::variant<int, wchar_t, std::wstring>>> root;
+};
 
-// class ParserImplementation
-// {
-// public:
-//     ParserImplementation() = default;
-//
-// };
+class Parser
+{
+public:
+    Parser();
+
+    StartPointer parse(const std::vector<std::shared_ptr<IToken>>& tokens);
+
+protected:
+private:
+    StartPointer _root;
+};
 
 
 #endif //PARSER_HPP

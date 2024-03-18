@@ -8,5 +8,6 @@
 #include <string>
 
 [[nodiscard]] std::wstring ConvertString(const std::string& string);
+[[nodiscard]] std::string ConvertWstring(const std::wstring& string);
 
 #endif //CONFIG_HPP
