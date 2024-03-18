@@ -43,7 +43,7 @@ private:
     static const size_t       MIN_SIZE_VEC;
 
     std::wstring _inputCode;
-    unsigned _position;
+    unsigned _position{};
     std::vector<tokenPointer> _tokens;
 
 
