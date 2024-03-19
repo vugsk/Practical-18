@@ -29,7 +29,7 @@ static const std::vector<TokenType> TOKEN_DATA_TYPES
     {L"STRING_DATATYPE", L"строка"},
     {L"NUMBER_DATATYPE", L"число"},
     {L"CHARACTER_DATATYPE", L"символ"},
-    {L"ID", L"а-я && 0-9"},
+    {L"ID", L"[А-я]*|[0-9]*"},
 };
 
 static constexpr TokenType NONE = {L"NONE", L"NONE"};
