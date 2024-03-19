@@ -2,7 +2,6 @@
 #ifndef TESTLEXER_HPP
 #define TESTLEXER_HPP
 
-#include <functional>
 #include <memory>
 
 #include <TypeToken.hpp>

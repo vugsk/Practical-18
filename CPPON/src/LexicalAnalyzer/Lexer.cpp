@@ -16,7 +16,7 @@ Lexer::Lexer(std::wstring code) : _inputCode(std::move(code)) {}
 
 std::vector<Lexer::tokenPointer> Lexer::lexicalCodeAnalysis()
 {
-    while (_position <= _inputCode.length() - 1)
+    while (_position <= static_cast<unsigned>(_inputCode.length()) - 1)
     {
         for (const auto i : TOKEN_OPERATORS)
             if (i.value[0] == _inputCode[_position])
