@@ -36,6 +36,7 @@ std::shared_ptr<IToken> Lexer::createrToken(TokenType token_type,
     return std::make_shared<Token>(token_type, _position, value);
 }
 
+// * thing
 std::shared_ptr<IToken> Lexer::test_func_operator()
 {
     for (const auto i : TOKEN_OPERATORS)
@@ -46,6 +47,17 @@ std::shared_ptr<IToken> Lexer::test_func_operator()
 
 std::shared_ptr<IToken> Lexer::test_func_literal()
 {
+    for (auto i : TOKEN_LITERALS)
+    {
+        if (i.tokenType == TOKEN_LITERALS[2].tokenType)
+        {
+
+        }
+        else if (i.value[0] == _inputCode[_position])
+        {
+
+        }
+    }
     return {};
 }
 

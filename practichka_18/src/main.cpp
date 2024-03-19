@@ -26,6 +26,13 @@ using namespace std;
 
 // * предположительно мне нужно часов 24-48 в днях где-то 3-10 дней
 
+#include <string>
+
+typedef int Integer;
+
+size_t get_size(std::string& s) {
+    return s.size();
+}
 
 int main()
 {
