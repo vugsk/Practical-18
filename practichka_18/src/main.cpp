@@ -3,7 +3,6 @@
 #include <TypeToken.hpp>
 
 #include "Lexer.hpp"
-// #include "Parser.hpp"
 
 using namespace std;
 
@@ -41,9 +40,6 @@ int main()
     for (const auto& i : l.lexicalCodeAnalysis())
         std::wcout << i->getToken().tokenType << ' ' << i->getToken().value
                     << " | " << i->getValue() << '\n';
-    // wcout << "\nРабота парсера\n";
-
-
 
     return 0;
 }
