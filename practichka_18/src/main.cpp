@@ -76,14 +76,11 @@ wstring test_if_x2(wchar_t symbol, const wstring& D, const wstring& _d)
 
 wstring test_func(wchar_t symbol)
 {
-    if (!(test_if_x2(symbol, TEST_D, TEST_).empty()
-        || test_if_x2(symbol, TEST_, TEST_D).empty()))
-            return !test_if_x2(symbol, TEST_, TEST_D).empty()
-                ? test_if_x2(symbol, TEST_, TEST_D)
-                : test_if_x2(symbol, TEST_D, TEST_);
-
-
-    return test_if((state == TEST_), wstring(1, symbol));
+    return test_if((state == TEST_), wstring(1, symbol)).empty()
+        ? !test_if_x2(symbol, TEST_, TEST_D).empty()
+            ? test_if_x2(symbol, TEST_, TEST_D)
+            : test_if_x2(symbol, TEST_D, TEST_)
+        : test_if((state == TEST_), wstring(1, symbol));
 }
 
 int main()
