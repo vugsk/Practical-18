@@ -39,25 +39,22 @@ bool Is_quote(const wchar_t ch)
     return ch == L'\'' || ch == L'\"';
 }
 
-bool Is_space(const wchar_t ch)
-{
-    return ch != L' ';
-}
-
-wstring test_func_test(const wstring& text, const function<bool(wchar_t)>& func)
+wstring test_func_test_q(const wstring::const_iterator begin,
+                         const wstring::const_iterator end,
+                         const function<bool(wchar_t)>& func =
+                         [](const wchar_t ch){ return !Is_quote(ch); })
 {
     wstring test;
-    for (auto it = text.begin(), end = text.end(); (it != end) && func(*it); ++it)
-        test.push_back(*it);
+    for(auto it = begin; (it != end) && func(*it); ++it)
+            test.push_back(*it);
     return test;
 }
 
-wstring test_tstt(const wstring& str, wstring& text)
+wstring test_funx_erase(const wstring& str, wstring& text)
 {
     text.erase(0, str.length());
     return str;
 }
-
 
 int main()
 {
@@ -67,7 +64,7 @@ int main()
 
     vector<function<bool(wchar_t)>> func_test
     {
-        /*iswalpha, Is_test, Is_quote, iswdigit,*/Is_space, iswprint
+        iswalpha, Is_test, iswdigit, iswspace
     };
 
     ifstream file("File_program_code");
@@ -83,9 +80,19 @@ int main()
     {
         wstring wstr = ConvertString(str);
 
-        for (auto j : wstr)
-            for (auto i : func_test)
-                arr.push_back(test_tstt(test_func_test(wstr, i), wstr));
+        for (int j = 0; j < wstr.size(); j++)
+        {
+            if (!Is_quote(wstr[j]))
+                for (const auto& i : func_test)
+                    arr.push_back(test_funx_erase(
+                        test_func_test_q(wstr.begin(), wstr.end(), i),
+                        wstr));
+
+            else if (Is_quote(wstr[j]))
+                arr.push_back(test_funx_erase(
+                    test_func_test_q(wstr.begin() + j + 1, wstr.end()),
+                    wstr));
+        }
     }
 
     file.close();
