@@ -53,37 +53,35 @@ wstring read_file_test(const string& filename)
 
 const wstring TEST_ = L"IN_STRING";
 const wstring TEST_D = L"DEFAULT";
+
 wstring       state               = TEST_D;
 int           current_token_index = 0;
 
-wstring test_func(const wstring& t, const wstring& te,
-    const function<wstring()>& func)
+wstring test_if(bool is, const wstring& t)
 {
-    if (t == te)
-        return func();
+    if (is)
+        return t;
+    return L"";
+}
+
+wstring test_if_x2(wchar_t symbol, const wstring& D, const wstring& _d)
+{
+    if (symbol == '"' && state == D)
+    {
+        state = _d;
+        return wstring(1, symbol);
+    }
     return L"";
 }
 
 wstring test_func(wchar_t symbol)
 {
-    if (symbol == '"')
-    {
-        if (state == TEST_D)
-        {
-            state = TEST_;
-            return wstring(1, symbol);
-        }
-        if (state == TEST_)
-        {
-            state = TEST_D;
-            ++current_token_index;
-            return wstring(1, symbol);
-        }
-    }
-    else if (state == TEST_)
-        return wstring(1, symbol);
+    if (!test_if_x2(symbol, TEST_D, TEST_).empty())
+        return test_if_x2(symbol, TEST_D, TEST_);
+    if (!test_if_x2(symbol, TEST_, TEST_D).empty())
+        return test_if_x2(symbol, TEST_, TEST_D);
 
-    return L"";
+    return test_if((state == TEST_), wstring(1, symbol));
 }
 
 int main()
