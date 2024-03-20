@@ -29,45 +29,10 @@ using namespace std;
 
 // * предположительно мне нужно часов 24-48 в днях где-то 3-10 дней
 
-bool Is_test(const wchar_t ch)
+
+wstring read_file_test(const string& filename)
 {
-    return ch == L':' || ch == L';' || ch == L'=';
-}
-
-bool Is_quote(const wchar_t ch)
-{
-    return ch == L'\'' || ch == L'\"';
-}
-
-wstring test_func_test_q(const wstring::const_iterator begin,
-                         const wstring::const_iterator end,
-                         const function<bool(wchar_t)>& func =
-                         [](const wchar_t ch){ return !Is_quote(ch); })
-{
-    wstring test;
-    for(auto it = begin; (it != end) && func(*it); ++it)
-            test.push_back(*it);
-    return test;
-}
-
-wstring test_funx_erase(const wstring& str, wstring& text)
-{
-    text.erase(0, str.length());
-    return str;
-}
-
-int main()
-{
-    setlocale(LC_CTYPE, "");
-
-    vector<wstring> arr;
-
-    vector<function<bool(wchar_t)>> func_test
-    {
-        iswalpha, Is_test, iswdigit, iswspace
-    };
-
-    ifstream file("File_program_code");
+    ifstream file(filename, ios::binary);
 
     if (!file.is_open())
     {
@@ -75,30 +40,80 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    std::string str;
-    while (std::getline(file, str))
-    {
-        wstring wstr = ConvertString(str);
+    const long size = file.seekg(0, ios::end).tellg();
+    file.seekg(0);
 
-        for (int j = 0; j < wstr.size(); j++)
-        {
-            if (!Is_quote(wstr[j]))
-                for (const auto& i : func_test)
-                    arr.push_back(test_funx_erase(
-                        test_func_test_q(wstr.begin(), wstr.end(), i),
-                        wstr));
-
-            else if (Is_quote(wstr[j]))
-                arr.push_back(test_funx_erase(
-                    test_func_test_q(wstr.begin() + j + 1, wstr.end()),
-                    wstr));
-        }
-    }
+    string te;
+    te.resize(size);
+    file.read(&te[0], size);
 
     file.close();
+    return ConvertString(te);
+}
 
-    for (const auto& i : arr)
-        if (!i.empty()) wcout << i << '\n';
+const wstring TEST_ = L"IN_STRING";
+const wstring TEST_D = L"DEFAULT";
+wstring       state               = TEST_D;
+int           current_token_index = 0;
+
+wstring test_func(const wstring& t, const wstring& te,
+    const function<wstring()>& func)
+{
+    if (t == te)
+        return func();
+    return L"";
+}
+
+wstring test_func(wchar_t symbol)
+{
+    if (symbol == '"')
+    {
+        if (state == TEST_D)
+        {
+            state = TEST_;
+            return wstring(1, symbol);
+        }
+        if (state == TEST_)
+        {
+            state = TEST_D;
+            ++current_token_index;
+            return wstring(1, symbol);
+        }
+    }
+    else if (state == TEST_)
+        return wstring(1, symbol);
+
+    return L"";
+}
+
+int main()
+{
+    setlocale(LC_CTYPE, "");
+
+    vector<wstring> arr;
+    wstring text_code(read_file_test("File_program_code"));
+
+    current_token_index = -1;
+    size_t current_line = 1;
+    size_t current_pos = 0;
+    wstring current_lexeme;
+
+    for (const auto& symbol : text_code)
+    {
+        if (symbol == '\n')
+        {
+            ++current_line;
+            current_pos = 0;
+        }
+
+        current_lexeme += test_func(symbol);
+
+    }
+
+    wcout << current_lexeme;
+
+    // for (const auto& i : arr)
+    //     if (!i.empty()) wcout << i << '\n';
 
     // std::wcout << L"Код:\n" << filename << '\n';
     // Lexer l(filename);
