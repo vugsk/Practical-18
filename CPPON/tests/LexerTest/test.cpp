@@ -1,54 +1,31 @@
 
 #include <gtest/gtest.h>
 
-#include "Config.hpp"
+#include "ConfigTest.hpp"
+
+#define TEST_LEXER
+#include <codecvt>
 
 #include "Lexer.hpp"
 
-void TestOfOperatorsInToken(const std::shared_ptr<IToken>& token)
+std::string ConvertWstring(const std::wstring& string)
 {
-    for (const auto& [fst, snd] : OPERATORS)
-        if (fst == token->getToken())
-            EXPECT_EQ(token->getValue()[0], snd);
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    return converter.to_bytes(string);
 }
 
-void TestingDataTypesInToken(const std::shared_ptr<IToken>& token)
+// ! fix problem
+TEST(TestLexer, SeparatorOnWords)
 {
-    for (const auto& [fst, snd] : DATA_TYPES)
-        if (fst == token->getToken())
-            EXPECT_EQ(token->getValue(), snd);
-}
+    Lexer l;
 
-void ForEachTokenApplyFunction(const std::wstring& test_code,
-    const std::function<void(const std::shared_ptr<IToken>&)>& func)
-{
-    for (Lexer kl(test_code); const auto& j
-        : kl.lexicalCodeAnalysis())
+    for (const auto& [test_str, answers_str]
+        : TEST_CODES)
     {
-        func(j);
+        l.parseForTest(test_str);
+        ASSERT_EQ(l.getWords().size(), answers_str.size());
+        for (int i = 0; i < l.getWords().size(); i++)
+            EXPECT_EQ(l.getWords()[i], answers_str[i]);
     }
-}
 
-void TestTokensWithCustomFunction(
-    const std::function<void(const std::shared_ptr<IToken>&)>& func)
-{
-    for (const auto& i : TEST_CODES)
-        ForEachTokenApplyFunction(i, func);
-}
-
-
-TEST(TestPrint, Operators)
-{
-    TestTokensWithCustomFunction(TestOfOperatorsInToken);
-}
-
-TEST(TestPrint, TypeData)
-{
-    TestTokensWithCustomFunction(TestingDataTypesInToken);
-}
-
-TEST(TestFunctionIsQuote, Quote)
-{
-    EXPECT_TRUE(IsQuote('\''));
-    EXPECT_TRUE(IsQuote('\"'));
 }
