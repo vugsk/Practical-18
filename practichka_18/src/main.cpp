@@ -71,15 +71,21 @@ int           current_token_index = 0;
 size_t current_line = 1;
 size_t current_pos = 0;
 
-void add_arr(const wstring& current_lexeme)
+wstring add_arr(const wstring& current_lexeme)
 {
     arr.push_back(current_lexeme);
     ++current_token_index;
+    return L"";
 }
 
-void func_string_literal(wchar_t symbol, wstring& current_lexeme)
+[[nodiscard]] static bool Is_quote(const wchar_t ch)
 {
-    if (symbol == '\"' || symbol == '\'')
+    return ch == '\"' || ch == '\'';
+}
+
+void func_string_literal(const wchar_t symbol, wstring& current_lexeme)
+{
+    if (Is_quote(symbol))
     {
         if (state == TEST_D)
             state = TEST_;
@@ -92,21 +98,17 @@ void func_string_literal(wchar_t symbol, wstring& current_lexeme)
     }
 }
 
-void test_func_data_type() {}
-
-bool is_func_test_separators(wchar_t ch)
+[[nodiscard]] static bool is_func_test_separators(const wchar_t ch)
 {
     return ch != ' ' && ch != '\r' && ch != '\n';
 }
 
 wstring test_func_if(const bool is, const wstring& current_lexeme)
 {
-    if (is)
-        add_arr(current_lexeme);
-    return L"";
+    return is ? add_arr(current_lexeme) : L"";
 }
 
-void test_func_operator(const wchar_t symbol, wstring& current_lexeme)
+void test_func_str(const wchar_t symbol, wstring& current_lexeme)
 {
     if (is_separate_symbol(symbol))
     {
@@ -123,7 +125,10 @@ int main()
 {
     setlocale(LC_CTYPE, "");
 
-    wstring text_code(read_file_test("File_program_code"));
+    string filenam_test = "File_program_code";
+    string filename_release = "db_students.txt";
+
+    wstring text_code(read_file_test(filenam_test));
 
     current_token_index = -1;
     wstring current_lexeme;
@@ -136,12 +141,56 @@ int main()
             current_pos = 0;
         }
 
-        test_func_operator(symbol, current_lexeme);
+        test_func_str(symbol, current_lexeme);
         func_string_literal(symbol, current_lexeme);
 
     }
 
+    bool start       = false;
+    bool finih       = false;
+    int  index_start = 0;
+    int  index_finish = 0;
+    for (int i = 0; i < arr.size(); i++)
+    {
+        if (arr[i].front() == '\"')
+        {
+            index_start = i;
+            start = true;
+        }
 
+        if (start && arr[i].back() == '\"')
+        {
+            index_finish = i;
+            finih = true;
+        }
+    }
+
+    wcout << "start: " << start
+          << " finish: " << finih
+          << " index start: " << index_start
+          << " index finish: " << index_finish << '\n';
+    wcout << "text start index: " << arr[index_start]
+            << "\ntext finish index: " << arr[index_finish] << '\n';
+
+    if (start != finih)
+        wcout << "ERROR: quote";
+
+    if (index_start != index_finish)
+    {
+        wstring text;
+        if (arr[index_finish].front() == ' ')
+            text = arr[index_start] + arr[index_finish];
+        else
+            text = arr[index_start] + L" " + arr[index_finish];
+
+        erase_if(arr, [](const wstring& str)
+        {
+            return str.front() == '\"' || str.back() == '\"';
+        });
+        arr.insert(arr.begin()+index_start, text);
+    }
+
+    wcout << '\n';
     for (const auto& i : arr)
         if (!i.empty()) wcout << i << '\n';
 
