@@ -78,9 +78,14 @@ wstring add_arr(const wstring& current_lexeme)
     return L"";
 }
 
+[[nodiscard]] static bool is_q(const wchar_t ch, const bool is)
+{
+    return is ? ch == '\"' : ch != '\"';
+}
+
 [[nodiscard]] static bool Is_quote(const wchar_t ch)
 {
-    return ch == '\"' || ch == '\'';
+    return is_q(ch, true) || ch == '\'';
 }
 
 void func_string_literal(const wchar_t symbol, wstring& current_lexeme)
@@ -98,9 +103,14 @@ void func_string_literal(const wchar_t symbol, wstring& current_lexeme)
     }
 }
 
+[[nodiscard]] static bool is_space(const wchar_t ch, const bool is)
+{
+    return is ? ch == ' ' : ch != ' ';
+}
+
 [[nodiscard]] static bool is_func_test_separators(const wchar_t ch)
 {
-    return ch != ' ' && ch != '\r' && ch != '\n';
+    return is_space(ch, false) && ch != '\r' && ch != '\n';
 }
 
 wstring test_func_if(const bool is, const wstring& current_lexeme)
@@ -120,6 +130,30 @@ void test_func_str(const wchar_t symbol, wstring& current_lexeme)
         current_lexeme += symbol;
 }
 
+static int test_func_for(const function<bool(const wstring&)>& func)
+{
+    auto result = 0;
+    for (auto i = 0; i < arr.size() && func(arr[i]);)
+        result  = ++i;
+    return result;
+}
+
+[[nodiscard]] static bool is_front_str(const wstring& str)
+{
+    return is_q(str.front(), false);
+}
+
+[[nodiscard]] static bool is_back_str(const wstring& str)
+{
+    return is_q(str.back(), false);
+}
+
+wstring test_func_merge(const int index_to, const int index_from)
+{
+    if (is_space(arr[index_from].front(), true))
+        return arr[index_to] + arr[index_from];
+    return arr[index_to] + L" " + arr[index_from];
+}
 
 int main()
 {
@@ -146,53 +180,36 @@ int main()
 
     }
 
-    bool start       = false;
-    bool finih       = false;
-    int  index_start = 0;
-    int  index_finish = 0;
-    for (int i = 0; i < arr.size(); i++)
-    {
-        if (arr[i].front() == '\"')
-        {
-            index_start = i;
-            start = true;
-        }
+    int index_start = test_func_for(is_front_str);
+    int index_finish = test_func_for(is_back_str);
 
-        if (start && arr[i].back() == '\"')
-        {
-            index_finish = i;
-            finih = true;
-        }
-    }
-
-    wcout << "start: " << start
-          << " finish: " << finih
-          << " index start: " << index_start
+    wcout << " index start: " << index_start
           << " index finish: " << index_finish << '\n';
     wcout << "text start index: " << arr[index_start]
             << "\ntext finish index: " << arr[index_finish] << '\n';
 
-    if (start != finih)
-        wcout << "ERROR: quote";
 
     if (index_start != index_finish)
     {
-        wstring text;
-        if (arr[index_finish].front() == ' ')
-            text = arr[index_start] + arr[index_finish];
-        else
-            text = arr[index_start] + L" " + arr[index_finish];
+        arr.insert(arr.begin() + index_start,
+            test_func_merge(index_start, index_finish));
 
-        erase_if(arr, [](const wstring& str)
+        erase_if(arr, [index_start, index_finish](const wstring& str)
         {
-            return str.front() == '\"' || str.back() == '\"';
+            for (int i = index_start + 1; i < index_finish + 2; i++)
+                if (arr[i] == str)
+                    return true;
+            return false;
         });
-        arr.insert(arr.begin()+index_start, text);
     }
 
     wcout << '\n';
     for (const auto& i : arr)
-        if (!i.empty()) wcout << i << '\n';
+        wcout << i << '\n';
+
+
+
+
 
     // std::wcout << L"Код:\n" << filename << '\n';
     // Lexer l(filename);
