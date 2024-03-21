@@ -71,6 +71,12 @@ int           current_token_index = 0;
 size_t current_line = 1;
 size_t current_pos = 0;
 
+void add_arr(const wstring& current_lexeme)
+{
+    arr.push_back(current_lexeme);
+    ++current_token_index;
+}
+
 void func_string_literal(wchar_t symbol, wstring& current_lexeme)
 {
     if (symbol == '\"' || symbol == '\'')
@@ -80,8 +86,7 @@ void func_string_literal(wchar_t symbol, wstring& current_lexeme)
         else if (state == TEST_)
         {
             state = TEST_D;
-            arr.push_back(current_lexeme);
-            ++current_token_index;
+            add_arr(current_lexeme);
             current_lexeme.clear();
         }
     }
@@ -89,36 +94,25 @@ void func_string_literal(wchar_t symbol, wstring& current_lexeme)
 
 void test_func_data_type() {}
 
-void test_func_if(bool is, wstring& current_lexeme, bool is2)
+bool is_func_test_separators(wchar_t ch)
 {
-    if (is)
-    {
-        arr.push_back(current_lexeme);
-        if (is2)
-            current_lexeme.clear();
-        ++current_token_index;
-    }
+    return ch != ' ' && ch != '\r' && ch != '\n';
 }
 
-void test_func_operator(wchar_t symbol, wstring& current_lexeme)
+wstring test_func_if(const bool is, const wstring& current_lexeme)
+{
+    if (is)
+        add_arr(current_lexeme);
+    return L"";
+}
+
+void test_func_operator(const wchar_t symbol, wstring& current_lexeme)
 {
     if (is_separate_symbol(symbol))
     {
-        test_func_if(!current_lexeme.empty(), current_lexeme, true);
-        // if (!current_lexeme.empty())
-        // {
-        //     arr.push_back(current_lexeme);
-        //     current_lexeme.clear();
-        //     ++current_token_index;
-        // }
-        wstring op(1, symbol);
-        test_func_if(symbol != ' ' && symbol != '\r' && symbol != '\n',
-            op, false);
-        // if (symbol != ' ' && symbol != '\r' && symbol != '\n')
-        // {
-        //     arr.push_back(wstring(1, symbol));
-        //     ++current_token_index;
-        // }
+        current_lexeme = test_func_if(!current_lexeme.empty(), current_lexeme);
+        test_func_if(is_func_test_separators(symbol),
+            wstring(1, symbol));
     }
     else
         current_lexeme += symbol;
