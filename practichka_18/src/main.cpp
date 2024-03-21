@@ -51,16 +51,6 @@ wstring read_file_test(const string& filename)
     return ConvertString(te);
 }
 
-static bool is_separate_symbol(const wchar_t symbol)
-{
-    return  symbol == ':' || symbol == ';' ||
-            symbol == ',' || symbol == '(' ||
-            symbol == ')' || symbol == '[' ||
-            symbol == ']' || symbol == '=' ||
-            symbol == ' ' || symbol == '\r'||
-            symbol == '\n'|| symbol == '#';
-}
-
 vector<wstring> arr;
 
 const wstring TEST_ = L"IN_STRING";
@@ -78,14 +68,14 @@ wstring add_arr(const wstring& current_lexeme)
     return L"";
 }
 
-[[nodiscard]] static bool is_q(const wchar_t ch, const bool is)
+[[nodiscard]] static bool is_q(const wchar_t ch)
 {
-    return is ? ch == '\"' : ch != '\"';
+    return ch == '\"';
 }
 
 [[nodiscard]] static bool Is_quote(const wchar_t ch)
 {
-    return is_q(ch, true) || ch == '\'';
+    return is_q(ch) || ch == '\'';
 }
 
 void func_string_literal(const wchar_t symbol, wstring& current_lexeme)
@@ -103,19 +93,34 @@ void func_string_literal(const wchar_t symbol, wstring& current_lexeme)
     }
 }
 
-[[nodiscard]] static bool is_space(const wchar_t ch, const bool is)
+[[nodiscard]] static bool is_space(const wchar_t ch)
 {
-    return is ? ch == ' ' : ch != ' ';
+    return ch == ' ';
+}
+
+[[nodiscard]] static bool is_enter(const wchar_t ch)
+{
+    return ch == '\n';
 }
 
 [[nodiscard]] static bool is_func_test_separators(const wchar_t ch)
 {
-    return is_space(ch, false) && ch != '\r' && ch != '\n';
+    return !is_space(ch) && ch != '\r' && !is_enter(ch);
 }
 
 wstring test_func_if(const bool is, const wstring& current_lexeme)
 {
     return is ? add_arr(current_lexeme) : L"";
+}
+
+static bool is_separate_symbol(const wchar_t symbol)
+{
+    return  symbol == ':'   || symbol == ';' ||
+            symbol == ','   || symbol == '(' ||
+            symbol == ')'   || symbol == '[' ||
+            symbol == ']'   || symbol == '=' ||
+            is_space(symbol)|| symbol == '\r'||
+            is_enter(symbol)|| symbol == '#';
 }
 
 void test_func_str(const wchar_t symbol, wstring& current_lexeme)
@@ -130,29 +135,63 @@ void test_func_str(const wchar_t symbol, wstring& current_lexeme)
         current_lexeme += symbol;
 }
 
-static int test_func_for(const function<bool(const wstring&)>& func)
+template<typename T>
+T test_func_T(const int& to, const int& from,
+    const function<bool(const wstring&)>& func)
 {
-    auto result = 0;
-    for (auto i = 0; i < arr.size() && func(arr[i]);)
-        result  = ++i;
-    return result;
+    for (auto i = to; i < from; ++i)
+        if (func(arr[i]))
+            return i;
+    return 0;
 }
 
 [[nodiscard]] static bool is_front_str(const wstring& str)
 {
-    return is_q(str.front(), false);
+    return is_q(str.front());
 }
 
 [[nodiscard]] static bool is_back_str(const wstring& str)
 {
-    return is_q(str.back(), false);
+    return is_q(str.back());
 }
 
 wstring test_func_merge(const int index_to, const int index_from)
 {
-    if (is_space(arr[index_from].front(), true))
+    if (is_space(arr[index_from].front()))
         return arr[index_to] + arr[index_from];
     return arr[index_to] + L" " + arr[index_from];
+}
+
+void test_func_m()
+{
+    auto index_start = test_func_T<int>(0, arr.size(), is_front_str),
+         index_finish = test_func_T<int>(0, arr.size(), is_back_str);
+
+    arr.insert(arr.begin() + index_start,
+        test_func_merge(index_start, index_finish));
+
+    erase_if(arr, [index_start, index_finish](const wstring& str)
+    {
+        return test_func_T<bool>(index_start + 1, index_finish + 2,
+            [str](const wstring& string) { return string == str; });
+    });
+}
+
+void test_func_main(const wstring& code)
+{
+    current_token_index = -1;
+    wstring current_lexeme;
+    for (const auto& symbol : code)
+    {
+        if (is_enter(symbol))
+        {
+            ++current_line;
+            current_pos = 0;
+        }
+
+        test_func_str(symbol, current_lexeme);
+        func_string_literal(symbol, current_lexeme);
+    }
 }
 
 int main()
@@ -162,63 +201,13 @@ int main()
     string filenam_test = "File_program_code";
     string filename_release = "db_students.txt";
 
-    wstring text_code(read_file_test(filenam_test));
-
-    current_token_index = -1;
-    wstring current_lexeme;
-
-    for (const auto& symbol : text_code)
-    {
-        if (symbol == '\n')
-        {
-            ++current_line;
-            current_pos = 0;
-        }
-
-        test_func_str(symbol, current_lexeme);
-        func_string_literal(symbol, current_lexeme);
-
-    }
-
-    int index_start = test_func_for(is_front_str);
-    int index_finish = test_func_for(is_back_str);
-
-    wcout << " index start: " << index_start
-          << " index finish: " << index_finish << '\n';
-    wcout << "text start index: " << arr[index_start]
-            << "\ntext finish index: " << arr[index_finish] << '\n';
-
-
-    if (index_start != index_finish)
-    {
-        arr.insert(arr.begin() + index_start,
-            test_func_merge(index_start, index_finish));
-
-        erase_if(arr, [index_start, index_finish](const wstring& str)
-        {
-            for (int i = index_start + 1; i < index_finish + 2; i++)
-                if (arr[i] == str)
-                    return true;
-            return false;
-        });
-    }
+    const wstring text_code(read_file_test(filenam_test));
+    test_func_main(text_code);
+    test_func_m();
 
     wcout << '\n';
     for (const auto& i : arr)
         wcout << i << '\n';
-
-
-
-
-
-    // std::wcout << L"Код:\n" << filename << '\n';
-    // Lexer l(filename);
-    // wcout << L"Обработка лексера:\n";
-    // for (const auto& i : l.lexicalCodeAnalysis())
-    //     std::wcout << i->getToken().tokenType << ' ' << i->getToken().value
-    //                 << " | " << i->getValue() << '\n';
-
-
 
     return 0;
 }
