@@ -51,48 +51,87 @@ wstring read_file_test(const string& filename)
     return ConvertString(te);
 }
 
+static bool is_separate_symbol(const wchar_t symbol)
+{
+    return  symbol == ':' || symbol == ';' ||
+            symbol == ',' || symbol == '(' ||
+            symbol == ')' || symbol == '[' ||
+            symbol == ']' || symbol == '=' ||
+            symbol == ' ' || symbol == '\r'||
+            symbol == '\n'|| symbol == '#';
+}
+
+vector<wstring> arr;
+
 const wstring TEST_ = L"IN_STRING";
 const wstring TEST_D = L"DEFAULT";
 
 wstring       state               = TEST_D;
 int           current_token_index = 0;
+size_t current_line = 1;
+size_t current_pos = 0;
 
-wstring test_if(bool is, const wstring& t)
+void func_string_literal(wchar_t symbol, wstring& current_lexeme)
+{
+    if (symbol == '\"' || symbol == '\'')
+    {
+        if (state == TEST_D)
+            state = TEST_;
+        else if (state == TEST_)
+        {
+            state = TEST_D;
+            arr.push_back(current_lexeme);
+            ++current_token_index;
+            current_lexeme.clear();
+        }
+    }
+}
+
+void test_func_data_type() {}
+
+void test_func_if(bool is, wstring& current_lexeme, bool is2)
 {
     if (is)
-        return t;
-    return L"";
-}
-
-wstring test_if_x2(wchar_t symbol, const wstring& D, const wstring& _d)
-{
-    if (symbol == '"' && state == D)
     {
-        state = _d;
-        return wstring(1, symbol);
+        arr.push_back(current_lexeme);
+        if (is2)
+            current_lexeme.clear();
+        ++current_token_index;
     }
-    return L"";
 }
 
-wstring test_func(wchar_t symbol)
+void test_func_operator(wchar_t symbol, wstring& current_lexeme)
 {
-    return test_if((state == TEST_), wstring(1, symbol)).empty()
-        ? !test_if_x2(symbol, TEST_, TEST_D).empty()
-            ? test_if_x2(symbol, TEST_, TEST_D)
-            : test_if_x2(symbol, TEST_D, TEST_)
-        : test_if((state == TEST_), wstring(1, symbol));
+    if (is_separate_symbol(symbol))
+    {
+        test_func_if(!current_lexeme.empty(), current_lexeme, true);
+        // if (!current_lexeme.empty())
+        // {
+        //     arr.push_back(current_lexeme);
+        //     current_lexeme.clear();
+        //     ++current_token_index;
+        // }
+        wstring op(1, symbol);
+        test_func_if(symbol != ' ' && symbol != '\r' && symbol != '\n',
+            op, false);
+        // if (symbol != ' ' && symbol != '\r' && symbol != '\n')
+        // {
+        //     arr.push_back(wstring(1, symbol));
+        //     ++current_token_index;
+        // }
+    }
+    else
+        current_lexeme += symbol;
 }
+
 
 int main()
 {
     setlocale(LC_CTYPE, "");
 
-    vector<wstring> arr;
     wstring text_code(read_file_test("File_program_code"));
 
     current_token_index = -1;
-    size_t current_line = 1;
-    size_t current_pos = 0;
     wstring current_lexeme;
 
     for (const auto& symbol : text_code)
@@ -103,14 +142,14 @@ int main()
             current_pos = 0;
         }
 
-        current_lexeme += test_func(symbol);
+        test_func_operator(symbol, current_lexeme);
+        func_string_literal(symbol, current_lexeme);
 
     }
 
-    wcout << current_lexeme;
 
-    // for (const auto& i : arr)
-    //     if (!i.empty()) wcout << i << '\n';
+    for (const auto& i : arr)
+        if (!i.empty()) wcout << i << '\n';
 
     // std::wcout << L"Код:\n" << filename << '\n';
     // Lexer l(filename);
