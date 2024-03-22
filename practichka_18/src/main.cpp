@@ -56,6 +56,7 @@ int main()
     string filename_release = "db_students.txt";
 
     const wstring text_code(read_file_test(filenam_test));
+    wcout << text_code << '\n';
     Lexer l(text_code);
     l.printDebug();
 

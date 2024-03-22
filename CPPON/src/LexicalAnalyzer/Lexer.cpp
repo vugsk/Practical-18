@@ -1,9 +1,13 @@
 
 #include "Lexer.hpp"
 
+#include <algorithm>
 
-static constexpr uint32_t       BEGIN_NUMBER = 0;
-static constexpr const wchar_t* EMPTY_LINE   = L"";
+
+constinit const wchar_t* Lexer::_string       = L"IN_STRING";
+constinit const wchar_t* Lexer::_default      = L"DEFAULT";
+constinit const wchar_t* Lexer::_empty_line   = L"";
+constinit uint32_t       Lexer::_begin_number = 0;
 
 
 [[nodiscard]] static constexpr bool IsDoubleQuote(const wchar_t ch)
@@ -50,53 +54,52 @@ static constexpr const wchar_t* EMPTY_LINE   = L"";
 
 
 Lexer::Lexer(const std::wstring& code)
-    : _state(DEFAULT), _tokenIndex(0)
+    : _state(_default), _tokenIndex(0)
     , _line(0), _position(0)
 {
     parseCode(code);
     mergeStringLiterale();
 }
 
+constexpr void Lexer::test_func_(const bool is, const std::wstring&& str)
+{
+    if (is) addWord(str);
+}
 
-void Lexer::checkForSeparator(const wchar_t symbol, std::wstring& lexeme)
+constexpr std::wstring Lexer::checkForSeparator(const wchar_t      symbol,
+                                                const std::wstring& lexeme)
 {
     if (IsSeparateSymbol(symbol))
     {
-        lexeme = functionAddsWordsOnCondition(!lexeme.empty(), lexeme);
-        functionAddsWordsOnCondition(IsSeparators(symbol),
-            std::wstring(1, symbol));
+        test_func_(!lexeme.empty(), std::move(lexeme));
+        test_func_(IsSeparators(symbol), std::wstring(1, symbol));
     }
     else
-        lexeme += symbol;
+        return lexeme + symbol;
+    return L"";
 }
 
-constexpr std::wstring Lexer::functionAddsWordsOnCondition(const bool condition,
-    const std::wstring& lexeme)
-{
-    return condition ? addWord(lexeme) : EMPTY_LINE;
-}
-
-void Lexer::addStringLiterale(const wchar_t symbol,
-    std::wstring& lexem)
+constexpr std::wstring Lexer::addStringLiterale(const wchar_t symbol,
+                                                const std::wstring& lexem)
 {
     if (IsQuote(symbol))
     {
-        if (_state == DEFAULT)
-            _state = STRING;
-        else if (_state == STRING)
+        if (_state == _default)
+            _state = _string;
+        else if (_state == _string)
         {
-            _state = DEFAULT;
+            _state = _default;
             addWord(lexem);
-            lexem.clear();
+            return L"";
         }
     }
+    return lexem;
 }
 
-constexpr std::wstring Lexer::addWord(const std::wstring& lexeme)
+constexpr void Lexer::addWord(const std::wstring& lexeme)
 {
     _words.push_back(lexeme);
     ++_tokenIndex;
-    return EMPTY_LINE;
 }
 
 constexpr std::wstring Lexer::glueWordsTogether(const uint32_t start_index,
@@ -110,11 +113,11 @@ constexpr std::wstring Lexer::glueWordsTogether(const uint32_t start_index,
 void Lexer::mergeStringLiterale()
 {
     uint32_t start_index = findsValueGivenCondition<uint32_t>(
-        BEGIN_NUMBER, _words.size(),
+        _begin_number, _words.size(),
         IsFrontDoubleQuoteStrring);
 
     uint32_t end_index = findsValueGivenCondition<uint32_t>(
-        BEGIN_NUMBER, _words.size(),
+        _begin_number, _words.size(),
         IsBackDoubleQuoteStrring);
 
     if (start_index == end_index)
@@ -132,7 +135,7 @@ void Lexer::mergeStringLiterale()
     });
 }
 
-void Lexer::parseCode(const std::wstring& code)
+constexpr void Lexer::parseCode(const std::wstring& code)
 {
     _tokenIndex = -1;
     std::wstring current_lexeme;
@@ -141,12 +144,10 @@ void Lexer::parseCode(const std::wstring& code)
         if (IsEnter(symbol))
         {
             ++_line;
-            _position = BEGIN_NUMBER;
+            _position = _begin_number;
         }
 
-        checkForSeparator(symbol, current_lexeme);
-        addStringLiterale(symbol, current_lexeme);
+        current_lexeme = checkForSeparator(symbol, current_lexeme);
+        current_lexeme = addStringLiterale(symbol, current_lexeme);
     }
 }
-
-

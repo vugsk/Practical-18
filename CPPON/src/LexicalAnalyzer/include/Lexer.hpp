@@ -16,7 +16,6 @@
 #include <string>
 
 
-
 class Lexer
 {
 public:
@@ -33,11 +32,11 @@ public:
     ~Lexer()                                 = default;
 
     #ifdef DEBUG_LEXER
-        void printDebug()
-        {
-            for (const auto& i : _words)
-                std::wcout << i << '\n';
-        }
+    void printDebug()
+    {
+        for (const auto& i : _words)
+            std::wcout << i << '\n';
+    }
     #endif
     #ifdef TEST_LEXER
         [[nodiscard]] constexpr std::vector<std::wstring> getWords()
@@ -55,18 +54,20 @@ public:
     #endif
 
 protected:
-    void addStringLiterale(wchar_t symbol, std::wstring& lexem);
-    void checkForSeparator(wchar_t symbol, std::wstring& lexeme);
-    void parseCode(const std::wstring& code);
-    void mergeStringLiterale();
+    constexpr std::wstring addStringLiterale(wchar_t             symbol,
+                                             const std::wstring& lexem);
 
-    constexpr std::wstring functionAddsWordsOnCondition(bool condition,
-        const std::wstring& lexeme);
+    constexpr std::wstring checkForSeparator(wchar_t             symbol,
+                                             const std::wstring& lexeme);
+
+    constexpr void test_func_(bool is, const std::wstring&& str);
+    constexpr void parseCode(const std::wstring& code);
+    void           mergeStringLiterale();
 
     [[nodiscard]] constexpr std::wstring glueWordsTogether(uint32_t start_index,
-        uint32_t end_index) const;
+                                                           uint32_t end_index) const;
 
-    constexpr std::wstring addWord(const std::wstring& lexeme);
+    constexpr void addWord(const std::wstring& lexeme);
 
     template<typename T>
     [[nodiscard]] constexpr T findsValueGivenCondition(
@@ -80,16 +81,21 @@ protected:
     }
 
 private:
-    static constexpr const wchar_t* STRING = L"IN_STRING";
-    static constexpr const wchar_t* DEFAULT = L"DEFAULT";
+    static constinit const wchar_t* _string;
+    static constinit const wchar_t* _default;
+    static constinit const wchar_t* _empty_line;
+    static constinit uint32_t       _begin_number;
 
     const wchar_t* _state;
-    uint16_t _tokenIndex;
-    uint32_t _line;
-    uint32_t _position;
+    uint16_t       _tokenIndex;
+    uint32_t       _line;
+    uint32_t       _position;
 
     std::vector<std::wstring> _words;
 
 };
+
+
+
 
 #endif //TESTLEXER_HPP
