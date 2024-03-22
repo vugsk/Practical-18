@@ -3,7 +3,7 @@
 #define TESTLEXER_HPP
 
 
-#define DEBUG_LEXER
+// #define DEBUG_LEXER
 // #define TEST_LEXER
 
 
@@ -14,7 +14,6 @@
 #include <cstdint>
 #include <functional>
 #include <string>
-
 
 class Lexer
 {
@@ -44,7 +43,7 @@ public:
             return _words;
         }
 
-        void parseForTest(const std::wstring& code)
+        constexpr void parseForTest(const std::wstring& code)
         {
             if (!_words.empty())
                 _words.clear();
@@ -54,30 +53,29 @@ public:
     #endif
 
 protected:
-    constexpr std::wstring addStringLiterale(wchar_t             symbol,
-                                             const std::wstring& lexem);
+    constexpr std::wstring addStringLiterale(wchar_t symbol,
+        std::wstring&& lexem);
 
-    constexpr std::wstring checkForSeparator(wchar_t             symbol,
-                                             const std::wstring& lexeme);
+    constexpr std::wstring checkForSeparator(wchar_t symbol,
+        std::wstring&& lexeme);
 
-    constexpr void test_func_(bool is, const std::wstring&& str);
+    constexpr void test_func_(bool is, std::wstring&& str);
     constexpr void parseCode(const std::wstring& code);
+    constexpr void addWord(std::wstring&& lexeme);
     void           mergeStringLiterale();
-
-    [[nodiscard]] constexpr std::wstring glueWordsTogether(uint32_t start_index,
-                                                           uint32_t end_index) const;
-
-    constexpr void addWord(const std::wstring& lexeme);
 
     template<typename T>
     [[nodiscard]] constexpr T findsValueGivenCondition(
         const uint32_t start_index, const uint32_t end_index,
         const std::function<bool(const std::wstring&)>& func)
     {
-        for (auto i = start_index; i < end_index; ++i)
-            if (func(_words[i]))
-                return i;
-        return 0;
+        const auto it = std::find_if(
+            std::next(_words.begin(), start_index),
+            std::next(_words.begin(), end_index), func);
+
+        if (it != std::next(_words.begin(), end_index))
+            return static_cast<T>(std::distance(_words.begin(), it));
+        return T{};
     }
 
 private:
@@ -92,7 +90,6 @@ private:
     uint32_t       _position;
 
     std::vector<std::wstring> _words;
-
 };
 
 

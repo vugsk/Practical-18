@@ -11,6 +11,7 @@ add_library(${PROJECT_NAME} SHARED
     include/Lexer.hpp
     include/IToken.hpp
     include/Token.hpp
+    Token.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC

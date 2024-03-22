@@ -4,7 +4,7 @@
 
 #include <string>
 
-inline std::vector<std::wstring> vectorAddition(
+inline std::vector<std::wstring> VectorAddition(
     const std::vector<std::wstring>& vec1, const std::vector<std::wstring>& vec2)
 {
     std::vector<std::wstring> temp;
@@ -27,7 +27,7 @@ const std::vector<std::wstring> TEST_CODE_1_ANSWERS
 
 const std::vector<std::wstring> TEST_CODE_2_ANSWERS
 {
-    L"тАfdк", L":", L"символ", L"=", L"'Д'", L";"
+    L"тghк", L":", L"символ", L"=", L"'Д'", L";"
 };
 
 const std::vector<std::wstring> TEST_CODE_3_ANSWERS
@@ -45,10 +45,14 @@ const std::wstring TEST_CODE_6 = TEST_CODE_5 + TEST_CODE_2;
 const std::wstring TEST_CODE_7 = TEST_CODE_3 + TEST_CODE_6;
 const std::wstring TEST_CODE_8 = TEST_CODE_7 + TEST_CODE_1;
 
-const std::vector TEST_CODE_5_ANSWERS = vectorAddition(TEST_CODE_1_ANSWERS, TEST_CODE_4_ANSWERS);
-const std::vector TEST_CODE_6_ANSWERS = vectorAddition(TEST_CODE_5_ANSWERS, TEST_CODE_2_ANSWERS);
-const std::vector TEST_CODE_7_ANSWERS = vectorAddition(TEST_CODE_3_ANSWERS, TEST_CODE_6_ANSWERS);
-const std::vector TEST_CODE_8_ANSWERS = vectorAddition(TEST_CODE_7_ANSWERS, TEST_CODE_1_ANSWERS);
+const std::vector TEST_CODE_5_ANSWERS = VectorAddition(TEST_CODE_1_ANSWERS,
+                                                        TEST_CODE_4_ANSWERS);
+const std::vector TEST_CODE_6_ANSWERS = VectorAddition(TEST_CODE_5_ANSWERS,
+                                                        TEST_CODE_2_ANSWERS);
+const std::vector TEST_CODE_7_ANSWERS = VectorAddition(TEST_CODE_3_ANSWERS,
+                                                        TEST_CODE_6_ANSWERS);
+const std::vector TEST_CODE_8_ANSWERS = VectorAddition(TEST_CODE_7_ANSWERS,
+                                                        TEST_CODE_1_ANSWERS);
 
 const std::vector<std::pair<std::wstring, std::vector<std::wstring>>> TEST_CODES
 {

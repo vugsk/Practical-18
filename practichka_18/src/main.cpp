@@ -1,9 +1,10 @@
 
-#include <iostream>
 #include <Config.hpp>
 #include <fstream>
+#include <iostream>
 
 #include "Lexer.hpp"
+#include "Token.hpp"
 
 using namespace std;
 
@@ -56,9 +57,12 @@ int main()
     string filename_release = "db_students.txt";
 
     const wstring text_code(read_file_test(filenam_test));
-    wcout << text_code << '\n';
-    Lexer l(text_code);
-    l.printDebug();
+    // wcout << text_code << '\n';
+    // Lexer l(text_code);
+    // l.printDebug();
+
+    Token token(L"число", {2, 2});
+    token.printDebug();
 
     return 0;
 }
