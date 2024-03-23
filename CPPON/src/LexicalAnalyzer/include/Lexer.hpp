@@ -8,8 +8,11 @@
 #endif
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
+
+class IToken;
 
 class Lexer
 {
@@ -48,6 +51,8 @@ public:
         }
     #endif
 
+    [[nodiscard]] static std::vector<std::shared_ptr<IToken>> test_func();
+
 protected:
     constexpr std::wstring addStringLiterale(wchar_t symbol,
         std::wstring&& lexem);
@@ -71,10 +76,11 @@ protected:
     }
 
 private:
-    static constinit const wchar_t*            _string;
-    static constinit const wchar_t*            _default;
-    static constinit const wchar_t*            _empty_line;
-    static constinit std::vector<std::wstring> _words;
+    static constinit const wchar_t*                       _string;
+    static constinit const wchar_t*                       _default;
+    static constinit const wchar_t*                       _empty_line;
+    static constinit std::vector<std::wstring>            _words;
+    static constinit std::vector<std::shared_ptr<IToken>> _tokens;
 
     const wchar_t* _state;
     uint16_t       _tokenIndex;

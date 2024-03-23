@@ -64,10 +64,9 @@ int main()
     const wstring text_code(read_file_test(filenam_test));
     wcout << text_code << '\n';
     Lexer l(text_code);
-    Lexer::printDebug();
 
-    const Token token(L"-90", {2, 2});
-    wcout << static_cast<int>(token.getToken()) << ' ' << token.getValue() << '\n';
+    for (const auto& i : Lexer::test_func())
+        wcout << static_cast<int>(i->getToken()) << ' ' << i->getValue() << '\n';
 
     return 0;
 }

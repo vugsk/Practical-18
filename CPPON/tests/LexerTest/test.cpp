@@ -16,7 +16,7 @@ TEST(TestLexer, SeparatorOnWords)
         ASSERT_TRUE(!l.getWords().empty()) << "array empty";
         ASSERT_EQ(l.getWords().size(), answers_str.size());
         for (auto i = 0; i < l.getWords().size(); i++)
-            EXPECT_EQ(l.getWords()[i], answers_str[i]);
+            EXPECT_EQ(l.getWords()[i].first, answers_str[i]);
     }
 }
 

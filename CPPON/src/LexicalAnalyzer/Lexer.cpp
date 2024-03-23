@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cwctype>
+#include <Token.hpp>
 
 using std::wstring;
 using std::move;
@@ -14,6 +15,7 @@ constinit const wchar_t* Lexer::_string       = L"IN_STRING";
 constinit const wchar_t* Lexer::_default      = L"DEFAULT";
 constinit const wchar_t* Lexer::_empty_line   = L"";
 constinit std::vector<wstring> Lexer::_words{};
+constinit std::vector<std::shared_ptr<IToken>>  Lexer::_tokens{};
 
 [[nodiscard]] static constexpr bool IsQuote(const wchar_t ch)
 {
@@ -53,12 +55,6 @@ constinit std::vector<wstring> Lexer::_words{};
 }
 
 template<typename T>
-concept IsValueGivenCondition = requires(T value)
-{
-
-};
-
-template<typename T>
 [[nodiscard]] static constexpr pair<T, T> test_f(const pair<T, T>& pair_t,
     T&& val_1, T&& val_2)
 {
@@ -73,8 +69,15 @@ Lexer::Lexer(const wstring& code)
     mergeStringLiterale();
 }
 
+std::vector<std::shared_ptr<IToken>> Lexer::test_func()
+{
+    for (auto i : _words)
+        _tokens.push_back(make_shared<Token>(i));
+    return _tokens;
+}
+
 constexpr wstring Lexer::checkForSeparator(const wchar_t symbol,
-    wstring&& lexeme)
+                                           wstring&& lexeme)
 {
     if (IsSeparateSymbol(symbol))
     {
