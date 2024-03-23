@@ -6,7 +6,7 @@ project(${PROJECT_NAME} VERSION ${VERSION_PROJECT}
 
 
 add_library(${PROJECT_NAME} SHARED
-    include/TypeToken.hpp
+    include/ConfigLexer.hpp
     Lexer.cpp
     include/Lexer.hpp
     include/IToken.hpp

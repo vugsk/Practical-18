@@ -1,9 +1,14 @@
 
-#include <Config.hpp>
 #include <fstream>
 #include <iostream>
 
+#include "Config.hpp"
+
+
+#define DEBUG_LEXER
 #include "Lexer.hpp"
+
+#define DEBUG_TOKEN
 #include "Token.hpp"
 
 using namespace std;
@@ -53,16 +58,16 @@ int main()
 {
     setlocale(LC_CTYPE, "");
 
-    string filenam_test = "File_program_code";
-    string filename_release = "db_students.txt";
+    const string filenam_test = "File_program_code";
+    const string filename_release = "db_students.txt";
 
     const wstring text_code(read_file_test(filenam_test));
-    // wcout << text_code << '\n';
-    // Lexer l(text_code);
-    // l.printDebug();
+    wcout << text_code << '\n';
+    Lexer l(text_code);
+    l.printDebug();
 
-    Token token(L"число", {2, 2});
-    token.printDebug();
+    Token token(L"90", {2, 2});
+    wcout << static_cast<int>(token.getToken()) << ' ' << token.getValue() << '\n';
 
     return 0;
 }
