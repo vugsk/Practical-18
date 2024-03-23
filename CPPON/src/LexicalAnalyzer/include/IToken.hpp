@@ -17,10 +17,10 @@ public:
     typedef const location&   ref_location;
     typedef const TokenType&  ref_token_type;
 
-    virtual                                        ~IToken() = default;
-    [[nodiscard]] constexpr virtual ref_token_type getToken() const = 0;
-    [[nodiscard]] constexpr virtual ref_value_type getValue() const = 0;
-    [[nodiscard]] constexpr virtual ref_location   getLine() const = 0;
+    virtual                              ~IToken() = default;
+    [[nodiscard]] virtual ref_token_type getToken() const = 0;
+    [[nodiscard]] virtual ref_value_type getValue() const = 0;
+    [[nodiscard]] virtual ref_location   getLine()  const = 0;
 };
 
 #endif //ITOKEN_HPP

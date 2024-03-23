@@ -8,11 +8,12 @@
 
 using std::wstring;
 using std::move;
+using std::pair;
 
 constinit const wchar_t* Lexer::_string       = L"IN_STRING";
 constinit const wchar_t* Lexer::_default      = L"DEFAULT";
 constinit const wchar_t* Lexer::_empty_line   = L"";
-
+constinit std::vector<wstring> Lexer::_words{};
 
 [[nodiscard]] static constexpr bool IsQuote(const wchar_t ch)
 {
@@ -51,6 +52,18 @@ constinit const wchar_t* Lexer::_empty_line   = L"";
     return iswspace(val_2.front()) ? val_2 + val_1 : val_1 + L" " + val_2;
 }
 
+template<typename T>
+concept IsValueGivenCondition = requires(T value)
+{
+
+};
+
+template<typename T>
+[[nodiscard]] static constexpr pair<T, T> test_f(const pair<T, T>& pair_t,
+    T&& val_1, T&& val_2)
+{
+    return std::make_pair(pair_t.first + val_1, pair_t.second + val_2);
+}
 
 Lexer::Lexer(const wstring& code)
     : _state(_default), _tokenIndex(0)
@@ -98,26 +111,24 @@ constexpr void Lexer::addWord(wstring&& lexeme)
     ++_tokenIndex;
 }
 
-void Lexer::mergeStringLiterale()
+constexpr void Lexer::mergeStringLiterale() const
 {
-    std::pair indexs = std::make_pair(
-        findValueGivenCondition<uint32_t>(0,
-            _words.size(), IsFrontDoubleQuoteStrring),
-        findValueGivenCondition<uint32_t>(0,
-            _words.size(), IsBackDoubleQuoteStrring));
+    pair indexs = std::make_pair(
+        findValueGivenCondition<uint32_t>(IsFrontDoubleQuoteStrring),
+        findValueGivenCondition<uint32_t>(IsBackDoubleQuoteStrring));
 
     if (indexs.first == indexs.second)
         return;
 
-    _words.insert(std::next(_words.begin(), indexs.first),
+    _words.insert(next(_words.begin(), indexs.first),
         CombineWithSpaceIfNeeded(move(_words[indexs.first]),
             move(_words[indexs.second])));
 
     erase_if(_words, [this, indexs](const wstring& str)
     {
-        return findValueGivenCondition<bool>(indexs.first + 1,
-            indexs.second + 2, [str](const wstring& string)
-                { return string == str; });
+        return findValueGivenCondition<bool>(
+            [str](const wstring& string){ return string == str; },
+            test_f<uint32_t>(indexs, 1, 2));
     });
 }
 

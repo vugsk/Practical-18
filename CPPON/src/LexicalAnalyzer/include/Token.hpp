@@ -64,7 +64,7 @@ public:
     Token& operator=(Token&& other) noexcept = delete;
     ~Token() override                        = default;
 
-    explicit Token(std::wstring value, location location = {0, 0});
+    explicit Token(std::wstring value, location location = EMPTY_LOCATION);
 
     [[nodiscard]] constexpr ref_token_type getToken() const override;
     [[nodiscard]] constexpr ref_value_type getValue() const override;
@@ -74,9 +74,12 @@ protected:
     constexpr TokenType checkValueType();
 
 private:
+    static constinit const location EMPTY_LOCATION;
+
     TokenType  _token;
     value_type _value;
     location   _location;
+
 };
 
 
