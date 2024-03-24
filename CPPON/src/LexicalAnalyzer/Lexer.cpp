@@ -2,20 +2,25 @@
 #include "Lexer.hpp"
 
 #include "ConfigLexer.hpp"
+#include "Token.hpp"
 
 #include <algorithm>
 #include <cwctype>
-#include <Token.hpp>
 
 using std::wstring;
 using std::move;
 using std::pair;
+using std::shared_ptr;
+using std::vector;
 
 constinit const wchar_t* Lexer::_string       = L"IN_STRING";
 constinit const wchar_t* Lexer::_default      = L"DEFAULT";
+constinit const wchar_t* Lexer::_end          = L"END";
 constinit const wchar_t* Lexer::_empty_line   = L"";
-constinit std::vector<wstring> Lexer::_words{};
-constinit std::vector<std::shared_ptr<IToken>>  Lexer::_tokens{};
+constinit vector<pair<wstring, uint32_t>> Lexer::_words{};
+constinit vector<shared_ptr<IToken>>  Lexer::_tokens{};
+
+
 
 [[nodiscard]] static constexpr bool IsQuote(const wchar_t ch)
 {
@@ -61,18 +66,22 @@ template<typename T>
     return std::make_pair(pair_t.first + val_1, pair_t.second + val_2);
 }
 
+
+
+
 Lexer::Lexer(const wstring& code)
     : _state(_default), _tokenIndex(0)
-    , _line(0), _position(0)
+    , _line(1)
 {
     parseCode(code);
     mergeStringLiterale();
 }
 
-std::vector<std::shared_ptr<IToken>> Lexer::test_func()
+std::vector<shared_ptr<IToken>> Lexer::test_func()
 {
-    for (auto i : _words)
-        _tokens.push_back(make_shared<Token>(i));
+    for (const auto& [value, line] : _words)
+        _tokens.push_back(std::make_shared<Token>(value, line));
+    _tokens.push_back(std::make_shared<Token>(_end, ++_line));
     return _tokens;
 }
 
@@ -110,7 +119,7 @@ constexpr wstring Lexer::addStringLiterale(const wchar_t symbol,
 
 constexpr void Lexer::addWord(wstring&& lexeme)
 {
-    _words.push_back(lexeme);
+    _words.emplace_back(lexeme, _line);
     ++_tokenIndex;
 }
 
@@ -124,13 +133,15 @@ constexpr void Lexer::mergeStringLiterale() const
         return;
 
     _words.insert(next(_words.begin(), indexs.first),
-        CombineWithSpaceIfNeeded(move(_words[indexs.first]),
-            move(_words[indexs.second])));
+        std::make_pair(CombineWithSpaceIfNeeded(
+            move(_words[indexs.first].first), move(_words[indexs.second].first)),
+            _words[indexs.first].second));
 
-    erase_if(_words, [this, indexs](const wstring& str)
+    erase_if(_words,
+        [this, indexs](const pair<std::wstring, uint32_t>& str)
     {
         return findValueGivenCondition<bool>(
-            [str](const wstring& string){ return string == str; },
+            [str](const wstring& string){ return string == str.first; },
             test_f<uint32_t>(indexs, 1, 2));
     });
 }
@@ -142,10 +153,7 @@ constexpr void Lexer::parseCode(const wstring& code)
     for (const auto& symbol : code)
     {
         if (IsEnter(symbol))
-        {
             ++_line;
-            _position = 0;
-        }
 
         current_lexeme = checkForSeparator(symbol, move(current_lexeme));
         current_lexeme = addStringLiterale(symbol, move(current_lexeme));

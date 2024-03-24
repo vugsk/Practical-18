@@ -13,8 +13,6 @@ using std::move;
 using std::wstring;
 using std::ranges::all_of;
 
-constinit const Token::location Token::EMPTY_LOCATION = {0, 0};
-
 template<typename F>
 constexpr bool test_func(const wstring& str, const F&& func)
 {
@@ -22,8 +20,8 @@ constexpr bool test_func(const wstring& str, const F&& func)
 }
 
 
-Token::Token(value_type value, location location)
-    : _location(move(location))
+Token::Token(value_type value, const uint32_t location)
+    : _line(location)
 {
     _value = move(value);
     _token = checkValueType();
@@ -39,9 +37,9 @@ constexpr Token::ref_value_type Token::getValue() const
     return _value;
 }
 
-constexpr Token::ref_location Token::getLine() const
+constexpr const uint32_t& Token::getLine() const
 {
-    return _location;
+    return _line;
 }
 
 constexpr TokenType Token::checkValueType()

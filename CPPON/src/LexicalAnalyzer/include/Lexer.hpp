@@ -33,11 +33,12 @@ public:
         static constexpr void printDebug()
         {
             for (const auto i : _words)
-                std::wcout << i << '\n';
+                std::wcout << i.first << i.second << ' ' << '\n';
         }
     #endif
     #ifdef TEST_LEXER
-        [[nodiscard]] constexpr std::vector<std::wstring> getWords()
+        [[nodiscard]] constexpr
+            std::vector<std::pair<std::wstring, uint32_t>> getWords()
         {
             return _words;
         }
@@ -51,7 +52,7 @@ public:
         }
     #endif
 
-    [[nodiscard]] static std::vector<std::shared_ptr<IToken>> test_func();
+    [[nodiscard]] std::vector<std::shared_ptr<IToken>> test_func();
 
 protected:
     constexpr std::wstring addStringLiterale(wchar_t symbol,
@@ -70,22 +71,22 @@ protected:
             {0, static_cast<uint32_t>(_words.size())})
     {
         for (auto i = range.first; i < range.second; ++i)
-            if (func(_words[i]))
+            if (func(_words[i].first))
                 return static_cast<T>(i);
         return T{};
     }
 
 private:
-    static constinit const wchar_t*                       _string;
-    static constinit const wchar_t*                       _default;
-    static constinit const wchar_t*                       _empty_line;
-    static constinit std::vector<std::wstring>            _words;
-    static constinit std::vector<std::shared_ptr<IToken>> _tokens;
+    static constinit const wchar_t*                                 _string;
+    static constinit const wchar_t*                                 _default;
+    static constinit const wchar_t*                                 _end;
+    static constinit const wchar_t*                                 _empty_line;
+    static constinit std::vector<std::pair<std::wstring, uint32_t>> _words;
+    static constinit std::vector<std::shared_ptr<IToken>>           _tokens;
 
     const wchar_t* _state;
     uint16_t       _tokenIndex;
     uint32_t       _line;
-    uint32_t       _position;
 };
 
 #endif //TESTLEXER_HPP

@@ -9,6 +9,7 @@ add_library(${PROJECT_NAME} SHARED
     Parser.cpp
     include/Parser.hpp
     include/Node.hpp
+    Node.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Lexer_lib)

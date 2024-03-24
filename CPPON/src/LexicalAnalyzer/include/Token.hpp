@@ -64,21 +64,19 @@ public:
     Token& operator=(Token&& other) noexcept = delete;
     ~Token() override                        = default;
 
-    explicit Token(std::wstring value, location location = EMPTY_LOCATION);
+    explicit Token(std::wstring value, uint32_t location = 0);
 
-    [[nodiscard]] constexpr ref_token_type getToken() const override;
-    [[nodiscard]] constexpr ref_value_type getValue() const override;
-    [[nodiscard]] constexpr ref_location   getLine() const override;
+    [[nodiscard]] constexpr ref_token_type  getToken() const override;
+    [[nodiscard]] constexpr ref_value_type  getValue() const override;
+    [[nodiscard]] constexpr const uint32_t& getLine() const override;
 
 protected:
     constexpr TokenType checkValueType();
 
 private:
-    static constinit const location EMPTY_LOCATION;
-
     TokenType  _token;
     value_type _value;
-    location   _location;
+    uint32_t   _line;
 
 };
 

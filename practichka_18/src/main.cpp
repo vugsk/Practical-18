@@ -5,11 +5,11 @@
 #include "Config.hpp"
 
 
-#define DEBUG_LEXER
 #include "Lexer.hpp"
-
-#define DEBUG_TOKEN
 #include "Token.hpp"
+
+#define PARSER_DEBUG
+#include "Parser.hpp"
 
 using namespace std;
 
@@ -62,11 +62,17 @@ int main()
     const string filename_release = "db_students.txt";
 
     const wstring text_code(read_file_test(filenam_test));
-    wcout << text_code << '\n';
-    Lexer l(text_code);
+    wcout << text_code << "\n\n";
 
-    for (const auto& i : Lexer::test_func())
-        wcout << static_cast<int>(i->getToken()) << ' ' << i->getValue() << '\n';
+    Lexer l(text_code);
+    // for (const auto& i : l.test_func())
+    //     wcout << static_cast<int>(i->getToken()) << ' '
+    //             << i->getValue() << ' '
+    //             << i->getLine()<< '\n';
+
+    Parser parser;
+    parser.parse(l.test_func());
+    parser.printDebug();
 
     return 0;
 }
