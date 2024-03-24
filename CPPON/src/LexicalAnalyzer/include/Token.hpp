@@ -48,11 +48,11 @@ static const std::vector<token_pair> TOKENS
         {TokenType::character_datatype, L"символ"},
 
         {TokenType::id, L"ID"},
+        {TokenType::end, L"END"}
 };
 
 static const token_pair NONE = {TokenType::none, L"NONE"};
 static const token_pair NUL  = {TokenType::null, L"NULL"};
-static const token_pair END  = {TokenType::end, L"END"};
 
 
 class Token final : public IToken

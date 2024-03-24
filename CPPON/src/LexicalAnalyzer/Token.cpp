@@ -49,7 +49,10 @@ constexpr TokenType Token::checkValueType()
             return fst;
 
     if (test_func<bool(const wchar_t&)>(_value, IsDoubleQuote))
+    {
+        _value = _value.substr( 1, _value.size() - 2);
         return TokenType::string_literal;
+    }
 
      if (test_func<bool(const wchar_t&)>(_value, IsOneQuote))
         return TokenType::character_literal;

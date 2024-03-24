@@ -1,9 +1,7 @@
-
 #include <fstream>
 #include <iostream>
 
 #include "Config.hpp"
-
 
 #include "Lexer.hpp"
 #include "Token.hpp"
@@ -12,8 +10,6 @@
 #include "Parser.hpp"
 
 using namespace std;
-
-
 
 // *  текстовый формат называется CPPON -> C++ Object Notation
 
@@ -31,7 +27,6 @@ using namespace std;
 // * переписать, то что осталось и продолжить идти по под задачам
 
 // * предположительно мне нужно часов 24-48 в днях где-то 3-10 дней
-
 
 wstring read_file_test(const string& filename)
 {
@@ -58,22 +53,18 @@ int main()
 {
     setlocale(LC_CTYPE, "");
 
-    const string filenam_test = "File_program_code";
+    const string filenam_test     = "File_program_code";
     const string filename_release = "db_students.txt";
 
     const wstring text_code(read_file_test(filenam_test));
     wcout << text_code << "\n\n";
 
     Lexer l(text_code);
-    // for (const auto& i : l.test_func())
-    //     wcout << static_cast<int>(i->getToken()) << ' '
-    //             << i->getValue() << ' '
-    //             << i->getLine()<< '\n';
 
-    Parser parser;
-    parser.parse(l.test_func());
+    Parser parser(l.test_func());
+
+    std::wcout << std::get<wchar_t>(parser.test_func_lol(L"буква")) << '\n';
     parser.printDebug();
 
     return 0;
 }
-
