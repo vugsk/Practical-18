@@ -68,9 +68,9 @@ public:
 
     explicit Token(std::wstring value, uint32_t location = 0);
 
-    [[nodiscard]] constexpr ref_token_type  getToken() const override;
-    [[nodiscard]] constexpr ref_value_type  getValue() const override;
-    [[nodiscard]] constexpr const uint32_t& getLine() const override;
+    [[nodiscard]] ref_token_type  getToken() const override;
+    [[nodiscard]] ref_value_type  getValue() const override;
+    [[nodiscard]] const uint32_t& getLine() const override;
 
 protected:
     constexpr TokenType checkValueType();

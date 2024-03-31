@@ -5,11 +5,9 @@
 
 #include <algorithm>
 #include <cwctype>
-#include <iostream>
 #include <utility>
 
 using std::next;
-using std::move;
 using std::wstring;
 using std::ranges::all_of;
 
@@ -23,21 +21,21 @@ constexpr bool test_func(const wstring& str, const F&& func)
 Token::Token(value_type value, const uint32_t location)
     : _line(location)
 {
-    _value = move(value);
+    _value = std::move(value);
     _token = checkValueType();
 }
 
-constexpr Token::ref_token_type Token::getToken() const
+Token::ref_token_type Token::getToken() const
 {
     return _token;
 }
 
-constexpr Token::ref_value_type Token::getValue() const
+Token::ref_value_type Token::getValue() const
 {
     return _value;
 }
 
-constexpr const uint32_t& Token::getLine() const
+const uint32_t& Token::getLine() const
 {
     return _line;
 }

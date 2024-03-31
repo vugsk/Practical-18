@@ -8,9 +8,7 @@
     #include <iostream>
 #endif
 
-#include <any>
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "Node.hpp"
@@ -49,7 +47,7 @@ public:
 
 protected:
     constexpr void parse(const std::vector<std::shared_ptr<IToken>>& tokens);
-    void           check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens);
+    void check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens);
 
     // std::any test_func_lol(const std::wstring& key) const;
 

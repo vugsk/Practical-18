@@ -6,26 +6,6 @@
 
 #include "IToken.hpp"
 
-const std::vector<std::vector<TokenType>> Parser::_test_funcs
-{
-    {TokenType::id, TokenType::colon, TokenType::number_datatype,
-            TokenType::assignment, TokenType::number_literal,
-                TokenType::semicolon},
-
-    {TokenType::id, TokenType::colon, TokenType::string_datatype,
-            TokenType::assignment, TokenType::string_literal,
-                TokenType::semicolon},
-
-    {TokenType::id, TokenType::colon, TokenType::character_datatype,
-            TokenType::assignment, TokenType::character_literal,
-                TokenType::semicolon},
-
-    {TokenType::id, TokenType::colon, TokenType::structe_datatype,
-            TokenType::left_bracket, TokenType::right_bracket,
-                TokenType::semicolon},
-};
-
-
 
 static constexpr bool operator==(const std::vector<std::shared_ptr<IToken>>& lhs,
                 std::vector<std::vector<TokenType>>::const_reference rhs)
