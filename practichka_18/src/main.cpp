@@ -63,7 +63,7 @@ int main()
 
     Parser parser(l.test_func());
 
-    std::wcout << std::get<wchar_t>(parser.test_func_lol(L"буква")) << '\n';
+    // std::wcout << parser.get_test_func<int>(L"номер") << '\n';
     parser.printDebug();
 
     return 0;

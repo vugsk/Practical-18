@@ -28,6 +28,7 @@ enum class TokenType : int8_t
     number_datatype,
     string_datatype,
     character_datatype,
+    structe_datatype,
 };
 
 typedef std::pair<TokenType, std::wstring> token_pair;
@@ -46,6 +47,7 @@ static const std::vector<token_pair> TOKENS
         {TokenType::string_datatype, L"строка"},
         {TokenType::number_datatype, L"число"},
         {TokenType::character_datatype, L"символ"},
+        {TokenType::structe_datatype, L"структура"},
 
         {TokenType::id, L"ID"},
         {TokenType::end, L"END"}

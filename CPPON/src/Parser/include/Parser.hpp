@@ -8,58 +8,58 @@
     #include <iostream>
 #endif
 
+#include <any>
 #include <memory>
 #include <set>
-#include <variant>
 #include <vector>
 
+#include "Node.hpp"
 #include "Token.hpp"
 
 class Parser
 {
 public:
     explicit Parser(const std::vector<std::shared_ptr<IToken>>& tokens);
-    ~Parser() = default;
 
-     std::variant<int, wchar_t, std::wstring> test_func_lol(
-        const std::wstring& key) const
-    {
-        for (auto i : _tokens_set)
-        {
-            if (i.front()->getValue() == key)
-            {
-                if (is_test_func_number(i))
-                    return std::stoi(i[i.size() - 2]->getValue());
-                if (is_test_func_string(i))
-                    return i[i.size() - 2]->getValue();
-                if (is_test_func_char(i))
-                    return i[i.size() - 2]->getValue()[1];
-            }
-        }
-        return 0;
-    }
+    Parser(const Parser& other)                = delete;
+    Parser(Parser&& other) noexcept            = delete;
+    Parser& operator=(const Parser& other)     = delete;
+    Parser& operator=(Parser&& other) noexcept = delete;
+    ~Parser()                                  = default;
+
+    // template <typename T>
+    // constexpr T get_test_func(const std::wstring& key) const
+    // {
+    //     return std::any_cast<T>(test_func_lol(key));
+    // }
 
     #ifdef PARSER_DEBUG
-        void printDebug() {}
+        void printDebug() const
+        {
+            for (const auto& node : _nodes)
+            {
+                std::wcout << node->get_name() << ' '
+                            << node->get_type_token() << ' '
+                            << node->get_type_factic() << ' '
+                            << node->get_line() << ' '
+                            << node->get_value().type().name() << '\n';
+            }
+        }
     #endif
 
 protected:
-    void parse(const std::vector<std::shared_ptr<IToken>>& tokens);
-    void check_tokens() const;
+    constexpr void parse(const std::vector<std::shared_ptr<IToken>>& tokens);
+    void           check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens);
 
-    bool        is_test_func_struct();
-    static bool is_test_func_number(
-        const std::vector<std::shared_ptr<IToken>>& line_tokens);
-    static bool is_test_func_string(
-        const std::vector<std::shared_ptr<IToken>>& line_tokens);
-    static bool is_test_func_char(
-        const std::vector<std::shared_ptr<IToken>>& line_tokens);
+    // std::any test_func_lol(const std::wstring& key) const;
 
 private:
-    std::set<std::vector<std::shared_ptr<IToken>>> _tokens_set;
-
     static const std::vector<std::vector<TokenType>> _test_funcs;
 
+    bool test_func_is_num(uint32_t index,
+        const std::vector<std::shared_ptr<IToken>>& tokens);
+
+    std::vector<std::shared_ptr<Node>>               _nodes;
 };
 
 

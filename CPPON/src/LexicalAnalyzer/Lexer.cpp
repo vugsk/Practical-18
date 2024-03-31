@@ -81,7 +81,6 @@ std::vector<shared_ptr<IToken>> Lexer::test_func()
 {
     for (const auto& [value, line] : _words)
         _tokens.push_back(std::make_shared<Token>(value, line));
-    _tokens.push_back(std::make_shared<Token>(_end, ++_line));
     return _tokens;
 }
 
