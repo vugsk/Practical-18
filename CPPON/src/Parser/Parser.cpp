@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstdlib>
 #include <iostream>
 
 #include "IToken.hpp"
@@ -79,7 +80,10 @@ static constexpr uint32_t find_test_func(
 {
     if (index == -1) return true;
     if (tokens[index - 1] != TokenType::assignment) return true;
-    if (tokens[index + 1] != TokenType::semicolon) return true;
+    
+    if (tokens[index + 1] != TokenType::semicolon && 
+        tokens[index + 1] != TokenType::comma) return true;
+
     if (tokens[index - 3] != TokenType::colon) return true;
 
     return false;
@@ -91,6 +95,7 @@ static constexpr uint32_t find_test_func(
 {
     if (test_func_is_num(index, tokens) || tokens[index - 2] != data)
     {
+        std::wcout << tokens[index]->getValue() << '\n';
         pos_err = tokens[index]->getLine();
         return true;
     }
@@ -156,6 +161,7 @@ void Parser::check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens)
             TokenType::character_datatype))
     {
         std::wcout << "err: " << position_err << '\n';
+        exit(EXIT_FAILURE);
     }
 }
 

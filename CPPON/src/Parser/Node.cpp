@@ -1,7 +1,11 @@
 
 #include "Node.hpp"
+#include "IToken.hpp"
 
+#include <any>
+#include <memory>
 #include <utility>
+#include <vector>
 
 Var::Var(std::wstring   name, std::wstring value, std::wstring type,
          const uint32_t line)
@@ -59,12 +63,34 @@ uint32_t Var::get_line() const
 
 
 
-Struct::Struct(std::wstring name, std::any value, std::wstring type,
-    uint32_t line)
+Struct::Struct(std::wstring name, std::vector<std::shared_ptr<IToken>> value,
+    std::wstring type, uint32_t line)
         : _name(std::move(name)), _type_token(std::move(type))
         , _line(line)
 {
     _type_factic = _name;
+
+    std::vector<std::shared_ptr<Node>> var;
+    std::vector<std::shared_ptr<IToken>> line_token;
+    
+    for (auto i : value)
+    {
+        if (i->getValue() == L",")
+        {
+            var.push_back(std::make_shared<Var>(line_token[0]->getValue(), 
+                                                  line_token[4]->getValue(), 
+                                                  line_token[2]->getValue(), 
+                                                  line_token[0]->getLine()));
+            
+            _lines.push_back(line_token.front()->getLine());
+
+            line_token.clear();
+            continue;
+        }
+        line_token.push_back(i);
+    }
+
+    _value = var;
 
 }
 
@@ -93,4 +119,8 @@ uint32_t Struct::get_line() const
     return _line;
 }
 
+std::vector<uint32_t> Struct::get_lines_val() const
+{
+    return _lines;
+}
 
