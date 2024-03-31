@@ -2,6 +2,7 @@
 #include "Parser.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
 
 #include "IToken.hpp"
@@ -37,7 +38,8 @@ static constexpr bool is_test_func_data_type(
     const std::vector<std::shared_ptr<IToken>>& line_tokens,
     const TokenType& type)
 {
-    return std::ranges::any_of(line_tokens, [type](const auto& i)
+    return std::ranges::any_of(line_tokens, 
+        [type](const auto& i)
     {
         return i->getToken() == type;
     });
@@ -72,14 +74,42 @@ static constexpr uint32_t find_test_func(
     return -1;
 }
 
+[[nodiscard]] static constexpr bool test_func_is_num(uint32_t index,
+    const std::vector<std::shared_ptr<IToken>>& tokens)
+{
+    if (index == -1) return true;
+    if (tokens[index - 1] != TokenType::assignment) return true;
+    if (tokens[index + 1] != TokenType::semicolon) return true;
+    if (tokens[index - 3] != TokenType::colon) return true;
 
+    return false;
+}
 
+[[nodiscard]] static constexpr bool test_is_func(uint32_t index,
+    const std::vector<std::shared_ptr<IToken>>& tokens, uint32_t& pos_err,
+    TokenType data)
+{
+    if (test_func_is_num(index, tokens) || tokens[index - 2] != data)
+    {
+        pos_err = tokens[index]->getLine();
+        return true;
+    }
+    return false;
+}
+
+static constexpr bool is_test_func_easy_data(
+    const std::vector<std::shared_ptr<IToken>>& line_token)
+{
+    return is_test_func_number(line_token) ||
+           is_test_func_string(line_token) ||
+           is_test_func_char(line_token);
+}
 
 
 Parser::Parser(const std::vector<std::shared_ptr<IToken>>& tokens)
 {
     check_tokens(tokens);
-    // parse(tokens);
+    parse(tokens);
 }
 
 constexpr void Parser::parse(const std::vector<std::shared_ptr<IToken>>& tokens)
@@ -89,9 +119,7 @@ constexpr void Parser::parse(const std::vector<std::shared_ptr<IToken>>& tokens)
     {
         if (i->getValue() == L";")
         {
-            if (is_test_func_number(line_tokens) ||
-                is_test_func_string(line_tokens) ||
-                is_test_func_char(line_tokens))
+            if (is_test_func_easy_data(line_tokens))
             {
                 std::wstring name = line_tokens[find_test_func(line_tokens,
                     TokenType::id)]->getValue();
@@ -110,54 +138,25 @@ constexpr void Parser::parse(const std::vector<std::shared_ptr<IToken>>& tokens)
     }
 }
 
-bool Parser::test_func_is_num(uint32_t index,
-    const std::vector<std::shared_ptr<IToken>>& tokens)
-{
-    if (index == -1) return true;
-    if (tokens[index - 1] != TokenType::assignment) return true;
-    if (tokens[index + 1] != TokenType::semicolon) return true;
-    if (tokens[index - 2] != TokenType::colon) return true;
-
-    return false;
-}
-
 void Parser::check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens)
 {
-    uint32_t line = tokens.back()->getLine();
-    std::wcout << line << '\n';
+    uint32_t index_literal_num = find_test_func(tokens, 
+        TokenType::number_literal);
+    uint32_t index_literal_str = find_test_func(tokens, 
+        TokenType::string_literal);
+    uint32_t index_literal_char = find_test_func(tokens, 
+        TokenType::character_literal);
 
-    bool     te           = false;
     uint32_t position_err = 0;
-
-    uint32_t index_literal_num = find_test_func(tokens, TokenType::number_literal);
-    uint32_t index_literal_str = find_test_func(tokens, TokenType::string_literal);
-    uint32_t index_literal_char = find_test_func(tokens, TokenType::character_literal);
-
-
-    if (test_func_is_num(index_literal_num, tokens) ||
-        tokens[index_literal_num - 2] != TokenType::number_datatype)
+    if (test_is_func(index_literal_num, tokens, position_err, 
+            TokenType::number_datatype) ||
+        test_is_func(index_literal_str, tokens, position_err, 
+            TokenType::string_datatype) ||
+        test_is_func(index_literal_char, tokens, position_err, 
+            TokenType::character_datatype))
     {
-        te = true;
-        position_err = tokens[index_literal_num - 2]->getLine();
+        std::wcout << "err: " << position_err << '\n';
     }
-
-    else if (test_func_is_num(index_literal_str, tokens) ||
-        tokens[index_literal_str - 2] != TokenType::string_datatype)
-    {
-        te = true;
-        position_err = tokens[index_literal_str - 2]->getLine();
-    }
-
-    else if (test_func_is_num(index_literal_char, tokens) ||
-        tokens[index_literal_char - 2] != TokenType::character_datatype)
-    {
-        te = true;
-        position_err = tokens[index_literal_char - 2]->getLine();
-    }
-
-    if (te)
-        std::wcout << te << " err: " << position_err << '\n';
-
 }
 
 // std::any Parser::test_func_lol(const std::wstring& key) const

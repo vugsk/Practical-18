@@ -54,8 +54,8 @@ protected:
 private:
     static const std::vector<std::vector<TokenType>> _test_funcs;
 
-    bool test_func_is_num(uint32_t index,
-        const std::vector<std::shared_ptr<IToken>>& tokens);
+    // bool test_func_is_num(uint32_t index,
+    //     const std::vector<std::shared_ptr<IToken>>& tokens);
 
     std::vector<std::shared_ptr<Node>>               _nodes;
 };

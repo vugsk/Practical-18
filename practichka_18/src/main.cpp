@@ -4,7 +4,6 @@
 #include "Config.hpp"
 
 #include "Lexer.hpp"
-#include "Token.hpp"
 
 #define PARSER_DEBUG
 #include "Parser.hpp"
