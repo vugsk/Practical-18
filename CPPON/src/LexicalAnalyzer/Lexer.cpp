@@ -4,11 +4,9 @@
 #include "ConfigLexer.hpp"
 #include "Token.hpp"
 
-#include <algorithm>
 #include <cwctype>
 
 using std::wstring;
-using std::move;
 using std::pair;
 using std::shared_ptr;
 using std::vector;
@@ -90,7 +88,7 @@ constexpr wstring Lexer::checkForSeparator(const wchar_t symbol,
     if (IsSeparateSymbol(symbol))
     {
         if (!lexeme.empty())
-            addWord(move(lexeme));
+            addWord(std::move(lexeme));
         if (IsSeparators(symbol))
             addWord(wstring(1, symbol));
     }
@@ -109,7 +107,7 @@ constexpr wstring Lexer::addStringLiterale(const wchar_t symbol,
         else if (_state == _string)
         {
             _state = _default;
-            addWord(move(lexem));
+            addWord(std::move(lexem));
             return _empty_line;
         }
     }
@@ -133,7 +131,8 @@ constexpr void Lexer::mergeStringLiterale() const
 
     _words.insert(next(_words.begin(), indexs.first),
         std::make_pair(CombineWithSpaceIfNeeded(
-            move(_words[indexs.first].first), move(_words[indexs.second].first)),
+            std::move(_words[indexs.first].first), 
+            std::move(_words[indexs.second].first)),
             _words[indexs.first].second));
 
     erase_if(_words,
@@ -154,7 +153,7 @@ constexpr void Lexer::parseCode(const wstring& code)
         if (IsEnter(symbol))
             ++_line;
 
-        current_lexeme = checkForSeparator(symbol, move(current_lexeme));
-        current_lexeme = addStringLiterale(symbol, move(current_lexeme));
+        current_lexeme = checkForSeparator(symbol, std::move(current_lexeme));
+        current_lexeme = addStringLiterale(symbol, std::move(current_lexeme));
     }
 }

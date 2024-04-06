@@ -1,7 +1,10 @@
 
 #include "Structe.hpp"
 
+#include "Token.hpp"
 #include "Variable.hpp"
+
+#include <memory>
 
 Struct::Struct(std::wstring name, std::vector<std::shared_ptr<IToken>> value,
     std::wstring type, uint32_t line)
@@ -13,7 +16,10 @@ Struct::Struct(std::wstring name, std::vector<std::shared_ptr<IToken>> value,
     std::vector<std::shared_ptr<Node>> var;
     std::vector<std::shared_ptr<IToken>> line_token;
     
-    for (auto i : value)
+    if (value.back()->getValue() != L",")
+        value.push_back(std::make_shared<Token>(L",", value.back()->getLine()));
+
+    for (const auto& i : value)
     {
         if (i->getValue() == L",")
         {

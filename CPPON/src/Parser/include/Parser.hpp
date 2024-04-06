@@ -4,15 +4,37 @@
 
 // #define PARSER_DEBUG
 
+#include <any>
+#include <string>
+#include <vector>
+
 #ifdef PARSER_DEBUG
     #include <iostream>
 #endif
 
 #include <memory>
-#include <vector>
 
 #include "Node.hpp"
-#include "Token.hpp"
+#include "IToken.hpp"
+
+class Test_str {
+public:
+    explicit Test_str(const std::vector<std::shared_ptr<Node>>& nodes)
+        : _nodes(nodes) {}
+    Test_str() {}
+    
+    std::any operator[](const std::wstring& key) {
+        for (const auto& i : _nodes) {
+            if (key == i->get_name()) {
+                return i->get_value();
+            }
+        }
+        return {};
+    }
+private:
+    std::vector<std::shared_ptr<Node>> _nodes;
+
+};
 
 class Parser
 {
@@ -25,7 +47,33 @@ public:
     Parser& operator=(Parser&& other) noexcept = delete;
     ~Parser()                                  = default;
 
-    std::shared_ptr<Node> get_test_func(const std::wstring& key) const;
+    template<typename T>
+    constexpr T get_test_func(const std::wstring& key) const
+    {
+        for (const auto& i : _nodes)
+        {
+            if (i->get_name() == key &&
+                i->get_type_token() != L"структура")
+            {
+                return std::any_cast<T>(i->get_value());
+            }
+        }
+        return T{};
+    }
+
+    Test_str get_test_func_structe(
+        const std::wstring& key) const
+    {
+        for (const auto& i : _nodes)
+        {
+            if (i->get_name() == key &&
+                i->get_type_token() == L"структура")
+            {
+                return Test_str(std::any_cast<std::vector<std::shared_ptr<Node>>>(i->get_value()));
+            }
+        }
+        return Test_str();
+    }
 
     #ifdef PARSER_DEBUG
         void printDebug() const
@@ -39,8 +87,6 @@ public:
                             << node->get_value().type().name() << '\n';
             }
         }
-
-        std::vector<std::shared_ptr<Node>> get__() { return _nodes; }
     #endif
 
 protected:

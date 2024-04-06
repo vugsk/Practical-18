@@ -1,5 +1,7 @@
+#include <any>
 #include <fstream>
 #include <iostream>
+#include <string>
 
 #include "Config.hpp"
 
@@ -61,9 +63,12 @@ int main()
     Lexer l(text_code);
 
     Parser parser(l.test_func());
-
-    // std::wcout << parser.get_test_func<int>(L"номер") << '\n';
     parser.printDebug();
+
+    wcout << parser.get_test_func<int>(L"df") << '\n';
+    // wcout << parser.get_test_func_structe(L"Студент0") << '\n';
+
+    wcout << any_cast<wstring>(parser.get_test_func_structe(L"Студент0")[L"фамилия"]);
 
     return 0;
 }

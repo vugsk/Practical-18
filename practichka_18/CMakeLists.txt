@@ -1,5 +1,6 @@
 
-project(Practichka_18 VERSION ${VERSION_PROJECT} LANGUAGES ${LANGUAGES_PROJECT})
+project(Practichka_18 VERSION ${VERSION_PROJECT}
+    LANGUAGES ${LANGUAGES_PROJECT})
 
 
 add_executable(Practichka_18

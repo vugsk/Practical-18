@@ -6,7 +6,6 @@
 
 #include "IToken.hpp"
 #include "Structe.hpp"
-#include "Token.hpp"
 #include "Variable.hpp"
 
 
@@ -37,11 +36,9 @@ static bool operator!=(const std::shared_ptr<IToken>& token,
 
 
 [[nodiscard]] static constexpr bool is_test_func_data_type(
-    const std::vector<std::shared_ptr<IToken>>& line_tokens,
-    const TokenType& type)
+    const std::vector<std::shared_ptr<IToken>>& line_tokens, const TokenType& type)
 {
-    return std::ranges::any_of(line_tokens, 
-        [type](const auto& i)
+    return std::ranges::any_of(line_tokens, [type](const auto& i)
     {
         return i == type;
     });
@@ -70,6 +67,13 @@ static bool operator!=(const std::shared_ptr<IToken>& token,
 {
     return is_test_func_data_type(line_tokens, TokenType::structe_datatype);
 }
+
+// template<typename T>
+// [[nodiscard]] static constexpr bool is_test_func_struct(
+//     const std::vector<std::shared_ptr<IToken>>& line_tokens)
+// {
+//     return is_test_func_data_type(line_tokens, TokenType::structe_datatype);
+// }
 
 [[nodiscard]] static constexpr uint32_t find_test_func(
     const std::vector<std::shared_ptr<IToken>>& tokens,
@@ -188,13 +192,4 @@ void Parser::check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens)
         std::wcout << "err: " << position_err << '\n';
         exit(EXIT_FAILURE);
     }
-}
-
-
-std::shared_ptr<Node> Parser::get_test_func(const std::wstring& key) const
-{
-    for (const auto& i : _nodes)
-        if (i->get_name() == key)
-            return i;
-    return std::make_shared<None>();
 }

@@ -2,60 +2,7 @@
 #ifndef TOKEN_HPP
 #define TOKEN_HPP
 
-#include <vector>
-
 #include "IToken.hpp"
-
-
-enum class TokenType : int8_t
-{
-    none = -1,
-    null = 0,
-    end = 1,
-    id,
-
-    colon,
-    semicolon,
-    assignment,
-    comma,
-    left_bracket,
-    right_bracket,
-
-    string_literal,
-    number_literal,
-    character_literal,
-
-    number_datatype,
-    string_datatype,
-    character_datatype,
-    structe_datatype,
-};
-
-typedef std::pair<TokenType, std::wstring> token_pair;
-static const std::vector<token_pair> TOKENS
-{
-        {TokenType::colon, L":"},
-        {TokenType::semicolon, L";"},
-        {TokenType::assignment, L"="},
-        {TokenType::left_bracket, L"("},
-        {TokenType::right_bracket, L")"},
-        {TokenType::comma, L","},
-        {TokenType::string_literal, L"\""},
-        {TokenType::character_literal, L"\'"},
-        {TokenType::number_literal, L"0-9"},
-
-        {TokenType::string_datatype, L"строка"},
-        {TokenType::number_datatype, L"число"},
-        {TokenType::character_datatype, L"символ"},
-        {TokenType::structe_datatype, L"структура"},
-
-        {TokenType::id, L"ID"},
-        {TokenType::end, L"END"}
-};
-
-static const token_pair NONE = {TokenType::none, L"NONE"};
-static const token_pair NUL  = {TokenType::null, L"NULL"};
-
 
 class Token final : public IToken
 {
