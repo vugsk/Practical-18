@@ -25,11 +25,7 @@ public:
     Parser& operator=(Parser&& other) noexcept = delete;
     ~Parser()                                  = default;
 
-    // template <typename T>
-    // constexpr T get_test_func(const std::wstring& key) const
-    // {
-    //     return std::any_cast<T>(test_func_lol(key));
-    // }
+    std::shared_ptr<Node> get_test_func(const std::wstring& key) const;
 
     #ifdef PARSER_DEBUG
         void printDebug() const
@@ -43,20 +39,16 @@ public:
                             << node->get_value().type().name() << '\n';
             }
         }
+
+        std::vector<std::shared_ptr<Node>> get__() { return _nodes; }
     #endif
 
 protected:
     constexpr void parse(const std::vector<std::shared_ptr<IToken>>& tokens);
     void check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens);
 
-    // std::any test_func_lol(const std::wstring& key) const;
-
 private:
     static const std::vector<std::vector<TokenType>> _test_funcs;
-
-    // bool test_func_is_num(uint32_t index,
-    //     const std::vector<std::shared_ptr<IToken>>& tokens);
-
     std::vector<std::shared_ptr<Node>>               _nodes;
 };
 
