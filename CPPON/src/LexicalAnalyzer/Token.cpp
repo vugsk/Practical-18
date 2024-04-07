@@ -42,7 +42,7 @@ const uint32_t& Token::getLine() const
 
 constexpr TokenType Token::checkValueType()
 {
-    for (const auto& [fst, snd] : TOKENS)
+    for (const auto& [fst, snd] : TOKENS_ARRAY)
         if (snd == _value)
             return fst;
 

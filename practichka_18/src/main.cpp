@@ -68,7 +68,7 @@ int main()
     wcout << parser.get_test_func<int>(L"df") << '\n';
     // wcout << parser.get_test_func_structe(L"Студент0") << '\n';
 
-    wcout << any_cast<wstring>(parser.get_test_func_structe(L"Студент0")[L"фамилия"]);
+    wcout << any_cast<wstring>(parser.get_test_func_structe(L"Студент0")[0]->get_value());
 
     return 0;
 }

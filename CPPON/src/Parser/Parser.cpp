@@ -2,7 +2,9 @@
 #include "Parser.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
+#include <vector>
 
 #include "IToken.hpp"
 #include "Structe.hpp"
@@ -44,36 +46,31 @@ static bool operator!=(const std::shared_ptr<IToken>& token,
     });
 }
 
-[[nodiscard]] static constexpr bool is_test_func_number(
-    const std::vector<std::shared_ptr<IToken>>& line_tokens)
-{
-    return is_test_func_data_type(line_tokens, TokenType::number_datatype);
-}
-
-[[nodiscard]] static constexpr bool is_test_func_string(
-    const std::vector<std::shared_ptr<IToken>>& line_tokens)
-{
-    return is_test_func_data_type(line_tokens, TokenType::string_datatype);
-}
-
-[[nodiscard]] static constexpr bool is_test_func_char(
-    const std::vector<std::shared_ptr<IToken>>& line_tokens)
-{
-    return is_test_func_data_type(line_tokens, TokenType::character_datatype);
-}
-
 [[nodiscard]] static constexpr bool is_test_func_struct(
     const std::vector<std::shared_ptr<IToken>>& line_tokens)
 {
     return is_test_func_data_type(line_tokens, TokenType::structe_datatype);
 }
 
-// template<typename T>
-// [[nodiscard]] static constexpr bool is_test_func_struct(
-//     const std::vector<std::shared_ptr<IToken>>& line_tokens)
-// {
-//     return is_test_func_data_type(line_tokens, TokenType::structe_datatype);
-// }
+static constexpr uint8_t SIZE_ARRAY_DATA_TYPE = 3;
+static const TokenType TYPE_DATA_ARRAY[SIZE_ARRAY_DATA_TYPE]
+{
+    TokenType::number_datatype,
+    TokenType::string_datatype,
+    TokenType::character_datatype,
+};
+
+[[nodiscard]] static constexpr bool is_test_func_test(
+    const std::vector<std::shared_ptr<IToken>>& line_tokens)
+{
+    return std::ranges::any_of(TYPE_DATA_ARRAY, [&line_tokens](const auto& i)
+    {
+        return is_test_func_data_type(line_tokens, i);
+    });
+}
+
+
+
 
 [[nodiscard]] static constexpr uint32_t find_test_func(
     const std::vector<std::shared_ptr<IToken>>& tokens,
@@ -113,13 +110,9 @@ static bool operator!=(const std::shared_ptr<IToken>& token,
     return false;
 }
 
-static constexpr bool is_test_func_easy_data(
-    const std::vector<std::shared_ptr<IToken>>& line_token)
-{
-    return is_test_func_number(line_token) ||
-           is_test_func_string(line_token) ||
-           is_test_func_char(line_token);
-}
+
+
+
 
 
 Parser::Parser(const std::vector<std::shared_ptr<IToken>>& tokens)
@@ -157,7 +150,7 @@ constexpr void Parser::parse(const std::vector<std::shared_ptr<IToken>>& tokens)
                 _nodes.push_back(std::make_shared<Struct>(name, temp, type, line));
             }
 
-            else if (is_test_func_easy_data(line_tokens))
+            else if (is_test_func_test(line_tokens))
             {                
                 std::wstring value = line_tokens[find_test_func(line_tokens,
                     TokenType::assignment) + 1]->getValue();
@@ -172,24 +165,23 @@ constexpr void Parser::parse(const std::vector<std::shared_ptr<IToken>>& tokens)
     }
 }
 
+static constexpr uint8_t SIZE_ARRAY_LITERALS = 3;
+static const TokenType ARRAY_LITERALS[SIZE_ARRAY_LITERALS]
+{
+    TokenType::number_literal,
+    TokenType::string_literal,
+    TokenType::character_literal,
+};
+
 void Parser::check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens)
 {
-    uint32_t index_literal_num = find_test_func(tokens, 
-        TokenType::number_literal);
-    uint32_t index_literal_str = find_test_func(tokens, 
-        TokenType::string_literal);
-    uint32_t index_literal_char = find_test_func(tokens, 
-        TokenType::character_literal);
-
     uint32_t position_err = 0;
-    if (test_is_func(index_literal_num, tokens, position_err, 
-            TokenType::number_datatype) ||
-        test_is_func(index_literal_str, tokens, position_err, 
-            TokenType::string_datatype) ||
-        test_is_func(index_literal_char, tokens, position_err, 
-            TokenType::character_datatype))
-    {
-        std::wcout << "err: " << position_err << '\n';
-        exit(EXIT_FAILURE);
+    for (int i = 0; i < SIZE_ARRAY_DATA_TYPE; i++) {
+        if (test_is_func(find_test_func(tokens, ARRAY_LITERALS[i]), 
+            tokens, position_err, TYPE_DATA_ARRAY[i]))
+        {
+            std::wcout << "err: " << position_err << '\n';
+            exit(EXIT_FAILURE);
+        }
     }
 }

@@ -4,7 +4,6 @@
 
 #include <cstdint>
 #include <string>
-#include <vector>
 
 enum class TokenType : int8_t
 {
@@ -30,8 +29,10 @@ enum class TokenType : int8_t
     structe_datatype,
 };
 
-typedef std::pair<TokenType, std::wstring> token_pair;
-static const std::vector<token_pair> TOKENS
+typedef std::pair<TokenType, const wchar_t*> token_pair;
+
+static constexpr uint8_t SIZE_TOKENS_ARRAY = 15;
+static const token_pair TOKENS_ARRAY[SIZE_TOKENS_ARRAY]
 {
         {TokenType::colon, L":"},
         {TokenType::semicolon, L";"},
