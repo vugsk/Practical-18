@@ -36,20 +36,13 @@ static bool operator!=(const std::shared_ptr<IToken>& token,
     return token->getToken() != type;
 }
 
-
-[[nodiscard]] static constexpr bool is_test_func_data_type(
-    const std::vector<std::shared_ptr<IToken>>& line_tokens, const TokenType& type)
-{
-    return std::ranges::any_of(line_tokens, [type](const auto& i)
-    {
-        return i == type;
-    });
-}
-
 [[nodiscard]] static constexpr bool is_test_func_struct(
     const std::vector<std::shared_ptr<IToken>>& line_tokens)
 {
-    return is_test_func_data_type(line_tokens, TokenType::structe_datatype);
+    return std::ranges::any_of(line_tokens, [](const auto& i)
+    {
+        return i == TokenType::structe_datatype;
+    });
 }
 
 static constexpr uint8_t SIZE_ARRAY_DATA_TYPE = 3;
@@ -65,12 +58,12 @@ static const TokenType TYPE_DATA_ARRAY[SIZE_ARRAY_DATA_TYPE]
 {
     return std::ranges::any_of(TYPE_DATA_ARRAY, [&line_tokens](const auto& i)
     {
-        return is_test_func_data_type(line_tokens, i);
+        return std::ranges::any_of(line_tokens, [i](const auto& j)
+        {
+            return j == i;
+        });
     });
 }
-
-
-
 
 [[nodiscard]] static constexpr uint32_t find_test_func(
     const std::vector<std::shared_ptr<IToken>>& tokens,
@@ -176,7 +169,8 @@ static const TokenType ARRAY_LITERALS[SIZE_ARRAY_LITERALS]
 void Parser::check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens)
 {
     uint32_t position_err = 0;
-    for (int i = 0; i < SIZE_ARRAY_DATA_TYPE; i++) {
+    for (int i = 0; i < SIZE_ARRAY_DATA_TYPE; i++)
+    {
         if (test_is_func(find_test_func(tokens, ARRAY_LITERALS[i]), 
             tokens, position_err, TYPE_DATA_ARRAY[i]))
         {
@@ -185,3 +179,13 @@ void Parser::check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens)
         }
     }
 }
+
+Test_array Parser::get_test_func_structe(const std::wstring& key) const
+{
+    for (const auto& i : _nodes)
+        if (i->get_name() == key && i->get_type_token() == L"структура")
+            return std::any_cast<std::vector<std::shared_ptr<Node>>>(
+                i->get_value());
+    return {};
+}
+
