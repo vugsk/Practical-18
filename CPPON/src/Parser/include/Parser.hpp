@@ -48,7 +48,7 @@ public:
         return count;
     }
 
-    Test_array GetStructureByKey(const std::wstring& key) const;
+    CppOn getStructureByKey(const std::wstring& key) const;
 
     #ifdef PARSER_DEBUG
         void printDebug() const
@@ -66,7 +66,7 @@ public:
 
 protected:
     constexpr void parse(const std::vector<std::shared_ptr<IToken>>& tokens);
-    void check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens);
+    void checkTokens(const std::vector<std::shared_ptr<IToken>>& tokens);
 
 private:
     std::vector<std::shared_ptr<Node>> _nodes;

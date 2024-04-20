@@ -6,12 +6,12 @@
 
 #include <memory>
 
-class Test_array
+class CppOn
 {
 public:
-    Test_array() = default;
-    Test_array(const std::vector<std::shared_ptr<Node>>& list);
-    Test_array(const Test_array& other);
+    CppOn() = default;
+    CppOn(const std::vector<std::shared_ptr<Node>>& list);
+    CppOn(const CppOn& other);
 
     template<typename T1>
     T1 getVal(const std::wstring& key)

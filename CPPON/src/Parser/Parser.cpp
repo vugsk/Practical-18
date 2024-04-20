@@ -36,7 +36,7 @@ static bool operator!=(const std::shared_ptr<IToken>& token,
     return token->getToken() != type;
 }
 
-[[nodiscard]] static constexpr bool is_test_func_struct(
+[[nodiscard]] static constexpr bool isStructe(
     const std::vector<std::shared_ptr<IToken>>& line_tokens)
 {
     return std::ranges::any_of(line_tokens, [](const auto& i)
@@ -53,7 +53,7 @@ static const TokenType TYPE_DATA_ARRAY[SIZE_ARRAY_DATA_TYPE]
     TokenType::character_datatype,
 };
 
-[[nodiscard]] static constexpr bool is_test_func_test(
+[[nodiscard]] static constexpr bool isDataType(
     const std::vector<std::shared_ptr<IToken>>& line_tokens)
 {
     return std::ranges::any_of(TYPE_DATA_ARRAY, [&line_tokens](const auto& i)
@@ -65,7 +65,7 @@ static const TokenType TYPE_DATA_ARRAY[SIZE_ARRAY_DATA_TYPE]
     });
 }
 
-[[nodiscard]] static constexpr uint32_t find_test_func(
+[[nodiscard]] static constexpr uint32_t findTokenWithDataType(
     const std::vector<std::shared_ptr<IToken>>& tokens,
     const TokenType& type)
 {
@@ -76,7 +76,7 @@ static const TokenType TYPE_DATA_ARRAY[SIZE_ARRAY_DATA_TYPE]
     return -1;
 }
 
-[[nodiscard]] static constexpr bool test_func_is_num(uint32_t index,
+[[nodiscard]] static constexpr bool checkIndexTokenOnNumber(uint32_t index,
     const std::vector<std::shared_ptr<IToken>>& tokens)
 {
     if (index == -1) return true;
@@ -90,11 +90,11 @@ static const TokenType TYPE_DATA_ARRAY[SIZE_ARRAY_DATA_TYPE]
     return false;
 }
 
-[[nodiscard]] static constexpr bool test_is_func(uint32_t index,
+[[nodiscard]] static constexpr bool checkTokenOnDataType(uint32_t index,
     const std::vector<std::shared_ptr<IToken>>& tokens, uint32_t& pos_err,
     TokenType data)
 {
-    if (test_func_is_num(index, tokens) || tokens[index - 2] != data)
+    if (checkIndexTokenOnNumber(index, tokens) || tokens[index - 2] != data)
     {
         std::wcout << tokens[index]->getValue() << '\n';
         pos_err = tokens[index]->getLine();
@@ -110,7 +110,7 @@ static const TokenType TYPE_DATA_ARRAY[SIZE_ARRAY_DATA_TYPE]
 
 Parser::Parser(const std::vector<std::shared_ptr<IToken>>& tokens)
 {
-    check_tokens(tokens);
+    checkTokens(tokens);
     parse(tokens);
 }
 
@@ -121,18 +121,18 @@ constexpr void Parser::parse(const std::vector<std::shared_ptr<IToken>>& tokens)
     {
         if (i->getValue() == L";")
         {
-            std::wstring name = line_tokens[find_test_func(line_tokens,
+            std::wstring name = line_tokens[findTokenWithDataType(line_tokens,
                     TokenType::id)]->getValue();
-            std::wstring type = line_tokens[find_test_func(line_tokens,
+            std::wstring type = line_tokens[findTokenWithDataType(line_tokens,
                     TokenType::colon) + 1]->getValue();
             uint32_t line = line_tokens.front()->getLine();
 
-            if (is_test_func_struct(line_tokens))
+            if (isStructe(line_tokens))
             {
                 uint32_t index_braket_left = 
-                    find_test_func(line_tokens, TokenType::left_bracket);
+                    findTokenWithDataType(line_tokens, TokenType::left_bracket);
                 uint32_t index_braket_right = 
-                    find_test_func(line_tokens, TokenType::right_bracket);
+                    findTokenWithDataType(line_tokens, TokenType::right_bracket);
                 
                 std::vector<std::shared_ptr<IToken>> temp;
                 for (int j = index_braket_left + 1; j < index_braket_right - 1; j++)
@@ -143,9 +143,9 @@ constexpr void Parser::parse(const std::vector<std::shared_ptr<IToken>>& tokens)
                 _nodes.push_back(std::make_shared<Struct>(name, temp, type, line));
             }
 
-            else if (is_test_func_test(line_tokens))
+            else if (isDataType(line_tokens))
             {                
-                std::wstring value = line_tokens[find_test_func(line_tokens,
+                std::wstring value = line_tokens[findTokenWithDataType(line_tokens,
                     TokenType::assignment) + 1]->getValue();
 
                 _nodes.push_back(std::make_shared<Var>(name, value, type, line));
@@ -166,12 +166,12 @@ static const TokenType ARRAY_LITERALS[SIZE_ARRAY_LITERALS]
     TokenType::character_literal,
 };
 
-void Parser::check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens)
+void Parser::checkTokens(const std::vector<std::shared_ptr<IToken>>& tokens)
 {
     uint32_t position_err = 0;
     for (int i = 0; i < SIZE_ARRAY_DATA_TYPE; i++)
     {
-        if (test_is_func(find_test_func(tokens, ARRAY_LITERALS[i]), 
+        if (checkTokenOnDataType(findTokenWithDataType(tokens, ARRAY_LITERALS[i]), 
             tokens, position_err, TYPE_DATA_ARRAY[i]))
         {
             std::wcout << "err: " << position_err << '\n';
@@ -180,7 +180,7 @@ void Parser::check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens)
     }
 }
 
-Test_array Parser::GetStructureByKey(const std::wstring& key) const
+CppOn Parser::getStructureByKey(const std::wstring& key) const
 {
     for (const auto& i : _nodes)
         if (i->get_name() == key && i->get_type_token() == L"структура")

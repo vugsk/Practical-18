@@ -5,10 +5,10 @@
 #include <string>
 #include <fstream>
 
-[[nodiscard]] std::wstring read_file_test(const std::string& filename);
+[[nodiscard]] std::wstring ReadFile(const std::string& filename);
 
 template<typename T>
-void Write_file(const std::string& filename, const T& data)
+void WriteFile(const std::string& filename, const T& data)
 {
     std::ofstream file(filename);
 

@@ -4,7 +4,7 @@
 #include "Config.hpp"
 
 
-[[nodiscard]] std::wstring read_file_test(const std::string& filename)
+[[nodiscard]] std::wstring ReadFile(const std::string& filename)
 {
     std::ifstream file(filename, std::ios::binary);
 
