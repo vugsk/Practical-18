@@ -1,54 +1,35 @@
 
 #include <gtest/gtest.h>
 
-#include "Config.hpp"
-
+#define TEST_LEXER
+#include "ConfigTest.hpp"
 #include "Lexer.hpp"
 
-void TestOfOperatorsInToken(const std::shared_ptr<IToken>& token)
-{
-    for (const auto& [fst, snd] : OPERATORS)
-        if (fst == token->getToken())
-            EXPECT_EQ(token->getValue()[0], snd);
-}
 
-void TestingDataTypesInToken(const std::shared_ptr<IToken>& token)
+TEST(TestLexer, SeparatorOnWords)
 {
-    for (const auto& [fst, snd] : DATA_TYPES)
-        if (fst == token->getToken())
-            EXPECT_EQ(token->getValue(), snd);
-}
-
-void ForEachTokenApplyFunction(const std::wstring& test_code,
-    const std::function<void(const std::shared_ptr<IToken>&)>& func)
-{
-    for (Lexer kl(test_code); const auto& j
-        : kl.lexicalCodeAnalysis())
+    Lexer l;
+    for (const auto& [test_str, answers_str]
+        : TEST_CODES)
     {
-        func(j);
+        l.parseForTest(test_str);
+        ASSERT_TRUE(!l.getWords().empty()) << "array empty";
+        ASSERT_EQ(l.getWords().size(), answers_str.size());
+        for (auto i = 0; i < l.getWords().size(); i++)
+            EXPECT_EQ(l.getWords()[i].first, answers_str[i]);
     }
 }
 
-void TestTokensWithCustomFunction(
-    const std::function<void(const std::shared_ptr<IToken>&)>& func)
+TEST(TestLexer, Token)
 {
-    for (const auto& i : TEST_CODES)
-        ForEachTokenApplyFunction(i, func);
-}
-
-
-TEST(TestPrint, Operators)
-{
-    TestTokensWithCustomFunction(TestOfOperatorsInToken);
-}
-
-TEST(TestPrint, TypeData)
-{
-    TestTokensWithCustomFunction(TestingDataTypesInToken);
-}
-
-TEST(TestFunctionIsQuote, Quote)
-{
-    EXPECT_TRUE(IsQuote('\''));
-    EXPECT_TRUE(IsQuote('\"'));
+    for (const auto& [test_str, answers_str]
+        : TESTS_TOKENS_ANSWERS)
+    {
+        ASSERT_EQ(test_str.size(), answers_str.size()) << "size mismatch";
+        for (auto i = 0; i < test_str.size(); i++)
+        {
+            Token token(test_str[i]);
+            EXPECT_EQ(token.getToken(), answers_str[i]);
+        }
+    }
 }

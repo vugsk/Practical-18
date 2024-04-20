@@ -2,33 +2,22 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
-#include <algorithm>
+#include <any>
+#include <cstdint>
 #include <string>
-#include <variant>
+#include <vector>
 
-struct Node
+class Node
 {
-    std::shared_ptr<Node> right = nullptr;
-    std::shared_ptr<Node> left = nullptr;
-    std::wstring id;
-    std::wstring type;
-
-    template<typename T>
-    T value() { return std::get<T>(_value); }
-
-    template<typename T>
-    void value(const T& data) { return _value = data; }
-
-private:
-    std::variant<int, char, std::wstring> _value;
+public:
+    virtual ~Node() = default;
+    virtual std::wstring get_name() const = 0;
+    virtual std::any get_value() const = 0;
+    virtual std::wstring get_type_token() const = 0;
+    virtual std::wstring get_type_factic() const = 0;
+    virtual uint32_t get_line() const = 0;
+    virtual std::vector<uint32_t> get_lines_val() const = 0;
 };
-
-
-
-
-
-
-
 
 
 #endif //NODE_HPP

@@ -1,12 +1,13 @@
 
 set(PROJECT_NAME Lexer_test)
 
-project(${PROJECT_NAME} VERSION ${VERSION_PROJECT} LANGUAGES ${LANGUAGES_PROJECT})
+project(${PROJECT_NAME} VERSION ${VERSION_PROJECT}
+    LANGUAGES ${LANGUAGES_PROJECT})
 
 
 add_executable(${PROJECT_NAME}
     test.cpp
-    Config.hpp
+    ConfigTest.hpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE

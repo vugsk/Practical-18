@@ -16,6 +16,8 @@ add_subdirectory(src/Parser)
 add_library(${PROJECT_NAME} SHARED
     include/Config.hpp
     Config.cpp
+    CppOn.cpp
+    CppOn.hpp
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC

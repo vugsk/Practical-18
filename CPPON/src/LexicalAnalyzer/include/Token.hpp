@@ -3,7 +3,6 @@
 #define TOKEN_HPP
 
 #include "IToken.hpp"
-#include "TypeToken.hpp"
 
 class Token final : public IToken
 {
@@ -12,30 +11,22 @@ public:
     Token(Token&& other) noexcept            = delete;
     Token& operator=(const Token& other)     = delete;
     Token& operator=(Token&& other) noexcept = delete;
+    ~Token() override                        = default;
 
-    Token(const TokenType   token, const unsigned position,
-        const std::wstring& value)
-         : _token(token), _value(value), _position(position) {}
+    explicit Token(std::wstring value, uint32_t location = 0);
 
-    [[nodiscard]] const TokenType& getToken() const override
-    {
-        return _token;
-    }
+    [[nodiscard]] ref_token_type  getToken() const override;
+    [[nodiscard]] ref_value_type  getValue() const override;
+    [[nodiscard]] const uint32_t& getLine() const override;
 
-    [[nodiscard]] const std::wstring& getValue() const override
-    {
-        return _value;
-    }
-
-    [[nodiscard]] unsigned short getPosition() const
-    {
-        return _position;
-    }
+protected:
+    constexpr TokenType checkValueType();
 
 private:
-    TokenType _token;
-    std::wstring _value;
-    unsigned _position;
+    TokenType  _token;
+    value_type _value;
+    uint32_t   _line;
+
 };
 
 

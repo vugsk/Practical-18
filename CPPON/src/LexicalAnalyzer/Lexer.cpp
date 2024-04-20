@@ -1,72 +1,159 @@
 
 #include "Lexer.hpp"
 
-#include <algorithm>
-#include <memory>
+#include "ConfigLexer.hpp"
+#include "Token.hpp"
 
-#include <Token.hpp>
-#include <TypeToken.hpp>
+#include <cwctype>
 
-const char         Lexer::SPACE        = ' ';
-const std::wstring Lexer::NOTHING      = L"NOTHING";
-const size_t       Lexer::MIN_SIZE_VEC = 4;
+using std::wstring;
+using std::pair;
+using std::shared_ptr;
+using std::vector;
+
+constinit const wchar_t* Lexer::_string       = L"IN_STRING";
+constinit const wchar_t* Lexer::_default      = L"DEFAULT";
+constinit const wchar_t* Lexer::_end          = L"END";
+constinit const wchar_t* Lexer::_empty_line   = L"";
+constinit vector<pair<wstring, uint32_t>> Lexer::_words{};
+constinit vector<shared_ptr<IToken>>  Lexer::_tokens{};
 
 
-Lexer::Lexer(std::wstring code) : _inputCode(std::move(code)) {}
 
-std::vector<Lexer::tokenPointer> Lexer::lexicalCodeAnalysis()
+[[nodiscard]] static constexpr bool IsQuote(const wchar_t ch)
 {
-    while (_position <= _inputCode.length() - 1)
-    {
-        for (const auto i : TOKEN_OPERATORS)
-            if (i.value[0] == _inputCode[_position])
-                _tokens.push_back(createrToken(i, i.value));
+    return IsDoubleQuote(ch) || ch == '\'';
+}
+[[nodiscard]] static constexpr bool IsEnter(const wchar_t ch)
+{
+    return ch == '\n';
+}
+[[nodiscard]] static constexpr bool IsSeparators(const wchar_t ch)
+{
+    return !iswspace(ch) && ch != '\r' && !IsEnter(ch);
+}
+[[nodiscard]] static constexpr bool IsSeparateSymbol(const wchar_t symbol)
+{
+    return  symbol == ':'   || symbol == ';' ||
+            symbol == ','   || symbol == '(' ||
+            symbol == ')'   || symbol == '[' ||
+            symbol == ']'   || symbol == '=' ||
+            iswspace(symbol)|| symbol == '\r'||
+            IsEnter(symbol) || symbol == '#';
+}
+[[nodiscard]] static constexpr bool IsFrontDoubleQuoteStrring(
+    const wstring& str)
+{
+    return IsDoubleQuote(str.front());
+}
+[[nodiscard]] static constexpr bool IsBackDoubleQuoteStrring(const wstring& str)
+{
+    return IsDoubleQuote(str.back());
+}
 
-        _position++;
-    }
+[[nodiscard]] static constexpr wstring CombineWithSpaceIfNeeded(
+    wstring&& val_1, wstring&& val_2)
+{
+    return iswspace(val_2.front()) ? val_2 + val_1 : val_1 + L" " + val_2;
+}
 
-    _tokens.push_back(createrToken(END, END.value));
+template<typename T>
+[[nodiscard]] static constexpr pair<T, T> test_f(const pair<T, T>& pair_t,
+    T&& val_1, T&& val_2)
+{
+    return std::make_pair(pair_t.first + val_1, pair_t.second + val_2);
+}
+
+
+
+
+Lexer::Lexer(const wstring& code)
+    : _state(_default), _tokenIndex(0)
+    , _line(1)
+{
+    parseCode(code);
+    mergeStringLiterale();
+}
+
+std::vector<shared_ptr<IToken>> Lexer::test_func()
+{
+    for (const auto& [value, line] : _words)
+        _tokens.push_back(std::make_shared<Token>(value, line));
     return _tokens;
 }
 
-
-std::shared_ptr<IToken> Lexer::createrToken(TokenType token_type,
-    const std::wstring& value)
+constexpr wstring Lexer::checkForSeparator(const wchar_t symbol,
+                                           wstring&& lexeme)
 {
-    return std::make_shared<Token>(token_type, _position, value);
-}
-
-// * thing
-std::shared_ptr<IToken> Lexer::test_func_operator()
-{
-    for (const auto i : TOKEN_OPERATORS)
-        if (i.value[0] == _inputCode[_position])
-            return createrToken(i, i.value);
-    return createrToken(NUL, NUL.value);
-}
-
-std::shared_ptr<IToken> Lexer::test_func_literal()
-{
-    for (auto i : TOKEN_LITERALS)
+    if (IsSeparateSymbol(symbol))
     {
-        if (i.tokenType == TOKEN_LITERALS[2].tokenType)
-        {
+        if (!lexeme.empty())
+            addWord(std::move(lexeme));
+        if (IsSeparators(symbol))
+            addWord(wstring(1, symbol));
+    }
+    else
+        return lexeme + symbol;
+    return _empty_line;
+}
 
-        }
-        else if (i.value[0] == _inputCode[_position])
+constexpr wstring Lexer::addStringLiterale(const wchar_t symbol,
+    wstring&& lexem)
+{
+    if (IsQuote(symbol))
+    {
+        if (_state == _default)
+            _state = _string;
+        else if (_state == _string)
         {
-
+            _state = _default;
+            addWord(std::move(lexem));
+            return _empty_line;
         }
     }
-    return {};
+    return lexem;
 }
 
-std::shared_ptr<IToken> Lexer::test_func_data_type()
+constexpr void Lexer::addWord(wstring&& lexeme)
 {
-    return {};
+    _words.emplace_back(lexeme, _line);
+    ++_tokenIndex;
 }
 
+constexpr void Lexer::mergeStringLiterale() const
+{
+    pair indexs = std::make_pair(
+        findValueGivenCondition<uint32_t>(IsFrontDoubleQuoteStrring),
+        findValueGivenCondition<uint32_t>(IsBackDoubleQuoteStrring));
 
+    if (indexs.first == indexs.second)
+        return;
 
+    _words.insert(next(_words.begin(), indexs.first),
+        std::make_pair(CombineWithSpaceIfNeeded(
+            std::move(_words[indexs.first].first), 
+            std::move(_words[indexs.second].first)),
+            _words[indexs.first].second));
 
+    erase_if(_words,
+        [this, indexs](const pair<std::wstring, uint32_t>& str)
+    {
+        return findValueGivenCondition<bool>(
+            [str](const wstring& string){ return string == str.first; },
+            test_f<uint32_t>(indexs, 1, 2));
+    });
+}
 
+constexpr void Lexer::parseCode(const wstring& code)
+{
+    _tokenIndex = -1;
+    wstring current_lexeme;
+    for (const auto& symbol : code)
+    {
+        if (IsEnter(symbol))
+            ++_line;
+
+        current_lexeme = checkForSeparator(symbol, std::move(current_lexeme));
+        current_lexeme = addStringLiterale(symbol, std::move(current_lexeme));
+    }
+}
