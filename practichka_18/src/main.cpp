@@ -1,14 +1,12 @@
 
-#include <fstream>
+
 #include <functional>
-#include <iostream>
-#include <istream>
-#include <string>
+#include <map>
 #include <utility>
-#include <vector>
 
 #include "Config.hpp"
 
+#include "../include/WorkWithFile.hpp"
 #include "../include/ExceotionError.hpp"
 
 #include "Lexer.hpp"
@@ -20,27 +18,6 @@ using namespace std;
 
 static const string filename_release = "db_students.txt";
 
-[[nodiscard]] wstring read_file_test(const string& filename)
-{
-    ifstream file(filename, ios::binary);
-
-    if (!file.is_open())
-    {
-        puts("ERROR: NOT OPEN FILE");
-        exit(EXIT_FAILURE);
-    }
-
-    const long size = file.seekg(0, ios::end).tellg();
-    file.seekg(0);
-
-    string te;
-    te.resize(size);
-    file.read(&te[0], size);
-
-    file.close();
-    return ConvertString(te);
-}
-
 struct Student
 {
     string name;
@@ -48,54 +25,69 @@ struct Student
     wchar_t gender;
     unsigned short age;
     unsigned curse;
-
-    friend bool operator>(Student fr, Student snd)
-    {
-        return fr.name > snd.name;
-    }
 };
 
-static string FILENAME;
-vector<Student> UploadingData(const string& filename)
+[[nodiscard]] string test_f(const map<int, Student>& students)
 {
-    vector<Student> students;
+    wstring text;
+    for (auto [i, student] : students)
+    {
+        text += L"Студент" + to_wstring(i) + L": структура (\n"
+            + L"\tфамилия: строка = \"" + ConvertString(student.surname) + L"\",\n"
+            + L"\tимя: строка = \"" + ConvertString(student.name) + L"\",\n"
+            + L"\tпол: символ = \'" + student.gender + L"\',\n"
+            + L"\tвозраст: число = " + to_wstring(student.age) + L",\n"
+            + L"\tкурс: число = " + to_wstring(student.curse) + L",\n"
+            + L");\n";
+    }
 
+    return ConvertWstring(text);
+}
+
+[[nodiscard]] map<int, Student> UploadingData(const string& filename, const wstring& text)
+{
     Lexer l(read_file_test(filename));
     Parser parser(l.test_func());
 
+    unsigned si = stoi(ConvertWstring(wstring(1, text[text.find(L"Студент") + 7])));
+
+    map<int, Student> students;
     const wstring name = L"Студент";
     for (int i = 0; i < parser.getSize(); i++)
     {
-        wstring nameStructe = name + to_wstring(i);
-        students[i].name = ConvertWstring(parser.get_test_func_structe(nameStructe).getVal<wstring>(L"имя"));
-        students[i].surname = ConvertWstring(parser.get_test_func_structe(nameStructe).getVal<wstring>(L"фамилия"));
-        students[i].gender = parser.get_test_func_structe(nameStructe).getVal<wchar_t>(L"пол");
-        students[i].age = parser.get_test_func_structe(nameStructe).getVal<int>(L"возраст");
-        students[i].curse = parser.get_test_func_structe(nameStructe).getVal<int>(L"курс");
+        wstring nameStructe = name + to_wstring(i + si);
+        students[i + si].name = ConvertWstring(parser.GetStructureByKey(nameStructe).getVal<wstring>(L"имя"));
+        students[i + si].surname = ConvertWstring(parser.GetStructureByKey(nameStructe).getVal<wstring>(L"фамилия"));
+        students[i + si].gender = parser.GetStructureByKey(nameStructe).getVal<wchar_t>(L"пол");
+        students[i + si].age = parser.GetStructureByKey(nameStructe).getVal<int>(L"возраст");
+        students[i + si].curse = parser.GetStructureByKey(nameStructe).getVal<int>(L"курс");
     }
 
     return students;
 }
 
-void printDataFile(const string& filename)
+void printStudent(const map<int, Student>& students)
 {
-    Lexer l(read_file_test(filename));
-    Parser parser(l.test_func());
-
-    const wstring name = L"Студент";
-    cout << "\nДанные из файла:\n";
-    for (int i = 0; i < parser.getSize(); i++)
+    cout << "\nВывод данныч:\n";
+    for (auto [i, student] : students)
     {
-        wstring nameStructe = name + to_wstring(i);
-        cout << "Структура - " << ConvertWstring(nameStructe)
-             << "\n   имя - " << ConvertWstring(parser.get_test_func_structe(nameStructe).getVal<wstring>(L"имя"))
-             << "\n   фамилия - " << ConvertWstring(parser.get_test_func_structe(nameStructe).getVal<wstring>(L"фамилия"))
-             << "\n   пол - " << ConvertWstring(wstring(1, parser.get_test_func_structe(nameStructe).getVal<wchar_t>(L"пол")))
-             << "\n   возраст - " << parser.get_test_func_structe(nameStructe).getVal<int>(L"возраст")
-             << "\n   курс - " << parser.get_test_func_structe(nameStructe).getVal<int>(L"курс") << '\n';
+        cout << "Структура - Студент" << i
+             << "\n   имя - " << student.name
+             << "\n   фамилия - " << student.surname
+             << "\n   пол - " << ConvertWstring(wstring(1, student.gender))
+             << "\n   возраст - " << student.age
+             << "\n   курс - " << student.curse
+             << "\n";
     }
+
     cout << '\n';
 }
+
+void printDataFile(const string& filename, const wstring& text)
+{
+    printStudent(UploadingData(filename, text));
+}
+
 
 template<typename T>
 [[nodiscard]] T test_te(const string& text)
@@ -109,19 +101,8 @@ template<typename T>
 }
 
 template<typename T>
-void Write_file(const string& filename, const T& data)
-{
-    ofstream file(filename);
-
-    if (!file.is_open())
-        cout << "NOT OPEN FILE!!!";
-
-    file << data;
-    file.close();
-}
-
-template<typename T>
-const T& test_func__(const T& data, const function<bool(const T&)>& func)
+[[nodiscard]] const T& test_func__(const T& data, 
+    const function<bool(const T&)>& func)
 {
     return func(data) ? data : throw Error("ERROR!!! " + to_string(data));
 }
@@ -170,17 +151,17 @@ void inputDataInFile(const string& filename)
     }
 }
 
-void sort_surname(const string& filename)
+void sort_surname(const string& filename,
+    const function<bool(Student fr, Student scd)>& func,
+    map<int, Student>& students)
 {
-    vector<Student> students = UploadingData(filename);
-
     bool swapped;
     for (int i = 0; i < students.size() - 1; i++)
     {
         swapped = false;
         for (int j = 0; j < students.size() - i - 1; j++)
         {
-            if (students[j] > students[j + 1])
+            if (func(students[j], students[j + 1]))
             {
                 swap(students[j], students[j + 1]);
                 swapped = true;
@@ -191,6 +172,43 @@ void sort_surname(const string& filename)
             break;
     }
 
+    Write_file(filename, test_f(students));
+}
+
+pair<int, int> test_func_man_curse(map<int, Student>&& students)
+{
+    int max = 0, ind = 0;
+    for (int i = 1; i < 6; i++)
+    {
+        int count = 0;
+        for (auto [j, student] : students)
+        {
+            if (i  == student.curse && (student.gender == L'м' || student.gender == L'М'))
+            {   
+                count++;
+            }
+        }
+
+        if (count > max)
+        {
+            max = count;
+            ind = i;
+        }
+    }
+
+    return make_pair(max, ind);
+}
+
+[[nodiscard]] map<int, Student> printGenderAndCurse(const map<int, Student>& students)
+{
+    string gender = test_te<string>("Введите пол студента: ");
+    int curse = test_te<int>("Введите курс студента: ");
+
+    map<int, Student> printStudent;
+    for (auto& [i, student] : students)
+        if (student.gender == ConvertString(gender)[0] && student.curse == curse)
+            printStudent[i] = student;
+    return printStudent;
 }
 
 int main()
@@ -214,23 +232,43 @@ int main()
         return ch;
     };
 
+    const wstring text = read_file_test(filename_release);
+    map<int, Student> students = UploadingData(filename_release, text);
+
     bool te = true;    
     do {
         switch (tes()) {
             case 1:
-                printDataFile(filename_release);
+                printStudent(students);
                 break;
             case 2:
             case 3:
                 inputDataInFile(filename_release);
                 break;
             case 4:
-                sort_surname(filename_release);
+                sort_surname(filename_release, [](Student fr, Student scd)
+                {
+                    return fr.surname > scd.surname;
+                }, students);
+                printStudent(students);
                 break;
             case 5:
+                sort_surname(filename_release, [](Student fr, Student scd)
+                {
+                    return fr.age > scd.age;
+                }, students);
+                printStudent(students);
+                break;
             case 6:
+            {
+                pair te = test_func_man_curse(std::move(students));
+                cout << "Количество мужчин - " << te.first 
+                     << "; курс - " << te.second << '\n';
+                break;
+            }
             case 7:
-                continue;
+                printStudent(printGenderAndCurse(students));
+                break;
             case 0:
                 te = false;
                 break;

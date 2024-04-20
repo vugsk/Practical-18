@@ -180,7 +180,7 @@ void Parser::check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens)
     }
 }
 
-Test_array Parser::get_test_func_structe(const std::wstring& key) const
+Test_array Parser::GetStructureByKey(const std::wstring& key) const
 {
     for (const auto& i : _nodes)
         if (i->get_name() == key && i->get_type_token() == L"структура")

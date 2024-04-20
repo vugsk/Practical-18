@@ -2,6 +2,8 @@
 #ifndef CONFIGLEXER_HPP
 #define CONFIGLEXER_HPP
 
+#include <type_traits>
+
 template<typename T>
 concept IsChar = requires(T ch)
 {

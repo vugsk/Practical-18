@@ -5,43 +5,14 @@
 // #define PARSER_DEBUG
 
 #include <any>
-#include <cstdint>
-#include <string>
-#include <vector>
-#include <memory>
 
 #ifdef PARSER_DEBUG
     #include <iostream>
 #endif
 
-#include "Node.hpp"
+#include "cppon.hpp"
 #include "IToken.hpp"
 
-class Test_array
-{
-public:
-    Test_array() {}
-    Test_array(const std::vector<std::shared_ptr<Node>>& list)
-    {
-        _arr = list;
-    }
-    Test_array(const Test_array& other)
-    {
-        _arr = other._arr;
-    }
-
-    template<typename T1>
-    T1 getVal(const std::wstring& key)
-    {
-        for (auto i : _arr)
-            if (i->get_name() == key)
-                return std::any_cast<T1>(i->get_value());
-        return T1{};
-    }
-
-private:
-    std::vector<std::shared_ptr<Node>> _arr;
-};
 
 class Parser
 {
@@ -55,7 +26,7 @@ public:
     ~Parser()                                  = default;
 
     template<typename T>
-    constexpr T get_test_func(const std::wstring& key) const
+    constexpr T GetValueByKey(const std::wstring& key) const
     {
         for (const auto& i : _nodes)
         {
@@ -77,7 +48,7 @@ public:
         return count;
     }
 
-    Test_array get_test_func_structe(const std::wstring& key) const;
+    Test_array GetStructureByKey(const std::wstring& key) const;
 
     #ifdef PARSER_DEBUG
         void printDebug() const
@@ -98,8 +69,7 @@ protected:
     void check_tokens(const std::vector<std::shared_ptr<IToken>>& tokens);
 
 private:
-    static const std::vector<std::vector<TokenType>> _test_funcs;
-    std::vector<std::shared_ptr<Node>>               _nodes;
+    std::vector<std::shared_ptr<Node>> _nodes;
 };
 
 

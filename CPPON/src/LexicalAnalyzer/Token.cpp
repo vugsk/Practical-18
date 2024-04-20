@@ -5,14 +5,13 @@
 
 #include <algorithm>
 #include <cwctype>
-#include <utility>
 
 using std::next;
 using std::wstring;
 using std::ranges::all_of;
 
 template<typename F>
-constexpr bool test_func(const wstring& str, const F&& func)
+constexpr bool StringVerification(const wstring& str, const F&& func)
 {
     return func(str.front()) && func(str.back());
 }
@@ -46,13 +45,13 @@ constexpr TokenType Token::checkValueType()
         if (snd == _value)
             return fst;
 
-    if (test_func<bool(const wchar_t&)>(_value, IsDoubleQuote))
+    if (StringVerification<bool(const wchar_t&)>(_value, IsDoubleQuote))
     {
         _value = _value.substr( 1, _value.size() - 2);
         return TokenType::string_literal;
     }
 
-     if (test_func<bool(const wchar_t&)>(_value, IsOneQuote))
+     if (StringVerification<bool(const wchar_t&)>(_value, IsOneQuote))
         return TokenType::character_literal;
 
     if (all_of(_value, iswdigit) && _value.front() != L'-')
